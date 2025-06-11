@@ -1,0 +1,7 @@
+<swiper-container #swiperContainer init="false">
+    @for (slide of slides(); track $index) {
+        <swiper-slide>
+            <img [src]="slide.imageUrl">
+        </swiper-slide>
+    }
+</swiper-container>

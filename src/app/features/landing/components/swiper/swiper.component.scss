@@ -1,0 +1,16 @@
+swiper-container {
+    max-width: 100vw;
+}
+
+swiper-slide {
+    height: 400px;
+    // width: auto;
+    // width: 200px !important;
+    
+    ::ng-deep {
+        img {
+            border-radius: 10px;
+
+        }
+    }
+}
