@@ -11,6 +11,12 @@
     align-items: center;
     padding: 1rem 2rem;
     background-color: transparent;
+    margin-bottom: 60px;
+
+    button {
+        height: 35px;
+        // font-size: 15px;
+    }
 
     .logo {
         font-weight: 600;
@@ -29,18 +35,14 @@
         }
 
         .submit {
-            background: #ffd9c3;
-            border: none;
-            border-radius: 6px;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
+            
         }
     }
 }
 
 .hero {
     text-align: center;
-    padding: 4rem 2rem 2rem;
+    padding: 1rem 2rem 2rem;
 
     h1 {
         font-size: 3rem;
@@ -58,15 +60,7 @@
         display: flex;
         justify-content: center;
         gap: 1rem;
-
-        .submit {
-            background: #ffd9c3;
-            border: none;
-            border-radius: 6px;
-            padding: 0.5rem 1.25rem;
-            font-weight: 600;
-        }
-
+ 
         .view {
             background: transparent;
             border: 1px solid #1e3a3a;
@@ -86,4 +80,8 @@
         max-width: 90%;
         border-radius: 12px;
     }
+}
+
+.hero-content {
+    margin-bottom: 40px;
 }
