@@ -12,6 +12,8 @@ export class LandingPageComponent implements OnInit {
     public slides = [{ imageUrl: 'https://thumbs.dreamstime.com/b/aerial-phooto-festetics-castle-keszthely-hungary-189535465.jpg' }, { imageUrl: 'https://w0.peakpx.com/wallpaper/240/495/HD-wallpaper-glade-creek-mill-forest-rocks-fall-phooto-autumn-mill-colors-beautiful-trees-foliage.jpg' }, { imageUrl: 'https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/jmezjfbuxu3vufvmuxku' }];
 
     public ngOnInit(): void {
+        if (typeof window === 'undefined') return;
+        
         document.addEventListener('click', function (e) {
             const target = e.target as HTMLElement;
 
