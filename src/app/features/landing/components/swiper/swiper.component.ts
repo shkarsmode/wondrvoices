@@ -36,6 +36,8 @@ export class SwiperComponent {
         input.required<ReadonlyArray<Slide>>();
 
     constructor() {
+        if (typeof window === 'undefined') return;
+        
         effect(() => {
             if (this.slides().length !== 0) {
                 const swiperElement = this.swiperContainer().nativeElement;
