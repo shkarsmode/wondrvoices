@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, input, InputSignal, Signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, effect, ElementRef, input, InputSignal, Signal, viewChild } from '@angular/core';
 import { SwiperContainer } from 'swiper/element';
 import { SwiperOptions } from 'swiper/types';
 
@@ -28,7 +28,7 @@ interface Slide {
     styleUrl: './swiper.component.scss',
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class SwiperComponent {
+export class SwiperComponent implements AfterViewInit{
     private readonly swiperContainer: Signal<ElementRef<SwiperContainer>> = 
         viewChild.required<ElementRef<SwiperContainer>>('swiperContainer');
 
@@ -47,17 +47,37 @@ export class SwiperComponent {
             }
         });
     }
+
+    public ngAfterViewInit() {
+        const shadowRoot = this.swiperContainer().nativeElement.shadowRoot;
+        if (shadowRoot) {
+            const style = document.createElement('style');
+            style.textContent = `
+                .swiper-wrapper {
+                    transition-timing-function: linear !important;
+                }
+            `;
+            shadowRoot.appendChild(style);
+        }
+    }
 }
 
 const swiperOptions: SwiperOptions = {
     initialSlide: 1,
     loop: true,
     roundLengths: true,
-    slidesPerView: 2,
+    slidesPerView: 3,
     zoom: true,
+    spaceBetween: 30,
+    grabCursor: true,
+
     autoplay: {
-        delay: 3000,
-        pauseOnMouseEnter: true
+        delay: 0,
+        pauseOnMouseEnter: false,
+        stopOnLastSlide: false
     },
-    speed: 600
+    speed: 7000,
+    allowTouchMove: true,
+
+    // freeMode: true,   
 };

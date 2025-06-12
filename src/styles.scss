@@ -2,6 +2,40 @@
 @import url('./app/shared/styles/reset.scss');
 @import url('./app/shared/styles/buttons.scss');
 
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    // overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.custom-scrollbar-track {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 100%;
+    background: transparent;
+    z-index: 9999;
+    pointer-events: none;
+
+    .custom-scrollbar-thumb {
+        height: 100%;
+        width: 0px;
+        background: linear-gradient(90deg, #fcb69f, #ffecd2);
+        border-radius: 4px;
+        transition: transform 0.3s ease;
+    }
+
+}
+
 :root {
     --font-sans: 'Inter', sans-serif;
 }

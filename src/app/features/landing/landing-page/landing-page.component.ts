@@ -1,19 +1,52 @@
-import { Component, OnInit } from '@angular/core';
-import { SwiperComponent } from '../components/swiper/swiper.component';
+import { Component, DestroyRef, HostListener, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
     selector: 'app-landing-page',
     standalone: true,
-    imports: [SwiperComponent],
+    imports: [RouterOutlet, RouterLink, RouterLinkActive],
     templateUrl: './landing-page.component.html',
     styleUrl: './landing-page.component.scss'
 })
 export class LandingPageComponent implements OnInit {
-    public slides = [{ imageUrl: 'https://thumbs.dreamstime.com/b/aerial-phooto-festetics-castle-keszthely-hungary-189535465.jpg' }, { imageUrl: 'https://w0.peakpx.com/wallpaper/240/495/HD-wallpaper-glade-creek-mill-forest-rocks-fall-phooto-autumn-mill-colors-beautiful-trees-foliage.jpg' }, { imageUrl: 'https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/jmezjfbuxu3vufvmuxku' }];
+    private readonly router: Router = inject(Router);
+    private readonly destroyRef: DestroyRef = inject(DestroyRef);
+    
 
     public ngOnInit(): void {
         if (typeof window === 'undefined') return;
-        
+    
+        this.onWindowScroll();
+        this.addRippleEffectForButtons();
+        this.initRouteListenerToUpdateThumb();
+    }
+
+    @HostListener('window:scroll', [])
+    public onWindowScroll() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.body.scrollHeight - window.innerHeight;
+        const scrollPercent = docHeight === 0 ? 0 :scrollTop / docHeight;
+
+        const thumb = document.querySelector('.custom-scrollbar-thumb') as HTMLElement;
+        if (thumb) {
+            thumb.style.width = `${scrollPercent * 100}%`;
+        }
+    }
+
+    private initRouteListenerToUpdateThumb(): void {
+        this.router.events
+            .pipe(
+                filter(event => event instanceof NavigationEnd),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe(() => {
+                setTimeout(() => this.onWindowScroll());
+            });
+    }
+
+    private addRippleEffectForButtons(): void {
         document.addEventListener('click', function (e) {
             const target = e.target as HTMLElement;
 
