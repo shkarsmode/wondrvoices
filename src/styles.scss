@@ -36,6 +36,11 @@ body {
 
 }
 
+*::selection {
+    color: white;
+    background-color: #fcb69f;
+}
+
 :root {
     --font-sans: 'Inter', sans-serif;
 }

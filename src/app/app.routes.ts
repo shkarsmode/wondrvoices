@@ -8,6 +8,16 @@ export const routes: Routes = [
         path: '', component: LandingPageComponent, children: [
             { path: '', component: MainComponent },
             { path: 'gallery', component: GalleryComponent },
+            { 
+                path: 'voices/:id', 
+                loadComponent: () => import('./features/landing/pages/voice/voice.component')
+                    .then(m => m.VoiceComponent) 
+            },
+            {
+                path: 'form',
+                loadComponent: () => import('./features/landing/pages/form/form.component')
+                    .then(m => m.FormComponent)
+            },
         ]
     },
 ];

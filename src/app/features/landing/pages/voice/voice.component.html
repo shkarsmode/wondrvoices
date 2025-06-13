@@ -1,0 +1,23 @@
+@if (card) {
+    <div class="card-details">
+        <button class="back-btn" (click)="history.back()">← Back</button>
+    
+        <div class="image">
+            <img [src]="card.image" alt="Card image">
+        </div>
+    
+        <div class="content">
+            <span class="category">{{ card.category }}</span>
+            <h1 class="title">{{ card.title }}</h1>
+            <p class="description">{{ card.description }}</p>
+    
+            <div class="author">
+                <img class="avatar" [src]="card.avatar" alt="avatar">
+                <div>
+                    <span class="name">{{ card.author }}</span>
+                    <span class="date">{{ card.date }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}

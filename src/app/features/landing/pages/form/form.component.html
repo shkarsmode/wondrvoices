@@ -1,0 +1,64 @@
+<h2>
+    WondrVoices invites anyone to create artwork or handwritten messages that are printed on personalized cards and
+    delivered to patients facing cancer and other serious illnesses.
+    Your kind words or drawings can bring comfort and connection when someone needs it most.
+</h2>
+
+<h3>
+    No names or personal information will appear on the cards — only your art or words of kindness will be shared.
+</h3>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="form">
+    @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input [formControlName]="field" [placeholder]="' '" type="text" />
+                <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+            </div>
+        </div>
+    }
+
+    <div
+        class="form-group dropzone"
+        [class.dragover]="isDragOver()"
+        (dragleave)="onDragLeave()"
+        (dragover)="onDragOver($event)"
+        (drop)="onFileDrop($event)"
+        (click)="fileInput.click()">
+        <label class="upload-label">
+            Upload a photo of your drawing, artwork, or handwritten message *
+        </label>
+    
+        <div class="dropzone-content">
+            @if (!previewUrl()) {
+                <p>📁 Click to choose a file or drag here</p>
+                <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
+            } @else {
+                <div class="clear-file" (click)="clearFile($event)">✖</div>
+                <img
+                    class="preview-img"
+                    [src]="previewUrl()"
+                    alt="preview" />
+            }
+        </div>
+    
+        <input
+            hidden
+            (change)="onFileChange($event)"
+            #fileInput
+            type="file" />
+    </div>
+
+    <div class="form-group checkbox">
+        <input type="checkbox" formControlName="consent" id="consent" />
+        <label for="consent">I agree to let WondrVoices use my submission in printed or digital form to bring hope to patients. I understand that not
+        all submissions may be printed or shared.</label>
+    </div>
+
+    <button
+        class="button submit-btn primary"
+        type="submit"
+        [disabled]="(form.invalid && form.touched && form.dirty) || submitted()">
+        Submit
+    </button>
+</form>

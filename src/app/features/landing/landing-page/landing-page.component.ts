@@ -1,4 +1,4 @@
-import { Component, DestroyRef, HostListener, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -8,7 +8,8 @@ import { filter } from 'rxjs';
     standalone: true,
     imports: [RouterOutlet, RouterLink, RouterLinkActive],
     templateUrl: './landing-page.component.html',
-    styleUrl: './landing-page.component.scss'
+    styleUrl: './landing-page.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LandingPageComponent implements OnInit {
     private readonly router: Router = inject(Router);

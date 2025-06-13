@@ -18,7 +18,10 @@
 
     <div class="card-grid">
         @for (card of filteredCards(); track card; let i = $index) {
-            <div class="card" [style]="'--i: ' + i*0.10 + 's'">
+            <div
+                class="card"
+                [style]="'--i: ' + i*0.10 + 's'"
+                (click)="openVoicePage(card.id)">
                 <img class="card-image" [src]="card.image" alt="card image" />
                 <div class="card-content">
                     <span class="category">{{ card.category }}</span>
