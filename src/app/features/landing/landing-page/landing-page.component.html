@@ -4,17 +4,22 @@
 
 <section class="hero">
     <header class="top-bar">
-        <div
-            class="logo"
-            [routerLink]="''">
+        <div class="logo" [routerLink]="''">
             <img src="assets/svg/full-logo.svg" alt="Logo" />
         </div>
-        <nav>
-            <a
-                [routerLink]="['/gallery']"
-                [routerLinkActive]="'link-active'">
-                Gallery
-            </a>
+
+        <button
+            class="burger"
+            [class.active]="menuOpened()"
+            (click)="toggleMenu()"
+            aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav [class.open]="menuOpened()" (click)="toggleMenu()">
+            <a [routerLink]="['/gallery']" routerLinkActive="link-active">Gallery</a>
             <a href="#">About</a>
             <a href="#">Blog</a>
             <a href="#">Support</a>

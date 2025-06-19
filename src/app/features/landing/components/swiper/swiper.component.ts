@@ -42,6 +42,12 @@ export class SwiperComponent implements AfterViewInit{
             if (this.slides().length !== 0) {
                 const swiperElement = this.swiperContainer().nativeElement;
 
+                if (window.screen.width < 900) {
+                    swiperOptions.slidesPerView = 2;
+                } else if (window.screen.width <= 500) {
+                    swiperOptions.slidesPerView = 1;
+                }
+
                 Object.assign(swiperElement, swiperOptions);
                 swiperElement.initialize();
             }

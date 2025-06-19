@@ -1,6 +1,11 @@
 :host {
     display: block;
+    padding: 0 20px;
     padding-bottom: 100px;
+
+    @media screen and (max-width: 500px) {
+        padding: 0 10px;
+    }
 }
 
 .card-details {
@@ -16,6 +21,10 @@
     flex-direction: column;
     gap: 1.5rem;
 
+    @media screen and (max-width: 768px) {
+        padding: 25px 15px;
+    }
+
     .back-btn {
         align-self: flex-start;
         background: none;
@@ -28,6 +37,10 @@
 
         &:hover {
             text-decoration: underline;
+        }
+
+        @media screen and (max-width: 768px) {
+            margin-bottom: 0px;
         }
     }
 
@@ -54,12 +67,30 @@
         font-size: 2rem;
         font-weight: 700;
         margin-top: 0.5rem;
+
+        @media screen and (max-width: 768px) {
+            font-size: 1.7rem;
+            margin-top: 5px;
+        }
+
+        @media screen and (max-width: 500px) {
+            font-size: 1.5rem;
+        }
     }
 
     .description {
         font-size: 1.1rem;
         line-height: 1.6;
         margin-top: 1rem;
+
+        @media screen and (max-width: 768px) {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        @media screen and (max-width: 500px) {
+            line-height: 1;
+        }
     }
 
     .author {
@@ -67,6 +98,14 @@
         align-items: center;
         gap: 1rem;
         margin-top: 2rem;
+
+        @media screen and (max-width: 768px) {
+            margin-top: 14px;
+        }
+
+        @media screen and (max-width: 500px) {
+            gap: 10px;
+        }
 
         .avatar {
             width: 50px;
@@ -101,5 +140,11 @@
         &:hover {
             transform: scale(1.05);
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .card-details {
+        margin-top: 0px;
     }
 }

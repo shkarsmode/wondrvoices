@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -14,6 +14,8 @@ import { filter } from 'rxjs';
 export class LandingPageComponent implements OnInit {
     private readonly router: Router = inject(Router);
     private readonly destroyRef: DestroyRef = inject(DestroyRef);
+
+    public menuOpened = signal(false);
     
 
     public ngOnInit(): void {
@@ -34,6 +36,10 @@ export class LandingPageComponent implements OnInit {
         if (thumb) {
             thumb.style.width = `${scrollPercent * 100}%`;
         }
+    }
+
+    public toggleMenu(): void {
+        this.menuOpened.update(open => !open);
     }
 
     private initRouteListenerToUpdateThumb(): void {

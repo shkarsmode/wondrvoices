@@ -43,3 +43,19 @@
 .hero-content {
     margin-bottom: 40px;
 }
+
+@media (max-width: 768px) {
+    .hero {
+        h1 {
+            font-size: 2rem;
+        }
+
+        p {}
+    }
+}
+
+@media (max-width: 500px) {
+    .hero {
+        padding: 10px;
+    }
+}

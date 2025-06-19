@@ -166,3 +166,46 @@
         margin-bottom: 15px !important;
     }
 }
+
+@media (max-width: 768px) {
+    .message-board {
+        padding: 20px;
+        padding-top: 0px;
+
+        .title {
+            font-size: 1.5rem;
+        }
+    }
+}
+
+@media (max-width: 500px) {
+    .message-board {
+        padding: 10px;
+        padding-top: 0px;
+
+        .card-grid {
+            grid-template-columns: auto;
+            padding: 10px;
+        }
+
+        .card-title {
+            font-size: 1rem !important;
+        }
+
+        .card-description {
+            font-size: 0.75rem !important;
+        }
+
+        .category {
+            font-size: 10px !important;
+        }
+
+        .name {
+            font-size: 14px !important;
+        }
+
+        .tabs {
+            gap: 10px;
+        }
+    }
+}

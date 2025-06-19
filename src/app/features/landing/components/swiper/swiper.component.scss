@@ -19,7 +19,13 @@ swiper-slide {
     }
 }
 
-::ng-deep swiper-container{
+::ng-deep swiper-container {
     transition-timing-function: linear !important;
     margin: 0 auto;
+}
+
+@media screen and (max-width: 500px) {
+    swiper-slide {
+        width: 280px !important;
+    }
 }

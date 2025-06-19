@@ -2,6 +2,16 @@ $form-radius: 12px;
 $form-color: #2b2b2b;
 $form-accent: #ffbfae;
 
+:host {
+    display: block;
+    padding: 0 2rem;
+    padding-bottom: 50px !important;
+
+    @media screen and (max-width: 500px) {
+        padding: 0 10px;
+    }
+}
+
 .form {
     font-family: 'Inter', sans-serif;
     max-width: 600px;
@@ -9,6 +19,10 @@ $form-accent: #ffbfae;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+
+    @media screen and (max-width: 500px) {
+        gap: 1rem;
+    }
 
     .form-group {
         display: flex;
@@ -29,6 +43,10 @@ $form-accent: #ffbfae;
                     outline: none;
                     border-color: $form-accent;
                 }
+
+                @media screen and (max-width: 500px) {
+                    font-size: 14px;
+                }
             }
 
             label {
@@ -39,6 +57,10 @@ $form-accent: #ffbfae;
                 color: #888;
                 transition: all 0.2s ease;
                 pointer-events: none;
+
+                @media screen and (max-width: 500px) {
+                    font-size: 14px;
+                }
             }
 
             input:focus+label,
@@ -58,6 +80,10 @@ $form-accent: #ffbfae;
 
             label {
                 cursor: pointer;
+
+                @media screen and (max-width: 500px) {
+                    font-size: 12px;
+                }
             }
         }
     }
@@ -85,6 +111,10 @@ h3 {
     font-weight: 300;
     max-width: 600px;
     margin: 0 auto;
+
+    @media screen and (max-width: 500px) {
+        font-size: 18px;
+    }
 }
 
 h3 {
@@ -92,6 +122,10 @@ h3 {
     font-style: italic;
     margin-top: 15px;
     margin-bottom: 30px;
+
+    @media screen and (max-width: 500px) {
+        font-size: 16px;
+    }
 }
 
 .dropzone {

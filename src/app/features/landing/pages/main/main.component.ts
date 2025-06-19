@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { SwiperComponent } from '../../components/swiper/swiper.component';
 
@@ -9,7 +10,9 @@ import { SwiperComponent } from '../../components/swiper/swiper.component';
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss'
 })
-export class MainComponent {
+export class MainComponent implements OnInit {
+    private title = inject(Title);
+
     public slides = [
         { imageUrl: 'assets/voices/6.jpg' },
         { imageUrl: 'assets/voices/11.jpg' }, 
@@ -19,6 +22,7 @@ export class MainComponent {
         { imageUrl: 'assets/voices/19.jpg' },
     ];
 
-
-
+    public ngOnInit(): void {
+        this.title.setTitle('Wondrvoices');
+    }
 }
