@@ -18,6 +18,11 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/landing/pages/form/form.component')
                     .then(m => m.FormComponent)
             },
+            {
+                path: 'about-us',
+                loadComponent: () => import('./features/landing/pages/about-us/about-us.component')
+                    .then(m => m.AboutUsComponent)
+            },
         ]
     },
 ];
