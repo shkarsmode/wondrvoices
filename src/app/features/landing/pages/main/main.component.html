@@ -1,14 +1,165 @@
-<div class="hero">
-    <div class="hero-content">
-        <h1>Voices that remind you you're not alone.</h1>
-        <p>Supportive messages of hope, love, and encouragement — shared by people who care.</p>
-        <div class="actions">
-            <button class="button primary" [routerLink]="'/form'">Submit a voice</button>
-            <button class="button secondary" [routerLink]="'/gallery'">View cards</button>
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-text">
+            <h1>Reminders that you are not alone</h1>
+            <p>
+                WondrVoices is a community-driven initiative that provides hope and kindness to those facing cancer
+            </p>
+            <div class="actions">
+                <button class="button primary" [routerLink]="'/form'">Submit</button>
+                <button class="button secondary" [routerLink]="'/gallery'">View cards</button>
+            </div>
+        </div>
+
+        <div class="hero-images">
+            <img
+                class="image-card"
+                src="https://picsum.photos/600/300"
+                alt="Card with flowers"
+                loading="lazy" />
+            <img
+                class="image-gallery"
+                src="https://picsum.photos/600/301"
+                alt="Gallery wall"
+                loading="lazy" />
         </div>
     </div>
-</div>
-
-<section class="hero-image">
-    <app-swiper [slides]="slides" />
 </section>
+
+<section class="share-hope">
+    <p class="section-title">
+        <b>Share hope, one message at a time</b><br>
+        Every card, note, and voice shared here is a small act of kindness that can brighten even the hardest days. Whether it's a child's drawing, a handwritten message, or an encouraging voice, each one reminds patients they are not alone in their fight. Join a growing community of people spreading encouragement to those who need it most.
+    </p>
+
+    <div class="cards">
+        <div class="card">
+            <div class="card-header">
+                <img src="https://cdn-icons-png.freepik.com/128/867/867979.png" alt="Submit icon" />
+                <h3>Submit a Card</h3>
+            </div>
+            <p>
+                Share your creativity to lift someone’s spirit. Whether it’s a drawing, handwritten note, or warm words
+                — your work will be printed and delivered to a patient who needs a moment of comfort and connection.
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <img src="https://i.pinimg.com/736x/be/7a/ad/be7aadf5c05ff6d5631f8a506ec06637.jpg" alt="Spot icon" />
+                <h3>Become a WondrSpot</h3>
+            </div>
+            <p>
+                Start a card-making project in your school, workplace, or community. WondrSpots help teach, heal, build
+                teams, and help spread kindness through handmade messages of hope.
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <img src="https://cdn-icons-png.freepik.com/256/923/923455.png" alt="Help icon" />
+                <h3>Help Us Grow</h3>
+            </div>
+            <p>
+                Support WondrVoices by sharing our mission or donating. Your help ensures a new wave of care can rise,
+                reach more patients, and grow a movement of care.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="why-we-started">
+    <div class="content">
+        <h2>Why We Started WondrVoices</h2>
+        <p>
+            What began as a simple way to comfort patients with handmade cards has grown into a small but meaningful
+            movement. WondrVoices helps foster connection and kindness through messages that remind patients they are
+            not alone.
+        </p>
+        <a routerLink="/about" class="read-link">Read Our Story <span>&rarr;</span></a>
+    </div>
+</section>
+
+<section class="impact">
+    <h2>What a Message Can Do</h2>
+    <div class="impact-counters">
+        <div class="counter">
+            <h3>200+</h3>
+            <p>Cards Delivered</p>
+        </div>
+        <div class="counter">
+            <h3>5+</h3>
+            <p>WondrSpots Created</p>
+        </div>
+        <div class="counter">
+            <h3>3 States</h3>
+            <p>Contributions From</p>
+        </div>
+    </div>
+</section>
+
+<section class="sponsors">
+    <p class="subtitle">Thanks to Submissions From</p>
+    <div class="logos">
+        <img src="https://www.olympiacoffee.com/cdn/shop/files/PRIMARY_BLK_2x_f247d0d1-eee8-4d48-8188-f32621972368.png?v=1684795489" alt="Olympia Coffee" />
+        <img src="https://kajabi-storefronts-production.kajabi-cdn.com/kajabi-storefronts-production/file-uploads/themes/2155285831/settings_images/200a1bb-ff31-2eb-7c3c-d0786eb2dc7_8af18cac-4bcb-488c-9efc-1fca1c5b56c2.png" alt="Adventure" />
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr-xKoADx6NMcJs09IwyafoXUnSBwXd9Z7BA&s" alt="Foulkeways" />
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Eo_circle_pink_white_letter-w.svg/1024px-Eo_circle_pink_white_letter-w.svg.png" alt="Logo pink" />
+        <img src="https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium" alt="Clay Center" />
+    </div>
+</section>
+
+<section class="latest-blogs">
+    <h2>Latest Blogs</h2>
+    <div class="blog-cards">
+        <div class="blog-card">
+            <h3>When Personalized and Compassionate Care Becomes the Turning Point</h3>
+            <p>
+                Every cancer is as unique as the person it affects...
+            </p>
+            <a href="#">Explore →</a>
+        </div>
+        <div class="blog-card">
+            <h3>What Happens When There's No Clinical Trial for You?</h3>
+            <p>
+                For many cancer patients, clinical trials represent...
+            </p>
+            <a href="#">Explore →</a>
+        </div>
+    </div>
+    <button class="button secondary view-all-btn">View All</button>
+</section>
+
+<section class="donate">
+    <h2>Make a difference today</h2>
+    <div class="donate-wrapper">
+        <div class="donate-image">
+            <h3>Help Us Print & Deliver More Cards</h3>
+            <img src="https://picsum.photos/600/400" alt="Handmade cards" />
+        </div>
+        <div class="donate-box">
+            <h3>Donate now</h3>
+            <p>Your donation helps us print and deliver cards to hospitals across the country.</p>
+
+            <form class="donate-form">
+                <label>Suggested donation*</label>
+                <div class="amounts">
+                    <button type="button">$5</button>
+                    <button type="button">$10</button>
+                    <button type="button">$50</button>
+                    <button type="button">$100</button>
+                </div>
+                <p class="note">Every $10 = 50 cards delivered</p>
+
+                <button type="submit" class="pay-btn">Pay with <strong>link</strong></button>
+                <button type="button" class="alt-pay">G Pay | Visa
+                    <!-- <img src="assets/visa.png" alt="Visa" /> -->
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- <section class="hero-image">
+    <app-swiper [slides]="slides" />
+</section> -->
