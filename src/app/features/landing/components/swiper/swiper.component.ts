@@ -72,10 +72,11 @@ const swiperOptions: SwiperOptions = {
     initialSlide: 1,
     loop: true,
     roundLengths: true,
-    slidesPerView: 3,
+    slidesPerView: 2,
     zoom: true,
-    spaceBetween: 30,
+    spaceBetween: 10,
     grabCursor: true,
+    direction: 'vertical',
 
     autoplay: {
         delay: 0,

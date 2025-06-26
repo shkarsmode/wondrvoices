@@ -20,9 +20,10 @@
 
         <nav [class.open]="menuOpened()" (click)="toggleMenu()">
             <a [routerLink]="['/gallery']" routerLinkActive="link-active">Gallery</a>
+            <a [routerLink]="['/spots']" routerLinkActive="link-active">Spots</a>
+            <a [routerLink]="['/get-involved']" routerLinkActive="link-active">Get Involved</a>
             <a [routerLink]="['/about-us']" routerLinkActive="link-active">About</a>
             <a [routerLink]="['/blog']" routerLinkActive="link-active">Blog</a>
-            <a [routerLink]="['/support']" routerLinkActive="link-active">Support</a>
             <button class="button submit primary" [routerLink]="'/form'">Submit</button>
         </nav>
     </header>

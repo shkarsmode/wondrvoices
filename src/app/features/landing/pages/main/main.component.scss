@@ -55,7 +55,7 @@
     }
 
     .hero-images {
-        flex: 1 1 400px;
+        transform: rotate(10deg);
         position: relative;
         display: flex;
         flex-direction: column;

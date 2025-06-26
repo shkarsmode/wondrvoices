@@ -1,0 +1,248 @@
+.ambassador-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    padding: 3rem 2rem;
+    flex-wrap: wrap;
+    // background: #fffefb;
+
+    .text {
+        max-width: 600px;
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .ambassador-btn {
+            background-color: #ffc727;
+            color: #000;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+
+            &:hover {
+                background-color: darken(#ffc727, 10%);
+            }
+        }
+    }
+
+    .image {
+        transform: rotate(10deg);
+        text-align: center;
+
+        img {
+            max-width: 100%;
+            max-height: 350px;
+            transform: rotate(10deg);
+            border-radius: 12px;
+        }
+    }
+}
+
+app-swiper {
+    height: 450px !important;
+    display: block;
+    overflow: hidden;
+}
+
+.ambassador-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding: 3rem 2rem;
+    flex-wrap: wrap;
+
+    .ambassador-section {
+        max-width: 600px;
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+        }
+
+        ul {
+            list-style: disc;
+            padding-left: 1.5rem;
+            line-height: 1.8;
+
+            li {
+                margin-bottom: 0.5rem;
+            }
+        }
+    }
+}
+
+$form-radius: 12px;
+$form-color: #2b2b2b;
+$form-accent: #ffbfae;
+
+
+.ambassador-form {
+    padding: 20px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+
+    h2,
+    h3 {
+        text-align: center;
+        font-size: 22px;
+        max-width: 700px;
+        margin: 0 auto 20px;
+
+        @media screen and (max-width: 500px) {
+            font-size: 18px;
+        }
+    }
+
+    h3 {
+        font-size: 18px;
+        font-style: italic;
+        margin-bottom: 30px;
+    }
+
+    .form {
+        max-width: 650px;
+    }
+
+    .submit-btn {
+        margin-top: 20px;
+        // background-color: $form-accent;
+
+        &:hover {
+            background-color: darken($form-accent, 10%);
+        }
+    }
+}
+
+.form {
+    font-family: 'Inter', sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    @media screen and (max-width: 500px) {
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+
+        .input-wrapper {
+            position: relative;
+
+            input {
+                width: 100%;
+                padding: 1rem;
+                border: 2px solid #ccc;
+                border-radius: $form-radius;
+                font-size: 1rem;
+                transition: border 0.3s;
+
+                &:focus {
+                    outline: none;
+                    border-color: $form-accent;
+                }
+
+                @media screen and (max-width: 500px) {
+                    font-size: 14px;
+                }
+            }
+
+            label {
+                position: absolute;
+                top: 50%;
+                left: 1rem;
+                transform: translateY(-50%);
+                color: #888;
+                transition: all 0.2s ease;
+                pointer-events: none;
+
+                @media screen and (max-width: 500px) {
+                    font-size: 14px;
+                }
+            }
+
+            input:focus+label,
+            input:active+label,
+            .focused {
+                top: 11px;
+                left: 0.9rem;
+                font-size: 0.75rem;
+                color: $form-accent;
+            }
+        }
+
+        &.checkbox {
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5rem;
+
+            label {
+                cursor: pointer;
+
+                @media screen and (max-width: 500px) {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
+    .submit-btn {
+        // background-color: $form-accent;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: $form-radius;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+
+        &:hover {
+            background-color: darken($form-accent, 10%);
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .ambassador-info {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .ambassador-hero {
+        flex-direction: column;
+
+        .text {
+            text-align: center;
+        }
+
+        .image img {
+            margin-top: 2rem;
+            transform: none;
+        }
+    }
+}

@@ -1,0 +1,68 @@
+<section class="ambassador-hero">
+    <div class="text">
+        <h1>Be a Voice That Moves Others</h1>
+        <p>
+            WondrVoices Ambassadors are everyday changemakers who help kindness go further, online and in real life.
+            Whether you’re sharing on social, hosting an event, or inspiring local spaces to join, your voice helps
+            spread hope.
+        </p>
+        <button class="button ambassador-btn">Join as an Ambassador</button>
+    </div>
+    <div class="image">
+        <app-swiper [slides]="slides" />
+    </div>
+</section>
+
+<section class="ambassador-info">
+    <div class="ambassador-section">
+        <h2>What Ambassadors do</h2>
+        <p>
+            As an ambassador, you’ll help build a ripple effect of kindness and connection.
+            You don’t need special skills — just a desire to make a difference in your community and online.
+        </p>
+        <ul>
+            <li>Encourage local spots (like cafés, libraries, galleries) to become WondrSpots</li>
+            <li>Host a meetup or popup card-making event</li>
+            <li>Share stories and videos that inspire others to join</li>
+            <li>Help distribute cards to nearby cancer centers or hospitals</li>
+            <li>Spread awareness on Instagram, TikTok, Facebook, or Nextdoor</li>
+        </ul>
+    </div>
+
+    <div class="ambassador-section">
+        <h2>Make Kindness Go Viral</h2>
+        <p>
+            Every month, we highlight ambassadors who make the biggest splash, online or offline.<br />
+            From viral reels to standout events, your creativity could be featured here.
+        </p>
+    </div>
+</section>
+
+<section class="ambassador-form">
+    <h2>Ready to join?</h2>
+    <h3>Whether you have five minutes or five hours, your effort matters.</h3>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+        @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input [formControlName]="field" [placeholder]="' '" type="text" />
+                <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+            </div>
+        </div>
+        }
+
+        <div class="form-group checkbox">
+            <input type="checkbox" formControlName="consent" id="consent" />
+            <label for="consent">
+                I agree to let Wondrvoices use my submission in printed or digital form to bring hope to patients.
+                I understand that not all submissions may be printed or shared.
+            </label>
+        </div>
+
+        <button class="button submit-btn primary" type="submit"
+            [disabled]="(form.invalid && form.touched && form.dirty) || submitted()">
+            Sign Me Up
+        </button>
+    </form>
+</section>
