@@ -1,5 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
 import { SwiperComponent } from '../../components/swiper/swiper.component';
 
 @Component({
@@ -9,7 +10,8 @@ import { SwiperComponent } from '../../components/swiper/swiper.component';
     templateUrl: './get-involved.component.html',
     styleUrl: './get-involved.component.scss'
 })
-export class GetInvolvedComponent {
+export class GetInvolvedComponent implements OnInit {
+    private title = inject(Title);
     public slides = [
         { imageUrl: 'assets/voices/6.jpg' },
         { imageUrl: 'assets/voices/11.jpg' },
@@ -39,6 +41,10 @@ export class GetInvolvedComponent {
             creditTo: [''],
             consent: [false, Validators.requiredTrue]
         });
+    }
+
+    public ngOnInit(): void {
+        this.title.setTitle('Get Involved | Wondrvoices');
     }
 
     public submit() {
