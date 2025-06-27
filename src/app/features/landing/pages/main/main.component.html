@@ -1,39 +1,49 @@
 <section class="hero">
     <div class="hero-inner">
         <div class="hero-text">
-            <h1>Reminders that you are not alone</h1>
+            <h1>
+                Reminders that <span>you <img src="assets/svg/lines-1.svg" alt="Lines" /></span> are not alone
+            </h1>
             <p>
                 WondrVoices is a community-driven initiative that provides hope and kindness to those facing cancer
             </p>
             <div class="actions">
                 <button class="button primary" [routerLink]="'/form'">Submit</button>
                 <button class="button secondary" [routerLink]="'/gallery'">View cards</button>
+                <img  class="svg-line-2" src="assets/svg/lines-2.svg" alt="Lines" />
             </div>
         </div>
 
         <div class="hero-images">
-            <section class="hero-image">
-                <app-swiper [slides]="slides" />
-            </section>
-            <!-- <img
-                class="image-card"
-                src="https://picsum.photos/600/300"
-                alt="Card with flowers"
-                loading="lazy" />
-            <img
-                class="image-gallery"
-                src="https://picsum.photos/600/301"
-                alt="Gallery wall"
-                loading="lazy" /> -->
+            <div
+                class="hero-images-block"
+                (mouseenter)="mouseEnterBlock1=true"
+                (mouseleave)="mouseEnterBlock1=false"
+                #heroImages1>
+                @for (img of images1; track img) {
+                    <img [src]="img" alt="">
+                }
+            </div>
+            <div
+                class="hero-images-block"
+                (mouseenter)="mouseEnterBlock2=true"
+                (mouseleave)="mouseEnterBlock2=false"
+                #heroImages2>
+                @for (img of images2; track img) {
+                    <img [src]="img" alt="">
+                }
+            </div>
         </div>
     </div>
 </section>
 
 <section class="share-hope">
-    <p class="section-title">
-        <b>Share hope, one message at a time</b><br>
-        Every card, note, and voice shared here is a small act of kindness that can brighten even the hardest days. Whether it's a child's drawing, a handwritten message, or an encouraging voice, each one reminds patients they are not alone in their fight. Join a growing community of people spreading encouragement to those who need it most.
-    </p>
+    <div class="section-title">
+        <h2>Share hope, one message at a <span>time <img src="assets/svg/lines-3.svg" alt="Lines" /></span></h2>
+        <span>
+            Every card, note, and voice shared here is a small act of kindness that can brighten even the hardest days. Whether it's a child's drawing, a handwritten message, or an encouraging voice, each one reminds patients they are not alone in their fight. Join a growing community of people spreading encouragement to those who need it most.
+        </span>
+    </div>
 
     <div class="cards">
         <div class="card">

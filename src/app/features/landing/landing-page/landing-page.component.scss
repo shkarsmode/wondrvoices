@@ -1,8 +1,8 @@
 :host {
     display: block;
     font-family: 'Inter', sans-serif;
-    background-color: #fff7ef;
-    color: #1e3a3a;
+    background-color: #f8f5f2;
+    color: #472B2F;
 }
 
 .top-bar {
@@ -36,7 +36,7 @@
 
         a {
             text-decoration: none;
-            color: #1e3a3a;
+            color: #472B2F;
             font-weight: 500;
 
             position: relative;
@@ -49,7 +49,7 @@
                 width: 100%;
                 height: 2px;
                 border-radius: 4px;
-                background-color: #1e3a3a;
+                background-color: #472B2F;
                 bottom: 0;
                 left: 0;
                 transform-origin: right;
@@ -75,9 +75,12 @@
 }
 
 .hero {
+    position: relative;
     text-align: center;
     padding: 1rem 2rem 2rem;
     padding-bottom: 0;
+    box-shadow: -16px 15px 20px 3px rgb(248 245 242 / 91%), -20px 13px 20px 60px rgb(248 245 242 / 66%);
+    z-index: 1;
 
     h1 {
         font-size: 3rem;
@@ -98,7 +101,7 @@
 
         .view {
             background: transparent;
-            border: 1px solid #1e3a3a;
+            border: 1px solid #472B2F;
             border-radius: 6px;
             padding: 0.5rem 1.25rem;
             font-weight: 600;
@@ -121,7 +124,7 @@
         display: block;
         height: 3px;
         width: 100%;
-        background: #1e3a3a;
+        background: #472B2F;
         border-radius: 3px;
         transition: all 0.4s ease;
         transform-origin: center;
