@@ -169,8 +169,11 @@ h1 span {
 }
 
 .share-hope {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     background-color: #f0ebe6;
-    padding: 140px 0;
+    height: 100vh;
     text-align: center;
 
     .section-title {
@@ -221,9 +224,9 @@ h1 span {
             background: #fff;
             border: 1px solid #f1e4d3;
             border-radius: 12px;
-            padding: 1.25rem 1.5rem;
-            width: 280px;
-            max-width: 90vw;
+            padding: 32px 30px;
+            width: 100%;
+            max-width: 400px;
             text-align: left;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
             display: flex;
@@ -235,25 +238,26 @@ h1 span {
                 transform: translateY(-4px);
             }
 
+            img {
+                width: 64px;
+            }
+
             .card-header {
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
 
-                img {
-                    width: 28px;
-                    height: 28px;
-                }
-
                 h3 {
-                    font-size: 0.95rem;
-                    font-weight: 600;
+                    font-size: 28px;
+                    line-height: 1;
+                    margin-bottom: 10px;
+                    font-weight: 500;
                     color: #472B2F;
                 }
             }
 
             p {
-                font-size: 0.875rem;
+                font-size: 16px;
                 color: #333;
                 line-height: 1.4;
             }
@@ -271,24 +275,33 @@ h1 span {
 }
 
 .why-we-started {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 117px;
+
     background-color: #f0ebe6;
     padding: 3rem 1.5rem;
     text-align: center;
 
+    height: 80vh;
+
+    background-color: #f8f5f2;
+
     .content {
-        max-width: 700px;
-        margin: 0 auto;
+        max-width: 620px;
+        text-align: left;
 
         h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
+            font-size: 49px;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
         p {
-            font-size: 1rem;
+            font-size: 16px;
             line-height: 1.6;
-            margin-bottom: 1.5rem;
+            margin-bottom: 32px;
         }
 
         .read-link {
@@ -309,37 +322,44 @@ h1 span {
 }
 
 .impact {
-    padding: 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 100vh;
     text-align: center;
-    background: #fffaf3;
+    background: #f0ebe6;
 
     h2 {
-        font-size: 2rem;
-        margin-bottom: 2rem;
-        font-weight: 600;
+        font-size: 48px;
+        margin-bottom: 80px;
+        font-weight: 500;
     }
 
     .impact-counters {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        gap: 2rem;
+        gap: 40px;
 
         .counter {
             background: #fdf4ed;
             padding: 2rem 1.5rem;
             border-radius: 1rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            min-width: 160px;
+            width: 340px;
 
-            h3 {
-                font-size: 1.8rem;
-                margin-bottom: 0.5rem;
-                color: #472B2F;
+            span {
+                display: block;
+                font-size: 40px;
+                font-weight: 700;
+                color: #3F3C98;
+                margin-bottom: 10px;
             }
 
             p {
-                font-size: 1rem;
+                font-size: 16px;
                 color: #555;
             }
         }
@@ -347,21 +367,33 @@ h1 span {
 }
 
 .sponsors {
-    padding: 3rem 1rem;
-    background-color: #fffaf3;
+    padding-top: 100px;
     text-align: center;
+    width: 100%;
+    max-width: 1100px;
 
     .subtitle {
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        font-weight: 500;
-        color: #888;
+        position: relative;
+        font-size: 16px;
+        font-weight: 600;
+        color: #472B2F;
+        text-align: center;
+
+        width: fit-content;
+        margin: 0 auto;
+        margin-bottom: 40px;
+
+        img {
+            position: absolute;
+            left: -90px;
+            top: -74px;
+        }
     }
 
     .logos {
         display: flex;
+        justify-content: space-between;
         flex-wrap: wrap;
-        justify-content: center;
         align-items: center;
         gap: 2rem;
 
@@ -393,14 +425,19 @@ h1 span {
 }
 
 .latest-blogs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 100vh;
     background-color: #ffefdc;
-    padding: 4rem 1.5rem;
     text-align: center;
 
     h2 {
-        font-size: 2rem;
-        margin-bottom: 2rem;
-        font-weight: 600;
+        font-size: 48px;
+        margin-bottom: 80px;
+        font-weight: 500;
     }
 
     .blog-cards {
