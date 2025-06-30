@@ -36,11 +36,11 @@ export class GetInvolvedComponent implements OnInit {
 
     constructor() {
         this.form = this.fb.group({
-            firstName: ['FirstName', [Validators.required, Validators.minLength(2)]],
-            email: ['test@mail.com', [Validators.required, Validators.email]],
-            location: ['Kiev', Validators.required],
-            creditTo: ['CreditTo'],
-            consent: [true, Validators.requiredTrue]
+            firstName: ['', [Validators.required, Validators.minLength(2)]],
+            email: ['', [Validators.required, Validators.email]],
+            location: ['', Validators.required],
+            creditTo: [''],
+            consent: [false, Validators.requiredTrue]
         });
     }
 
