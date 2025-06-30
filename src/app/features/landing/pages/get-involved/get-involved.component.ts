@@ -75,7 +75,7 @@ export class GetInvolvedComponent implements OnInit {
             height
         });
 
-        // Лого
+        // Logo
         const logoUrl = 'assets/img/full-logo.png';
         const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
         const logoImage = await pdfDoc.embedPng(logoBytes);
@@ -87,7 +87,7 @@ export class GetInvolvedComponent implements OnInit {
             height: logoDims.height
         });
 
-        // Завитушка / линия в углу
+        // Line in the corner of a table
         const decoUrl = 'assets/img/lines.png';
         const decoBytes = await fetch(decoUrl).then(res => res.arrayBuffer());
         const decoImage = await pdfDoc.embedPng(decoBytes);
@@ -102,7 +102,7 @@ export class GetInvolvedComponent implements OnInit {
         const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-        // Заголовок
+        // Title
         page.drawText('Thank You for Joining WondrVoices!', {
             x: 50,
             y: height - 130,
@@ -111,7 +111,7 @@ export class GetInvolvedComponent implements OnInit {
             color: rgb(0.95, 0.38, 0.16)
         });
 
-        // Таблица
+        // Table
         const tableYStart = height - 180;
         let y = tableYStart;
         const rowHeight = 35;
@@ -126,17 +126,17 @@ export class GetInvolvedComponent implements OnInit {
         ];
 
         rows.forEach(row => {
-            // Подложка строки
+            // Line's background
             page.drawRectangle({
                 x: 50,
                 y: y - rowHeight + 5,
                 width: width - 100,
                 height: rowHeight - 5,
-                color: rgb(1, 0.95, 0.9), // лёгкий оттенок бежевого
+                color: rgb(1, 0.95, 0.9),
                 opacity: 0.4
             });
 
-            // Лейбл
+            // Label
             page.drawText(row.label + ':', {
                 x: 60,
                 y: y - 20,
@@ -145,7 +145,7 @@ export class GetInvolvedComponent implements OnInit {
                 color: rgb(0.36, 0.22, 0.18)
             });
 
-            // Значение
+            // Value
             page.drawText(row.value, {
                 x: 60 + col1Width,
                 y: y - 20,
@@ -154,7 +154,7 @@ export class GetInvolvedComponent implements OnInit {
                 color: rgb(0.2, 0.2, 0.2)
             });
 
-            // Линия под строкой
+            // Underline
             page.drawLine({
                 start: { x: 50, y: y - rowHeight + 5 },
                 end: { x: width - 50, y: y - rowHeight + 5 },
