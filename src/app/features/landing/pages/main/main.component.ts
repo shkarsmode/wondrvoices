@@ -55,6 +55,7 @@ export class MainComponent implements OnInit {
     }
 
     public ngAfterViewInit(): void {
+        if (typeof window === 'undefined') return;
         setTimeout(() => {
             this.startAnimation();
         }, 100);
