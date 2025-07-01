@@ -15,17 +15,36 @@
     </div>
 </section>
 
-<section class="wondrspot-info">
-    <h2>What is a WondrSpot?</h2>
+<section class="wondrspot-description">
+    <h2>Become a WondrSpot</h2>
     <p>
-        WondrSpots are places like cafés, libraries, studios where kindness takes shape.
-        You're creating a ripple of care for those facing serious illness.
+        WondrSpots are spaces such as libraries, clinics, coffee shops, classrooms, community centers,
+        or kitchen tables where kindness takes shape. They are places where anyone can pause, reflect,
+        and create something meaningful for someone facing cancer or serious illness.
+    </p>
+    <p>
+        By becoming a WondrSpot, you’re helping turn your community into a wellspring of compassion, creativity,
+        and connection. Whether you host a one-time letter-writing event or set up a permanent card-making station,
+        you're offering something rare and needed: a moment of care from one human to another.
+    </p>
+
+    <h3>What You’re Creating</h3>
+    <p>When someone sits down at a WondrSpot, they’re reminded:</p>
+    <ul>
+        <li><strong>You are not alone.</strong></li>
+        <li><strong>Your words matter.</strong></li>
+        <li><strong>Even small acts can ripple outward.</strong></li>
+    </ul>
+    <p>
+        Each card or artwork created will be anonymously delivered to someone navigating a serious diagnosis.
+        These messages often go to hospitals, cancer centers, or hospice programs, offering comfort in a moment
+        of uncertainty.
     </p>
 </section>
 
 <section class="wondrspot-form">
     <h2>Ready to Become a WondrSpot?</h2>
-    <h3>Your place can be a beacon of kindness.</h3>
+    <h3>Sign up below and help turn compassion into action - one card, one voice, one community at a time. You don't need to be an artist. You just need a heart for connection.</h3>
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="form">
         @for (field of ['organizationName', 'address', 'city', 'contactPerson', 'email', 'type']; track field) {

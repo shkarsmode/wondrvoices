@@ -38,11 +38,11 @@ export class SpotsComponent implements OnInit {
         });
     }
 
-    ngOnInit(): void {
+    public ngOnInit(): void {
         this.title.setTitle('Become a WondrSpot | WondrVoices');
     }
 
-    async submit(): Promise<void> {
+    public async submit(): Promise<void> {
         if (this.form.valid) {
             this.submitted.set(true);
             console.log('[WondrSpot Form Submitted]:', this.form.value);
@@ -57,7 +57,6 @@ export class SpotsComponent implements OnInit {
         const page = pdfDoc.addPage([600, 700]);
         const { width, height } = page.getSize();
 
-        // Подложка с градиентом через картинку
         const gradientUrl = 'assets/img/gradient-bg.png';
         const gradientBytes = await fetch(gradientUrl).then(res => res.arrayBuffer());
         const gradientImage = await pdfDoc.embedPng(gradientBytes);
@@ -68,7 +67,6 @@ export class SpotsComponent implements OnInit {
             height
         });
 
-        // Логотип
         const logoUrl = 'assets/img/full-logo.png';
         const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
         const logoImage = await pdfDoc.embedPng(logoBytes);
@@ -80,7 +78,6 @@ export class SpotsComponent implements OnInit {
             height: logoDims.height
         });
 
-        // Декор уголка
         const decoUrl = 'assets/img/lines.png';
         const decoBytes = await fetch(decoUrl).then(res => res.arrayBuffer());
         const decoImage = await pdfDoc.embedPng(decoBytes);
@@ -95,7 +92,6 @@ export class SpotsComponent implements OnInit {
         const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-        // Заголовок
         page.drawText('Thank You for Becoming a WondrSpot!', {
             x: 50,
             y: height - 130,
@@ -104,7 +100,6 @@ export class SpotsComponent implements OnInit {
             color: rgb(0.95, 0.38, 0.16)
         });
 
-        // Таблица
         let y = height - 180;
         const rowHeight = 35;
         const col1Width = 180;
@@ -177,7 +172,7 @@ export class SpotsComponent implements OnInit {
 
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'WondrVoices_WondrSpot_Thank_You.pdf';
+        a.download = 'WondrSpot_Thank_You.pdf';
         a.click();
 
         URL.revokeObjectURL(url);
