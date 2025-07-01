@@ -28,6 +28,11 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/landing/pages/get-involved/get-involved.component')
                     .then(m => m.GetInvolvedComponent)
             },
+            {
+                path: 'spots',
+                loadComponent: () => import('./features/landing/pages/spots/spots.component')
+                    .then(m => m.SpotsComponent)
+            },
         ]
     },
 ];

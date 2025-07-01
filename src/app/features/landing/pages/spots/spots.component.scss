@@ -1,0 +1,245 @@
+.wondrspot-hero {
+    // background: linear-gradient(135deg, #fff4e6 0%, #ffe9d6 100%);
+    padding: 3rem 1rem;
+
+    .wondrspot-content {
+        max-width: 1200px;
+        margin: auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2rem;
+
+        .text {
+            flex: 1 1 400px;
+
+            h1 {
+                font-size: 2.5rem;
+                color: #5c4033;
+                margin-bottom: 1rem;
+            }
+
+            p {
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        .image {
+            flex: 1 1 400px;
+
+            img {
+                width: 100%;
+                border-radius: 8px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}
+
+.wondrspot-btn {
+    background-color: #ffc727;
+    color: #000;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+        background-color: darken(#ffc727, 10%);
+    }
+}
+
+.wondrspot-info {
+    padding: 2rem 1rem;
+    max-width: 800px;
+    margin: auto;
+    text-align: center;
+
+    h2 {
+        font-size: 2rem;
+        color: #5c4033;
+    }
+
+    p {
+        margin-top: 0.5rem;
+        font-size: 1rem;
+    }
+}
+
+app-swiper {
+    height: 450px !important;
+    display: block;
+    overflow: hidden;
+}
+
+
+h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+
+ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    line-height: 1.8;
+
+    li {
+        margin-bottom: 0.5rem;
+    }
+}
+
+$form-radius: 12px;
+$form-color: #2b2b2b;
+$form-accent: #ffbfae;
+
+
+.wondrspot-form {
+    padding: 20px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+
+    h2,
+    h3 {
+        text-align: center;
+        font-size: 22px;
+        max-width: 700px;
+        margin: 0 auto 20px;
+
+        @media screen and (max-width: 500px) {
+            font-size: 18px;
+        }
+    }
+
+    h3 {
+        font-size: 18px;
+        font-style: italic;
+        margin-bottom: 30px;
+    }
+
+    .form {
+        max-width: 650px;
+    }
+
+    .submit-btn {
+        margin-top: 20px;
+        // background-color: $form-accent;
+
+        &:hover {
+            background-color: darken($form-accent, 10%);
+        }
+    }
+}
+
+.form {
+    font-family: 'Inter', sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    @media screen and (max-width: 500px) {
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+
+        .input-wrapper {
+            position: relative;
+
+            input {
+                width: 100%;
+                padding: 1rem;
+                border: 2px solid #ccc;
+                border-radius: $form-radius;
+                font-size: 1rem;
+                transition: border 0.3s;
+
+                &:focus {
+                    outline: none;
+                    border-color: $form-accent;
+                }
+
+                @media screen and (max-width: 500px) {
+                    font-size: 14px;
+                }
+            }
+
+            label {
+                position: absolute;
+                top: 50%;
+                left: 1rem;
+                transform: translateY(-50%);
+                color: #888;
+                transition: all 0.2s ease;
+                pointer-events: none;
+
+                @media screen and (max-width: 500px) {
+                    font-size: 14px;
+                }
+            }
+
+            input:focus+label,
+            input:active+label,
+            .focused {
+                top: 11px;
+                left: 0.9rem;
+                font-size: 0.75rem;
+                color: $form-accent;
+            }
+        }
+
+        &.checkbox {
+            flex-direction: row;
+            align-items: center;
+            gap: 0.5rem;
+
+            label {
+                cursor: pointer;
+
+                @media screen and (max-width: 500px) {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
+    .submit-btn {
+        // background-color: $form-accent;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: $form-radius;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+
+        &:hover {
+            background-color: darken($form-accent, 10%);
+        }
+    }
+}
+
+
+@media (max-width: 768px) {
+    .text {
+        text-align: center;
+    }
+
+    .image img {
+        margin-top: 2rem;
+        transform: none;
+    }
+}

@@ -1,0 +1,52 @@
+<section class="wondrspot-hero">
+    <div class="wondrspot-content">
+        <div class="text">
+            <h1>Bring WondrVoices to Your Community</h1>
+            <p>
+                WondrSpots invite visitors to pause, create, and give back.
+                Whether you're a café, gallery, bookstore, or studio,
+                becoming a WondrSpot adds another purpose to your place.
+            </p>
+            <button class="button primary wondrspot-btn">Become a WondrSpot</button>
+        </div>
+        <div class="image">
+            <img src="assets/img/test/2.png" alt="WondrSpot Example" />
+        </div>
+    </div>
+</section>
+
+<section class="wondrspot-info">
+    <h2>What is a WondrSpot?</h2>
+    <p>
+        WondrSpots are places like cafés, libraries, studios where kindness takes shape.
+        You're creating a ripple of care for those facing serious illness.
+    </p>
+</section>
+
+<section class="wondrspot-form">
+    <h2>Ready to Become a WondrSpot?</h2>
+    <h3>Your place can be a beacon of kindness.</h3>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+        @for (field of ['organizationName', 'address', 'city', 'contactPerson', 'email', 'type']; track field) {
+        <div class="form-group">
+            <div class="input-wrapper">
+                <input [formControlName]="field" [placeholder]="' '" type="text" />
+                <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+            </div>
+        </div>
+        }
+
+        <div class="form-group checkbox">
+            <input type="checkbox" formControlName="consent" id="consent" />
+            <label for="consent">
+                I agree to let WondrVoices use my submission to promote hope and kindness.
+            </label>
+        </div>
+
+        <button class="button submit-btn primary" type="submit"
+            [disabled]="(form.invalid && form.touched && form.dirty) || submitted()">
+            Sign Me Up
+        </button>
+    </form>
+</section>
