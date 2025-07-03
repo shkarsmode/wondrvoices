@@ -39,6 +39,7 @@ body {
     scrollbar-width: none;
     -ms-overflow-style: none;
     color: #472B2F;
+    scroll-behavior: smooth;
 
 
     &::-webkit-scrollbar {
@@ -95,6 +96,7 @@ h1,
 h2,
 h3 {
     font-family: 'Ariata', serif;
+
     span {
         font-family: 'Ariata', serif;
     }
