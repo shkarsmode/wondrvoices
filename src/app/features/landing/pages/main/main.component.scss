@@ -6,6 +6,10 @@
     padding-top: calc(4rem + 60px);
     height: 75vh;
 
+    @media screen and (max-width: 1430px) {
+        height: 90vh;
+    }
+
     .hero-inner {
         max-width: 1200px;
         margin: 0 auto;
@@ -14,10 +18,26 @@
         justify-content: space-between;
         align-items: center;
         gap: 2rem;
+
+        @media screen and (max-width: 1430px) {
+            justify-content: center;
+        }
+
     }
 
     .hero-text {
         max-width: 588px;
+
+        @media screen and (max-width: 1430px) {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+            background: rgb(248 245 242 / 90%);
+            width: 100vw;
+            max-width: 100%;
+            box-shadow: 0px 0px 20px 116px rgba(248, 245, 242, 0.91);
+        }
 
         @media screen and (max-width: 945px) {
             display: flex;
@@ -27,6 +47,12 @@
 
         @media screen and (max-width: 768px) {
             flex: unset;
+        }
+
+        @media screen and (max-width: 500px) {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         h1 {
@@ -39,6 +65,10 @@
             @media screen and (max-width: 945px) {
                 text-align: center;
             }
+
+            @media screen and (max-width: 500px) {
+                text-align: left;
+            }
         }
 
         p {
@@ -48,6 +78,10 @@
 
             @media screen and (max-width: 945px) {
                 text-align: center;
+            }
+
+            @media screen and (max-width: 500px) {
+                text-align: left;
             }
         }
 
@@ -78,6 +112,15 @@
 
             }
 
+        }
+
+        @media screen and (max-width: 1430px) {
+            top: unset;
+            bottom: unset;
+            right: unset;
+            scale: 0.8;
+            transform-origin: center;
+            transform: rotate(15deg) translateY(1531px) translateX(48px);
         }
 
         @media screen and (max-width: 660px) {
@@ -115,23 +158,19 @@
 
         .hero-text {
             h1 {
-                font-size: 2rem;
-            }
-
-            p {
-                font-size: 1rem;
+                font-size: 48px;
             }
         }
 
-        .hero-images {
-            flex-direction: row;
-            justify-content: center;
-            flex-wrap: wrap;
+        // .hero-images {
+        //     flex-direction: row;
+        //     justify-content: center;
+        //     flex-wrap: wrap;
 
-            img {
-                max-width: 45%;
-            }
-        }
+        //     img {
+        //         max-width: 45%;
+        //     }
+        // }
     }
 }
 
@@ -142,12 +181,18 @@ h1 span {
         position: absolute;
         top: -3px;
         right: -39px;
+
+        @media screen and (max-width: 1000px) {
+            top: 0px;
+            right: 0px;
+            scale: 0.7;
+        }
     }
 }
 
 .svg-line-2 {
     position: absolute;
-    bottom: -70px;
+    bottom: -50px;
 }
 
 .share-hope h2 {
@@ -175,6 +220,11 @@ h1 span {
     background-color: #f0ebe6;
     height: 100vh;
     text-align: center;
+
+    @media screen and (max-width: 1430px) {
+        height: 100%;
+        padding: 80px 20px;
+    }
 
     .section-title {
         display: flex;
@@ -212,6 +262,17 @@ h1 span {
             font-weight: 600;
             color: #472B2F;
         }
+
+        @media screen and (max-width: 1430px) {
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 80px;
+
+            span {
+                max-width: 100%;
+            }
+        }
     }
 
     .cards {
@@ -233,6 +294,7 @@ h1 span {
             flex-direction: column;
             gap: 0.8rem;
             transition: transform 0.2s ease;
+
 
             &:hover {
                 transform: translateY(-4px);
@@ -261,6 +323,24 @@ h1 span {
                 color: #333;
                 line-height: 1.4;
             }
+
+            @media screen and (max-width: 1430px) {
+                padding: 20px;
+                width: 100%;
+                max-width: 300px;
+
+                img {
+                    width: 45px;
+                }
+
+                h3 {
+                    font-size: 22px;
+                }
+
+                p {
+                    font-size: 14px;
+                }
+            }
         }
     }
 
@@ -287,6 +367,18 @@ h1 span {
     height: 80vh;
 
     background-color: #f8f5f2;
+
+    @media screen and (max-width: 1430px) {
+        flex-direction: column;
+        height: 100%;
+        padding: 80px 20px;
+    }
+
+    @media screen and (max-width: 600px) {
+        img {
+            width: 100%;
+        }
+    }
 
     .content {
         max-width: 620px;
@@ -331,6 +423,11 @@ h1 span {
     text-align: center;
     background: #f0ebe6;
 
+    @media screen and (max-width: 1430px) {
+        height: 100%;
+        padding: 80px 20px;
+    }
+
     h2 {
         font-size: 48px;
         margin-bottom: 80px;
@@ -342,6 +439,10 @@ h1 span {
         justify-content: center;
         flex-wrap: wrap;
         gap: 40px;
+
+        @media screen and (max-width: 1430px) {
+            gap: 20px;
+        }
 
         .counter {
             background: #fdf4ed;
@@ -397,6 +498,10 @@ h1 span {
         align-items: center;
         gap: 2rem;
 
+        @media screen and (max-width: 1000px) {
+            gap: 1rem;
+        }
+
         img {
             max-height: 110px;
             max-width: 246px;
@@ -433,6 +538,7 @@ h1 span {
     height: 100vh;
     background-color: #ffefdc;
     text-align: center;
+    padding: 0 20px;
 
     h2 {
         font-size: 48px;

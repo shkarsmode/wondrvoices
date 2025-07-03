@@ -101,3 +101,9 @@ h3 {
         font-family: 'Ariata', serif;
     }
 }
+
+h2 {
+    @media screen and (max-width: 1430px) {
+        font-size: 36px !important;
+    }
+}
