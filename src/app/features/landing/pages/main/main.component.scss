@@ -10,6 +10,12 @@
         height: 90vh;
     }
 
+    @media screen and (max-width: 500px) {
+        padding-top: 0px;
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
     .hero-inner {
         max-width: 1200px;
         margin: 0 auto;
@@ -53,6 +59,15 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+
+            h1 {
+                line-height: 56px;
+                margin-bottom: 20px;
+            }
+
+            p {
+                line-height: 1.3;
+            }
         }
 
         h1 {
@@ -68,6 +83,7 @@
 
             @media screen and (max-width: 500px) {
                 text-align: left;
+                max-width: 350px;
             }
         }
 
@@ -120,12 +136,18 @@
             right: unset;
             scale: 0.8;
             transform-origin: center;
-            transform: rotate(15deg) translateY(1531px) translateX(48px);
+            transform: rotate(15deg) translateY(835px) translateX(48px);
         }
 
         @media screen and (max-width: 660px) {
             flex: unset;
             margin-top: 50px;
+        }
+
+        @media screen and (max-width: 500px) {
+            scale: 1.2;
+            gap: 10px;
+            transform: rotate(15deg) translateY(835px) translateX(90px);
         }
 
         img {
@@ -159,6 +181,15 @@
         .hero-text {
             h1 {
                 font-size: 48px;
+            }
+
+            box-shadow: 0px 0px 20px 52px rgba(248, 245, 242, 0.91);
+
+            button {
+                height: 48px;
+                font-size: 16px !important;
+                font-weight: 600;
+                padding: 14px 24px;
             }
         }
 
@@ -224,7 +255,15 @@ h1 span {
     @media screen and (max-width: 1430px) {
         height: 100%;
         padding: 80px 20px;
+
+        box-shadow: 0px -18px 20px 3px rgba(248, 245, 242, 0.91), 0px -20px 20px 60px rgba(248, 245, 242, 0.66);
+        position: relative;
     }
+
+    // @media screen and (max-width: 500px) {
+    //     box-shadow: 0px -18px 20px 3px rgba(248, 245, 242, 0.91), 0px -20px 20px 60px rgba(248, 245, 242, 0.66);
+    //     position: relative;
+    // }
 
     .section-title {
         display: flex;
@@ -236,7 +275,7 @@ h1 span {
         font-weight: 500;
         font-size: 0.95rem;
         color: #444;
-        line-height: 1.6;
+        line-height: 1.3;
         margin: 0 auto;
         text-align: left;
         margin-bottom: 100px;
@@ -271,6 +310,17 @@ h1 span {
 
             span {
                 max-width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            gap: 35px;
+            font-weight: 500;
+            margin-bottom: 40px;
+
+            span {
+                font-size: 14px;
+                line-height: 1.3;
             }
         }
     }
@@ -341,6 +391,10 @@ h1 span {
                     font-size: 14px;
                 }
             }
+
+            @media screen and (max-width: 500px) {
+                max-width: 100%;
+            }
         }
     }
 
@@ -351,6 +405,11 @@ h1 span {
             flex-direction: column;
             align-items: center;
         }
+    }
+
+    @media (max-width: 500px) {
+        padding-top: 80px;
+        padding-bottom: 80px;
     }
 }
 
@@ -388,17 +447,21 @@ h1 span {
             font-size: 49px;
             margin-bottom: 20px;
             font-weight: 500;
+
+            @media screen and (max-width: 500px) {
+                margin-top: 20px;
+            }
         }
 
         p {
             font-size: 16px;
-            line-height: 1.6;
+            line-height: 1.3;
             margin-bottom: 32px;
         }
 
         .read-link {
             font-weight: 600;
-            color: #472B2F;
+            color: #3F3C98;
             text-decoration: none;
             transition: color 0.3s;
 
@@ -432,6 +495,12 @@ h1 span {
         font-size: 48px;
         margin-bottom: 80px;
         font-weight: 500;
+        max-width: 350px;
+
+        @media screen and (max-width: 500px) {
+            line-height: 46px;
+            margin-bottom: 60px;
+        }
     }
 
     .impact-counters {
@@ -442,6 +511,14 @@ h1 span {
 
         @media screen and (max-width: 1430px) {
             gap: 20px;
+        }
+
+        @media screen and (max-width: 500px) {
+            width: 100%;
+
+            .counter {
+                width: 100% !important;
+            }
         }
 
         .counter {
@@ -513,6 +590,25 @@ h1 span {
                 transform: scale(1.05);
                 opacity: 1;
             }
+
+            @media screen and (max-width: 1070px) {
+                &:nth-child(1) {
+                    max-width: 55px;
+                }
+
+                &:nth-child(2) {
+                    max-width: 170px;
+                }
+
+                &:nth-child(4) {
+                    max-width: 212px
+                }
+
+                &:nth-child(5) {
+                    max-width: 95px
+                }
+            }
+
         }
     }
 }
@@ -536,7 +632,7 @@ h1 span {
     justify-content: center;
 
     height: 100vh;
-    background-color: #ffefdc;
+    background-color: #f8f5f2;
     text-align: center;
     padding: 0 20px;
 
@@ -562,44 +658,55 @@ h1 span {
             text-align: left;
 
             h3 {
-                font-size: 1rem;
+                font-size: 24px;
                 font-weight: 600;
-                margin-bottom: 0.8rem;
+                line-height: 1.3;
+                margin-bottom: 16px;
                 color: #472B2F;
+                font-family: "Inter", sans-serif;
             }
 
             p {
-                font-size: 0.875rem;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 1.3;
                 color: #444;
-                margin-bottom: 1rem;
+                margin-bottom: 16px;
             }
 
             a {
-                font-size: 0.85rem;
+                font-size: 16px;
                 font-weight: 600;
-                color: #472B2F;
+                color: #3F3C98;
                 text-decoration: none;
 
                 &:hover {
                     color: #ffbfae;
                 }
             }
+
+            @media screen and (max-width: 500px) {
+                h3 {
+                    font-size: 24px;
+                    font-weight: 600;
+                    line-height: 1.3;
+                }
+
+                p {
+                    font-size: 14px;
+                    font-weight: 400;
+                    line-height: 1.3;
+                }
+            }
         }
     }
 
-    .view-all-btn {
-        margin-top: 2rem;
-        background: #333;
-        color: #fff;
-        border: none;
-        border-radius: 999px;
-        padding: 0.5rem 1.5rem;
-        cursor: pointer;
-        transition: background 0.3s ease;
-
-        &:hover {
-            background: #555;
-        }
+    button {
+        margin-top: 50px;
+        font-size: 16px !important;
+        font-weight: 600;
+        height: 48px;
+        width: 111px;
     }
 }
 
