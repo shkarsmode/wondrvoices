@@ -1,154 +1,137 @@
-.about {
-    padding: 2rem 1rem;
-    background-color: #fffcf6;
-    color: #1e1e1e;
+.about-v2 {
+    // background: #fffcf6;
+    // padding: 3rem 1rem;
 
     .container {
-        max-width: 1200px;
+        // max-width: 1200px;
         margin: 0 auto;
         display: flex;
         flex-direction: column;
         gap: 4rem;
     }
 
-    .intro {
+    .block {
         display: flex;
-        flex-direction: row;
-        justify-content: center;
-        gap: 2rem;
         align-items: center;
+        gap: 117px;
+        justify-content: center;
         flex-wrap: wrap;
-        margin: 0 auto;
+        min-height: 50vh;
+        padding: 80px 20px;
+        
+
+        &.reverse {
+            flex-direction: row;
+            background-color: #f0ebe6;
+        }
 
         .text {
-            // flex: 1 1 400px;
-            width: 50%;
+            max-width: 620px;
+
+            h2, h1 {
+                font-size: 48px;
+                // color: #5c4033;
+                margin-bottom: 20px;
+            }
 
             h1 {
-                font-size: 2.1rem;
-                font-weight: 700;
-                margin-bottom: 35px;
-            }
+                font-size: 56px;
 
-            p {
-                font-size: 1.1rem;
-                line-height: 1.6;
-            }
-        }
-
-        .image {
-            // flex: 1 1 400px;
-            text-align: center;
-
-            img {
-                max-width: 100%;
-                border-radius: 12px;
-                transform: rotate(-8deg);
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            }
-        }
-    }
-
-
-    .section {
-        display: flex;
-        flex-direction: row;
-        gap: 2rem;
-        align-items: center;
-
-        img {
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.086);
-        }
-
-        h2 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin-bottom: 30px;
-        }
-
-        p {
-            font-size: 1.05rem;
-            line-height: 1.6;
-        }
-
-        &.why {
-            display: flex;
-            flex-direction: row-reverse;
-            align-items: center;
-
-            .block.colored {
-                flex: 0 0 100px;
-                height: 200px;
-                border-radius: 12px;
-            }
-
-            .pink {
-                background-color: #ffd6d6;
-            }
-
-            .yellow {
-                background-color: #ffd94c;
-            }
-
-            .text {
-                padding: 1rem;
-                padding-left: 0px;
-            }
-        }
-
-        &.how {
-            flex-direction: row;
-
-            ul {
-                padding-left: 1.5rem;
-
-                li {
-                    margin-bottom: 0.75rem;
-                    font-size: 1rem;
-                    display: flex;
-                    align-items: center;
-
-                    &::before {
-                        content: "✅";
-                        margin-right: 0.5rem;
-                    }
+                @media screen and (max-width: 768px) {
+                    font-size: 48px;
                 }
             }
 
-            .block.blue {
-                width: 100px;
-                height: 200px;
-                background-color: #a0e3f0;
-                border-radius: 12px;
-                margin-top: 1rem;
+            p {
+                font-size: 16px;
+                line-height: 1.3;
+                color: #472B2F;
             }
+
+            ul {
+                margin-top: 0.5rem;
+                padding-left: 1.2rem;
+
+                li {
+                    margin-bottom: 0.5rem;
+                    position: relative;
+                    padding-left: 1.2rem;
+
+                    &::before {
+                        content: '✔';
+                        position: absolute;
+                        left: 0;
+                        color: #ff9900;
+                    }
+                }
+            }
+        }
+
+        .image-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 485px;
+
+
+            img {
+                width: 100%;
+                border-radius: 10px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            }
+
+            // .decor {
+            //     position: absolute;
+            //     width: 40px;
+            //     height: 40px;
+            //     border-radius: 50%;
+            //     opacity: 0.5;
+
+            //     &.decor-purple {
+            //         background: #b39ddb;
+            //         top: -10px;
+            //         right: -10px;
+            //     }
+
+            //     &.decor-orange {
+            //         background: #ffcc80;
+            //         bottom: -10px;
+            //         left: -10px;
+            //     }
+
+            //     &.decor-yellow {
+            //         background: #fff59d;
+            //         top: -10px;
+            //         left: -10px;
+            //     }
+
+            //     &.decor-green {
+            //         background: #aed581;
+            //         bottom: -10px;
+            //         right: -10px;
+            //     }
+            // }
+        }
+
+        &:first-child .image-wrap img {
+            box-shadow: none;
         }
     }
 
     @media (max-width: 768px) {
-
-
-        .intro,
-        .section.why,
-        .section.who,
-        .section.how {
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .section.why .text,
-        .intro .text {
+        .block {
+            flex-direction: column !important;
             text-align: center;
-            width: 100%;
+
+            .text,
+            .image-wrap {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+
+            .text ul {
+                display: inline-block;
+                text-align: left;
+            }
         }
-    }
-}
-
-::ng-deep app-landing-page:has(app-about-us) {
-    background: #fffcf6 !important;
-
-    .top-bar {
-        margin-bottom: 15px !important;
     }
 }

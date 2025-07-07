@@ -1,3 +1,8 @@
+:host {
+    display: block;
+    background: #f0ebe6;
+}
+
 .ambassador-hero {
     display: flex;
     align-items: center;
@@ -5,7 +10,8 @@
     gap: 60px;
     padding: 3rem 2rem;
     flex-wrap: wrap;
-    // background: #fffefb;
+
+    background: #f8f5f2;
 
     .text {
         max-width: 600px;
