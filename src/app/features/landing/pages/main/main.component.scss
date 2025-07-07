@@ -25,6 +25,16 @@
         align-items: center;
         gap: 2rem;
 
+        &:before {
+            content: "";
+            position: absolute;
+            width: 100vw;
+            height: 381px;
+            left: 0px;
+            backdrop-filter: blur(3px);
+            z-index: 1;
+        }
+
         @media screen and (max-width: 1430px) {
             justify-content: center;
         }
