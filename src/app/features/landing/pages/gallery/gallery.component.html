@@ -1,8 +1,7 @@
 <div class="message-board">
-    <div class="subheading">FROM OUR HEARTS TO YOURS</div>
     <h1 class="title">Messages and moments that lift us up</h1>
     <p class="subtitle">
-        Explore heartfelt cards, creative art, and inspiring words from people who care. <br />
+        Explore heartfelt cards, creative art, and inspiring words from people who care.
         Every message is a reminder that you’re never alone on your journey.
     </p>
 
@@ -22,18 +21,23 @@
                 class="card"
                 [style]="'--i: ' + i*0.10 + 's'"
                 (click)="openVoicePage(card.id)">
-                <img class="card-image" [src]="card.image" alt="card image" />
+                <div class="card-image-wrap">
+                    <img
+                        class="card-image"
+                        [src]="card.image"
+                        alt="card image" />
+                </div>
                 <div class="card-content">
                     <span class="category">{{ card.category }}</span>
                     <h2 class="card-title">{{ card.title }}</h2>
-                    <p class="card-description">{{ card.description }}</p>
-                    <div class="card-author">
+                    <p class="card-description">{{ card.author }}</p>
+                    <!-- <div class="card-author">
                         <img class="avatar" [src]="card.avatar" alt="avatar" />
                         <div>
                             <div class="name">{{ card.author }}</div>
                             <div class="date">{{ card.date }}</div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         }
