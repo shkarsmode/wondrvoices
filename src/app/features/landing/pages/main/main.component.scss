@@ -27,6 +27,15 @@
 
         @media screen and (max-width: 1430px) {
             justify-content: center;
+            &:before {
+                content: "";
+                position: absolute;
+                width: 100vw;
+                height: 381px;
+                left: 0px;
+                backdrop-filter: blur(3px);
+                z-index: 1;   
+            }
         }
 
     }
@@ -726,7 +735,7 @@ h1 span {
 
 .donate {
     padding: 4rem 1.5rem;
-    background-color: #fffaf3;
+    background-color: #f0ebe6;
     text-align: center;
 
     h2 {
