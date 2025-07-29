@@ -27,25 +27,25 @@ export class MainComponent implements OnInit {
         { imageUrl: 'assets/voices/4.jpg' }, 
         { imageUrl: 'assets/voices/9.jpg' }, 
         { imageUrl: 'assets/voices/15.jpg' },
-        { imageUrl: 'assets/voices/19.jpg' },
+        { imageUrl: 'assets/voices/19.jpg' },   
     ];
 
     public images1 = [
-        'assets/img/test/3.png',
-        'assets/img/test/2.png',
-        'assets/img/test/1.png',
-        'assets/img/test/4.png',
-        'assets/img/test/5.png',
-        'assets/img/test/6.png'
+        'assets/img/test/test (1).png',
+        'assets/img/test/test (2).png',
+        'assets/img/test/test (3).png',
+        'assets/img/test/test (4).png',
+        'assets/img/test/test (5).png',
+        'assets/img/test/test (6).png'
     ];
 
     public images2 = [
-        'assets/img/test/4.png',
-        'assets/img/test/5.png',
-        'assets/img/test/6.png',
-        'assets/img/test/1.png',
-        'assets/img/test/2.png',
-        'assets/img/test/3.png'
+        'assets/img/test/test (7).png',
+        'assets/img/test/test (8).png',
+        'assets/img/test/test (9).png',
+        'assets/img/test/test (10).png',
+        'assets/img/test/test (11).png',
+        'assets/img/test/test (12).png'
     ];
 
     public ngOnInit(): void {

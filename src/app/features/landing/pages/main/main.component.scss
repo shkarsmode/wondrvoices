@@ -214,8 +214,8 @@ h1 span {
         right: -39px;
 
         @media screen and (max-width: 1000px) {
-            top: 0px;
-            right: 0px;
+            top: -10px;
+            // right: 0px;
             scale: 0.7;
         }
     }
@@ -248,15 +248,16 @@ h1 span {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: #f0ebe6;
+    background-color: #f8f5f2;
     height: 100vh;
     text-align: center;
+    z-index: 3;
 
     @media screen and (max-width: 1430px) {
         height: 100%;
         padding: 80px 20px;
 
-        box-shadow: 0px -18px 20px 3px rgba(248, 245, 242, 0.91), 0px -20px 20px 60px rgba(248, 245, 242, 0.66);
+        // box-shadow: 0px -18px 20px 3px rgba(248, 245, 242, 0.91), 0px -20px 20px 60px rgba(248, 245, 242, 0.66);
         position: relative;
     }
 
@@ -425,12 +426,11 @@ h1 span {
 
     height: 80vh;
 
-    background-color: #f8f5f2;
-
     @media screen and (max-width: 1430px) {
         flex-direction: column;
         height: 100%;
         padding: 80px 20px;
+        gap: 20px;
     }
 
     @media screen and (max-width: 600px) {
@@ -476,6 +476,20 @@ h1 span {
     }
 }
 
+.uplifting {
+    position: relative;
+    background-color: #f0ebe6;
+    z-index: 1;
+
+    @media screen and (max-width: 1430px) {
+        height: 100%;
+        padding: 80px 20px;
+
+        box-shadow: 0px -18px 20px 3px rgba(248, 245, 242, 0.91), 0px -20px 20px 60px rgba(248, 245, 242, 0.66);
+        position: relative;
+    }
+}
+
 .impact {
     display: flex;
     flex-direction: column;
@@ -484,7 +498,7 @@ h1 span {
 
     height: 100vh;
     text-align: center;
-    background: #f0ebe6;
+    background: #f8f5f2;
 
     @media screen and (max-width: 1430px) {
         height: 100%;
@@ -632,7 +646,7 @@ h1 span {
     justify-content: center;
 
     height: 100vh;
-    background-color: #f8f5f2;
+    background-color: #f0ebe6;
     text-align: center;
     padding: 0 20px;
 
@@ -740,7 +754,7 @@ h1 span {
                 width: 100%;
                 max-width: 500px;
                 border-radius: 8px;
-                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+                // box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
             }
         }
 

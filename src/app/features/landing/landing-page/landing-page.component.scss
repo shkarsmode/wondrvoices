@@ -1,6 +1,5 @@
 :host {
     display: block;
-    font-family: 'Inter', sans-serif;
     background-color: #f8f5f2;
     color: #472B2F;
 }
@@ -16,6 +15,12 @@
     button {
         height: 35px;
         // font-size: 15px;
+    }
+
+    .submit {
+        background-color: #A9D957;
+        color: black;
+        font-weight: 600;
     }
 
     .logo {
@@ -233,5 +238,163 @@
 
     .hero-content {
         margin-bottom: 20px;
+    }
+}
+
+.footer {
+    background: #f3eee9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 140px 30px;
+    flex-wrap: wrap;
+    width: 100%;
+
+    &__content,
+    .content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 1280px;
+        gap: 20px;
+
+        &__left h2 {
+            font-size: 38px;
+            color: #3c2421;
+            margin: 0;
+        }
+
+        &__underline {
+            display: block;
+            margin-top: 5px;
+            height: 5px;
+            width: 40px;
+            background-image: url("data:image/svg+xml;utf8,<svg width='40' height='5' xmlns='http://www.w3.org/2000/svg'><path d='M0,2.5 Q5,0 10,2.5 T20,2.5 T30,2.5 T40,2.5' stroke='%239bc53d' fill='transparent' stroke-width='2'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+
+        &__right {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            font-family: Arial, sans-serif;
+            color: #3c2421;
+            font-size: 14px;
+
+            .content__email {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                color: inherit;
+                text-decoration: none;
+
+                i {
+                    font-size: 16px;
+                }
+            }
+
+            .content__socials {
+                display: flex;
+                align-items: center;
+                gap: 40px;
+
+                a {
+                    color: #3c2421;
+                    font-size: 18px;
+                    text-decoration: none;
+
+                    &:hover {
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+
+        @media (max-width: 600px) {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 30px 20px;
+
+            &__right {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            &__email {
+                font-size: 14px;
+            }
+
+            &__socials {
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            // padding: 30px 30px;
+            flex-direction: column;
+            align-items: flex-start;
+
+            &__right {
+                margin-top: 10px;
+            }
+        }
+    }
+
+    @media screen and (max-width: 1000px) {
+        padding: 30px;
+    }
+}
+
+.sub-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #f8f5f2;
+    padding: 30px;
+
+    &__content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1280px;
+        width: 100%;
+
+        @media (max-width: 900px) {
+            padding: 30px 30px;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+
+            &__right {
+                margin-top: 10px;
+            }
+        }
+
+        .terms {
+            display: flex;
+            gap: 20px;
+            color: #3c2421;
+            font-size: 14px;
+
+            @media screen and (max-width: 550px) {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+        }
+    }
+
+    img {
+        max-width: 263px;
     }
 }
