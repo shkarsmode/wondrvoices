@@ -19,18 +19,14 @@ export class SpotsComponent implements OnInit {
 
     public fieldMap: Record<string, string> = {
         organizationName: 'Organization Name',
-        address: 'Address',
-        city: 'City',
         contactPerson: 'Contact Person',
         email: 'Email',
-        type: 'Type of Organization'
+        type: 'Type of Organization',
     };
 
     constructor() {
         this.form = this.fb.group({
             organizationName: ['', Validators.required],
-            address: ['', Validators.required],
-            city: ['', Validators.required],
             contactPerson: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             type: ['', Validators.required],

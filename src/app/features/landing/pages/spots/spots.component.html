@@ -1,59 +1,93 @@
 <section class="wondrspot-hero">
     <div class="wondrspot-content">
         <div class="text">
-            <h1>Bring WondrVoices to Your Community</h1>
+            <h1>What’s a WondrSpot?</h1>
             <p>
-                WondrSpots invite visitors to pause, create, and give back.
-                Whether you're a café, gallery, bookstore, or studio,
-                becoming a WondrSpot adds another purpose to your place.
+                It’s a simple way to share the spirit of your space with someone navigating cancer. 
+                <br />
+                Whether having post cards on the counter or lending your space to creativity, there are many ways to get involved. 
             </p>
             <a href="spots#wondrspot"><button class="button primary wondrspot-btn" >Become a WondrSpot</button></a>
         </div>
         <div class="image">
-            <img src="assets/img/test/2.png" alt="WondrSpot Example" />
+            <img src="assets/img/spots/banner-3.png" alt="WondrSpot Banner" />
+            <img src="assets/img/spots/banner-2.png" alt="WondrSpot Banner" />
+            <img src="assets/img/spots/banner-1.png" alt="WondrSpot Banner" />
         </div>
     </div>
 </section>
 
 <section class="wondrspot-description">
-    <h2>Become a WondrSpot</h2>
+    <h2>💛 Why It Matters</h2>
     <p>
-        WondrSpots are spaces such as libraries, clinics, coffee shops, classrooms, community centers,
-        or kitchen tables where kindness takes shape. They are places where anyone can pause, reflect,
-        and create something meaningful for someone facing cancer or serious illness.
+        Most people don’t expect to face cancer. And when they do, many are met with silence not because others don’t
+        care, but because they don’t know what to say.
     </p>
     <p>
-        By becoming a WondrSpot, you’re helping turn your community into a wellspring of compassion, creativity,
-        and connection. Whether you host a one-time letter-writing event or set up a permanent card-making station,
-        you're offering something rare and needed: a moment of care from one human to another.
+        WondrSpots offer a simple but tangible way to respond. By putting out blank cards, they invite people to pause
+        and create something meaningful: a message of care, a drawing, a few kind words.
     </p>
+    <p>
+        These cards become voices that might otherwise go unspoken. Each WondrSpot carries the unique spirit of its
+        setting, a reminder that kindness can come from anywhere, and that we’re all connected.
+    </p>
+    <p>
+        For some spaces, it’s a quiet corner of compassion. Others turn it into a shared moment of creativity and
+        connection. Either way, it becomes the part of your space that outlives a visit.
+    </p>
+    <a href="#" class="wondrspot-link">Join as a Wondrspot →</a>
 
-    <h3>What You’re Creating</h3>
-    <p>When someone sits down at a WondrSpot, they’re reminded:</p>
+    <h2>🌍 Who Can Be a WondrSpot?</h2>
+    <p>Any place where people gather, pause, or connect. Our growing community includes:</p>
     <ul>
-        <li><strong>You are not alone.</strong></li>
-        <li><strong>Your words matter.</strong></li>
-        <li><strong>Even small acts can ripple outward.</strong></li>
+        <li>☕ Coffee shops & bakeries</li>
+        <li>📚 Bookstores & libraries</li>
+        <li>🎨 Art studios & creative spaces</li>
+        <li>🧓 Senior centers & care homes</li>
+        <li>🏨 Hotels & spas</li>
+        <li>🐶 Pet boutiques & doggy daycares</li>
+        <li>🍷 Bars & tasting rooms</li>
+        <li>🛍️ Boutiques & community pop-ups</li>
     </ul>
-    <p>
-        Each card or artwork created will be anonymously delivered to someone navigating a serious diagnosis.
-        These messages often go to hospitals, cancer centers, or hospice programs, offering comfort in a moment
-        of uncertainty.
-    </p>
+    <p>Your space already nurtures community, let’s add one more beautiful layer.</p>
 </section>
 
+<section class="wondrspot-description wondrspot-postcards">
+    <div>
+        <h2>Start with 50 free postcards, on us!</h2>
+        <p>Love being a WondrSpot? We’ll happily send more.</p>
+        <p><strong>Want to add your logo to custom postcards?</strong></p>
+        <p>
+            We offer an option to include your logo directly on the cards, turning each message into a small but lasting
+            symbol of your community’s care. Your tax-deductible donation ensures these messages of hope reach those who
+            need them most. Adding your logo honors the space where these connections begin, celebrating the voices shared
+            because of you.
+        </p>
+        <a href="#" class="wondrspot-link">Claim Your Postcard Kit →</a>
+    </div>
+    <div>
+        <img src="assets/img/spots/banner-group.png" alt="Banner">
+    </div>
+</section>
+
+<section class="wondrspot-description">
+    <h2>📦 Join our Growing Community</h2>
+</section>
 <section class="wondrspot-form" id="wondrspot">
-    <h2>Ready to Become a WondrSpot?</h2>
-    <h3>Sign up below and help turn compassion into action - one card, one voice, one community at a time. You don't need to be an artist. You just need a heart for connection.</h3>
+    <h3>Ready to Become a WondrSpot?</h3>
+    <p>
+        Sign up below and help turn compassion into action - one card, one voice, one community at a time.
+        You don’t need to be an artist. You just need a heart for connection.
+    </p>
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-        @for (field of ['organizationName', 'address', 'city', 'contactPerson', 'email', 'type']; track field) {
-        <div class="form-group">
-            <div class="input-wrapper">
-                <input [formControlName]="field" [placeholder]="' '" type="text" />
-                <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+        @for (field of ['organizationName', 'contactPerson', 'email', 'type']; track field) {
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input [formControlName]="field" [placeholder]="' '" type="text" />
+                    <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+                </div>
             </div>
-        </div>
         }
 
         <div class="form-group checkbox">
@@ -63,9 +97,18 @@
             </label>
         </div>
 
-        <button class="button submit-btn primary" type="submit"
+        {{ form.invalid }}
+        <button class="button primary wondrspot-btn" type="submit"
             [disabled]="(form.invalid && form.touched && form.dirty) || submitted()">
-            Sign Me Up
+            Join
         </button>
     </form>
+</section>
+
+<section class="wondrspot-description">
+    <h2>📣 Help Us Spread the Word</h2>
+    <p>
+        The more WondrSpots we have, the more hearts we reach. Tell a friend, a favorite café, or your local bookstore.
+        Every new space is another light for someone in the dark.
+    </p>
 </section>
