@@ -110,7 +110,7 @@
     padding-bottom: 0;
     box-shadow: -16px 15px 20px 3px rgb(248 245 242 / 91%), -20px 13px 20px 60px rgb(248 245 242 / 66%);
     z-index: 9999;
-    // height: 80px;
+    height: 72.6px;
 
     h1 {
         font-size: 3rem;
@@ -140,7 +140,7 @@
 
     @media screen and (max-width: 900px) {
         // box-shadow: none;
-        z-index: 3;
+        // z-index: 3;
     }
 
     @media screen and (max-width: 900px) {
@@ -242,7 +242,8 @@
     }
 
     .hero {
-        padding: 1rem 0rem 2rem;
+        padding: 0px 10px;
+        height: 66.5px;
     }
 }
 
