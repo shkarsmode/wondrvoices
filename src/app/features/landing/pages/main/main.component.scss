@@ -1,4 +1,8 @@
 .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     padding: 4rem 2rem;
     background-color: #f8f5f2;
     overflow: hidden;
@@ -24,9 +28,12 @@
         justify-content: space-between;
         align-items: center;
         gap: 2rem;
+        width: 100%;
+        margin-top: -8%;
 
         @media screen and (max-width: 1430px) {
             justify-content: center;
+
             &:before {
                 content: "";
                 position: absolute;
@@ -34,7 +41,7 @@
                 height: 381px;
                 left: 0px;
                 backdrop-filter: blur(3px);
-                z-index: 1;   
+                z-index: 1;
             }
         }
 
