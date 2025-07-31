@@ -3,7 +3,7 @@
 </div>
 
 <section class="hero">
-    <header class="top-bar">
+    <header class="top-bar" [class.sticky-visible]="showStickyHeader()">
         <div class="logo" [routerLink]="''">
             <img src="assets/svg/full-logo.svg" alt="Logo" />
         </div>

@@ -16,6 +16,7 @@ export class LandingPageComponent implements OnInit {
     private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
     public menuOpened = signal(false);
+    public showStickyHeader = signal(false);
     
 
     public ngOnInit(): void {
@@ -36,6 +37,8 @@ export class LandingPageComponent implements OnInit {
         if (thumb) {
             thumb.style.width = `${scrollPercent * 100}%`;
         }
+
+        this.showStickyHeader.set(scrollTop > 300);
     }
 
     public toggleMenu(): void {
