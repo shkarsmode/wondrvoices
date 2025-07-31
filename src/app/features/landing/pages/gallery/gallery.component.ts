@@ -24,7 +24,7 @@ export interface VoiceCard {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GalleryComponent implements OnInit {
-    public tabs = ['All', 'Art by kids', 'Voices', 'Videos'];
+    public tabs = ['All', 'Art by kids', 'Voices', 'Letter'];
     public activeTab = signal<string>('All');
 
     private title = inject(Title);
