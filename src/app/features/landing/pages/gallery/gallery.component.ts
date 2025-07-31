@@ -30,7 +30,7 @@ export class GalleryComponent implements OnInit {
     private title = inject(Title);
     private meta = inject(Meta);
 
-    private allCards: VoiceCard[] = voices;
+    private allCards: VoiceCard[] = voices.sort(() => Math.random() - 0.5);
 
     public cards = signal<VoiceCard[]>(this.allCards);
 
