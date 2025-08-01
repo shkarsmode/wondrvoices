@@ -134,20 +134,32 @@
             <img src="assets/svg/thanks.svg" alt="Thanks">
             Thanks to Submissions From
         </p>
-        <div class="logos">
-            <img src="assets/img/gang.png" alt="Woof gang">
-            <img src="assets/img/brook.png" alt="Brook">
-            <img src="assets/img/foul.png"
-                alt="Foulkeways" />
-            <img src="assets/img/farm.png" alt="Farm">
-            <img src="assets/img/hill.png" alt="hill">
-            <img src="assets/img/artv.png" alt="artv">
-            <img src="assets/img/w.png"
-            alt="Logo pink" />
-            <img src="assets/img/aegis.png" alt="aegis">
-            <img src="assets/img/salty.png" alt="aegis">
-            <img src="https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium"
-                alt="Clay Center" />
+        <div class="logos-row-wrapper">
+            <div class="logos-row scroll-left">
+                <div class="logos-track">
+                    @for (i of [1, 2, 3]; track i) {
+                        <img src="assets/img/gang.png" alt="Woof gang">
+                        <img src="assets/img/brook.png" alt="Brook">
+                        <img src="assets/img/foul.png" alt="Foulkeways" />
+                        <img src="assets/img/farm.png" alt="Farm">
+                        <img src="assets/img/hill.png" alt="hill">
+                    }
+                </div>
+            </div>
+
+            <div class="logos-row scroll-right">
+                <div class="logos-track">
+                    @for (i of [1, 2, 3]; track i) {
+                        <img src="assets/img/artv.png" alt="artv">
+                        <img src="assets/img/w.png" alt="Logo pink" />
+                        <img src="assets/img/aegis.png" alt="aegis">
+                        <img src="assets/img/salty.png" alt="aegis">
+                        <img src="https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium"
+                            alt="Clay Center" />
+                    }
+                </div>
+            </div>
+
         </div>
     </section>
 </section>
