@@ -33,6 +33,11 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/landing/pages/spots/spots.component')
                     .then(m => m.SpotsComponent)
             },
+            {
+                path: 'blog',
+                loadComponent: () => import('./features/landing/pages/blog/blog.component')
+                    .then(m => m.BlogComponent)
+            },
         ]
     },
 ];

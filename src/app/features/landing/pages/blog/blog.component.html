@@ -1,0 +1,30 @@
+<h1 class="title">Blog</h1>
+<p class="subtitle">
+    Get the latest trends from the WondrVoices blog
+</p>
+
+<div class="tabs">
+    @for (tab of tabs; track tab) {
+        <button
+            [class.active]="tab === activeTab()"
+            (click)="selectTab(tab)">
+            {{ tab }}
+        </button>
+    }
+</div>
+
+@if (!isLoading()) {
+    <div class="content" [@fadeIn]>
+        @for (post of posts(); track post.id) {
+            <div class="blog-card">
+                <h3>{{ post.header }}</h3>
+                <p>{{ post.subHeader }}</p>
+                <a href="#">Read our story →</a>
+            </div>
+        }
+    </div>
+} @else {
+    <div class="content" [@fadeIn]>
+        Spinner element
+    </div>
+}
