@@ -42,9 +42,14 @@
     }
 
     .submit {
+        background-color: #eb5527;
+        color: white;
+        font-weight: 600;
+    }
+
+    .donate {
         background-color: #A9D957;
         color: black;
-        font-weight: 600;
     }
 
     .logo {
@@ -138,12 +143,12 @@
         }
     }
 
-    @media screen and (max-width: 900px) {
+    @media screen and (max-width: 1000px) {
         // box-shadow: none;
         // z-index: 3;
     }
 
-    @media screen and (max-width: 900px) {
+    @media screen and (max-width: 1000px) {
         box-shadow: none;
     }
 }
@@ -194,7 +199,7 @@
     }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
     .active {
         display: flex !important;
     }
@@ -359,7 +364,7 @@
             }
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             // padding: 30px 30px;
             flex-direction: column;
             align-items: flex-start;
@@ -390,7 +395,7 @@
         max-width: 1280px;
         width: 100%;
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             padding: 30px 30px;
             flex-direction: column;
             align-items: center;
