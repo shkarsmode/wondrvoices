@@ -12,6 +12,12 @@
     background-color: #f8f5f2;
     margin-bottom: 100px;
     height: 75vh;
+    // padding-top: 300px;
+
+    @media screen and (max-width: 1000px) {
+        padding-top: 90px;
+        height: 100vh;
+    }
 
 
     .wondrspot-content {
@@ -43,6 +49,11 @@
             position: relative;
             height: 430px;
             width: 500px;
+
+            @media screen and (max-width: 1000px) {
+                max-width: 500px;
+                width: 100%;
+            }
 
             img {
                 position: absolute;
