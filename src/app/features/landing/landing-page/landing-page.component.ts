@@ -27,6 +27,20 @@ export class LandingPageComponent implements OnInit {
         this.initRouteListenerToUpdateThumb();
     }
 
+    @HostListener('document:click', ['$event'])
+    public onDocumentClick(event: Event): void {
+        const target: any = event.target;
+        const navBar = document.querySelector('nav');
+        if (
+            !navBar?.contains(target) && navBar !== target &&
+            this.menuOpened()
+        ) {
+            this.toggleMenu();
+            return;
+        }
+
+    }
+
     @HostListener('window:scroll', [])
     public onWindowScroll() {
         const scrollTop = window.scrollY;
@@ -41,7 +55,8 @@ export class LandingPageComponent implements OnInit {
         this.showStickyHeader.set(scrollTop > 300);
     }
 
-    public toggleMenu(): void {
+    public toggleMenu(event?: Event): void {
+        event?.stopImmediatePropagation();
         this.menuOpened.update(open => !open);
     }
 
