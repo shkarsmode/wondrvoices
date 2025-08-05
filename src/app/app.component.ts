@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { ScrollToService } from './shared/services/scroll-to.service';
 
 @Component({
@@ -20,11 +20,11 @@ export class AppComponent implements OnInit {
 
     private async listenRoutesTransition(): Promise<void> {
         // @ts-ignore
-        this.router.events.subscribe(async (event: any) => {
-            if (event instanceof NavigationEnd) {
-                // await new Promise(resolve => setTimeout(resolve, 50));
-                this.scrollToService.scrollToTop();
-            }
-        });
+        // this.router.events.subscribe(async (event: any) => {
+        //     if (event instanceof NavigationEnd) {
+        //         // await new Promise(resolve => setTimeout(resolve, 50));
+        //         this.scrollToService.scrollToTop();
+        //     }
+        // });
     }
 }

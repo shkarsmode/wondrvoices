@@ -579,6 +579,7 @@ h1 span {
     text-align: center;
     width: 100%;
     max-width: 1100px;
+    // overflow: hidden;
 
     .subtitle {
         position: relative;
@@ -867,9 +868,8 @@ h1 span {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    overflow: hidden;
 
-    --translateX: translateX(calc(-50% - 21.6px));
+    // --translateX: translateX(calc(-50% - 21.6px));
 
     .logos-row {
         overflow: hidden;
@@ -878,9 +878,10 @@ h1 span {
         .logos-track {
             display: flex;
             align-items: center;
-            gap: 2.7rem;
-            animation: scroll-left 40s linear infinite;
-            min-width: max-content;
+            gap: 40px;
+            animation: scroll-left 5s linear infinite;
+            width: 100%;
+            overflow: visible;
 
             img {
                 max-height: 110px;
@@ -897,13 +898,13 @@ h1 span {
         }
 
         &.scroll-right .logos-track {
-            animation: scroll-right 40s linear infinite;
+            animation: scroll-right 5s linear infinite;
         }
 
         @media screen and (max-width: 1000px) {
             .logos-track {
                 gap: 1rem;
-                --translateX: translateX(calc(-50% - 8px));
+                // --translateX: translateX(calc(-50% - 8px));
             }
         }
     }
@@ -915,13 +916,21 @@ h1 span {
     }
 
     100% {
-        transform: var(--translateX);
+        transform: translateX(calc(-160% + 2px));
+
+        @media screen and (max-width: 1000px) {
+            transform: translateX(calc(-195% + 2px));
+        }
     }
 }
 
 @keyframes scroll-right {
     0% {
-        transform: var(--translateX);
+        transform: translateX(calc(-178% + 2px));
+
+        @media screen and (max-width: 1000px) {
+            transform: translateX(calc(-221% + 2px));
+        }
     }
 
     100% {
