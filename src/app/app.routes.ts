@@ -14,7 +14,7 @@ export const routes: Routes = [
                     .then(m => m.VoiceComponent) 
             },
             {
-                path: 'form',
+                path: 'submit',
                 loadComponent: () => import('./features/landing/pages/form/form.component')
                     .then(m => m.FormComponent)
             },
