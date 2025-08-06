@@ -31,21 +31,21 @@ export class MainComponent implements OnInit {
     ];
 
     public images1 = [
-        'assets/img/test/test (1).png',
-        'assets/img/test/test (2).png',
-        'assets/img/test/test (3).png',
-        'assets/img/test/test (4).png',
-        'assets/img/test/test (5).png',
-        'assets/img/test/test (6).png'
+        'assets/img/test/test (1).webp',
+        'assets/img/test/test (2).webp',
+        'assets/img/test/test (3).webp',
+        'assets/img/test/test (4).webp',
+        'assets/img/test/test (5).webp',
+        'assets/img/test/test (6).webp'
     ];
 
     public images2 = [
-        'assets/img/test/test (7).png',
-        'assets/img/test/test (8).png',
-        'assets/img/test/test (9).png',
-        'assets/img/test/test (10).png',
-        'assets/img/test/test (11).png',
-        'assets/img/test/test (12).png'
+        'assets/img/test/test (7).webp',
+        'assets/img/test/test (8).webp',
+        'assets/img/test/test (9).webp',
+        'assets/img/test/test (10).webp',
+        'assets/img/test/test (11).webp',
+        'assets/img/test/test (12).webp'
     ];
 
     public ngOnInit(): void {
