@@ -49,8 +49,8 @@ export class MainComponent implements OnInit {
     ];
 
     public ngOnInit(): void {
-        this.images1 = [...this.images1, ...this.images1];
-        this.images2 = [...this.images2, ...this.images2];
+        this.images1 = [...this.images1, ...this.images1, ...this.images1];
+        this.images2 = [...this.images2, ...this.images2, ...this.images2];
         this.title.setTitle('Wondrvoices');
     }
 
@@ -88,13 +88,13 @@ export class MainComponent implements OnInit {
     private moveAndLoop(block: HTMLElement, isUp: boolean): void {
         if (isUp) {
             block.style.transform = `translateY(${this.offset1}px)`;
-            const blockHeight = block.scrollHeight / 2;
-            if (Math.abs(this.offset1) >= blockHeight + 8) {
+            const blockHeight = block.scrollHeight / 3;
+            if (Math.abs(this.offset1) >= blockHeight + 0) {
                 this.offset1 = 0;
             }
         } else {
-            block.style.transform = `translateY(${-block.scrollHeight / 2 - this.offset2}px)`;
-            if (Math.abs(this.offset2) >= block.scrollHeight / 2 + 8) {
+            block.style.transform = `translateY(${-block.scrollHeight / 3 - this.offset2}px)`;
+            if (Math.abs(this.offset2) >= block.scrollHeight / 3 + 0) {
                 this.offset2 = 0;
             }
         }
