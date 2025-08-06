@@ -879,8 +879,9 @@ h1 span {
             display: flex;
             align-items: center;
             gap: 40px;
-            animation: scroll-left 5s linear infinite;
+            animation: scroll-left 40s linear infinite;
             width: 100%;
+            width: 1100px;
             overflow: visible;
 
             img {
@@ -898,12 +899,12 @@ h1 span {
         }
 
         &.scroll-right .logos-track {
-            animation: scroll-right 5s linear infinite;
+            animation: scroll-right 40s linear infinite;
         }
 
         @media screen and (max-width: 1000px) {
             .logos-track {
-                gap: 1rem;
+                // gap: 1rem;
                 // --translateX: translateX(calc(-50% - 8px));
             }
         }
