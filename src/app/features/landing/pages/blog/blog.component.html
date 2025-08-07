@@ -14,9 +14,9 @@
 </div>
 
 @if (!isLoading()) {
-    <div class="content" [@fadeIn]>
+    <div class="content">
         @for (post of posts(); track post.id) {
-            <div class="blog-card">
+            <div class="blog-card" [routerLink]="['/blogs', post.id]">
                 <h3>{{ post.header }}</h3>
                 <p>{{ post.subHeader }}</p>
                 <a href="#">Read our story →</a>
@@ -24,7 +24,7 @@
         }
     </div>
 } @else {
-    <div class="content" [@fadeIn]>
+    <div class="content">
         Spinner element
     </div>
 }

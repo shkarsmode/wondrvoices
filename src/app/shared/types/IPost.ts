@@ -7,6 +7,7 @@ export interface IPost {
 	readonly mainPicture: string;
 	readonly socialLinks: ISocialLinks | {};
 	readonly header: string;
+	readonly tag: string;
 	readonly subHeader: string;
 	readonly htmlContent: string;
 	readonly user?: IUser;

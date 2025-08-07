@@ -1,0 +1,199 @@
+
+<div class="wrap" #wrap>
+    <!-- * Main content -->
+    @if (post()) {
+        <div class="content">
+            <div class="top" (click)="goBack()">
+                <span class="material-symbols-outlined">
+                    west
+                </span>
+                Back
+            </div>
+        
+            <div class="post">
+                <div class="left-side">
+                    <span class="tag">{{ post()?.tag }}</span>
+                    <h2>{{ post()?.header }}</h2>
+                    <div class="date">
+                        {{ post()?.createdAt | date: 'MMM dd, YYYY' }}
+                    </div>
+                    <!-- <div class="sub-header">
+                        {{ post()?.subHeader }}
+                    </div> -->
+                    <!-- <div class="owner" *ngIf="post()?.user">
+                        <img
+                            *ngIf="post()?.user?.avatar"
+                            [alt]="post()?.user?.firstName"
+                            [src]="post()?.user?.avatar" />
+                        <div class="owner-info">
+                            <div class="name">
+                                {{ post()?.user?.firstName }}
+                                @if (post()?.user) {
+                                    {{ post()?.user?.lastName }}
+                                }
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+                <!-- <div class="right-side">
+                    <img [src]="post()?.mainPicture" [alt]="post()?.header">
+                </div> -->
+            </div>
+        </div>
+            
+    } @else {
+        <div class="content loading">
+            <div class="top">
+                <span class="material-symbols-outlined">
+                    west
+                </span>
+                back
+            </div>
+        
+            <div class="post">
+                <div class="left-side">
+                    <div class="date">
+                        Jun 23, 2023
+                    </div>
+                    <h2>
+                        <span>Director James Cameron sass he</span>
+                        <!-- <span>Director James Cameron</span>
+                        <span>Director James</span> -->
+                    </h2>
+                    <!-- <div class="sub-header">
+                        <span>James Cameron, who directed the hit 1997 film "Titanic"</span>
+                        <span>James Cameron, who</span>
+                    </div> -->
+                    <div class="owner">
+                        <div class="img"></div>
+                        <div class="owner-info">
+                            <div class="name">
+                                Daniil Shkarupa
+                            </div>
+                            <div class="sign">
+                                Associate writer for Well at The Times
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="right-side">
+                    <div class="right-side-picture"></div>
+                </div> -->
+            </div>
+        </div>
+    }
+</div>
+
+@if (post()) {
+
+    <div class="container">
+
+        <div class="wrap-end-center">
+
+            <!-- <div class="wrap-end share-start">
+                <div class="left">
+                    Share this post
+                </div>
+                <div class="right">
+                    <div
+                        class="block"
+                        [title]="post()?.header"
+                        (click)="copyCurrentPost()"
+                        tags="WondrLink">
+                        <ng-template [ngIf]="!isCopied()">
+                            <img src="assets/svg/copy-icon.svg" alt="">
+                            Copy link
+                        </ng-template>
+        
+                        <ng-template [ngIf]="isCopied()">
+                            <span class="material-symbols-outlined" *ngIf="isCopied()">
+                                library_add_check
+                            </span>
+                            Copied link
+                        </ng-template>
+        
+        
+        
+                    </div>
+                    
+                    
+                    
+                    <a rel="me" [href]="twitterShareLink()" target="_blank">
+                        Twitter
+                        <img src="assets/img/twitter.svg" />
+                    </a>
+                    <a rel="me" [href]="facebookShareLink()" target="_blank">
+                        Facebook
+                        <img src="assets/img/fb.svg" />
+                    </a>
+                    <a rel="me" [href]="linkedinShareLink() + '&summary=' + post()?.header" target="_blank">
+                        Linkedin
+                        <img src="assets/img/linkedin.svg" />
+                    </a>
+                </div>
+            </div> -->
+        </div>
+    
+        <!-- <img [src]="post()?.mainPicture" alt="main-picture" 
+            class="post-main-picture" #mainPicture> -->
+        
+    
+        <div class="wrap-content">
+            <div
+                class="content"
+                [innerHTML]="post()?.htmlContent">
+            </div>
+        </div>
+        
+        <!-- <div class="wrap-end-center">
+            <div class="wrap-end">
+                <div class="left">
+                    Share this post
+                </div>
+                <div class="right">
+                    <div
+                        class="block"
+                        [title]="post()?.header"
+                        (click)="copyCurrentPost()"
+                        tags="WondrLink"> shareButton="copy" [description]="post()?.header" 
+                        <ng-template [ngIf]="!isCopied()">
+
+                            <img src="assets/svg/copy-icon.svg" alt="">
+                            Copy link
+                        </ng-template>
+        
+                        <ng-template [ngIf]="isCopied()">
+                            <span class="material-symbols-outlined" *ngIf="isCopied()">
+                                library_add_check
+                            </span>
+                            Copied link
+                        </ng-template>
+        
+        
+        
+                    </div>
+                    
+                    
+                    
+                    <a rel="me" [href]="twitterShareLink()" target="_blank">
+                        Twitter
+                        <img src="assets/img/twitter.svg" />
+                    </a>
+                    <a rel="me" [href]="facebookShareLink()" target="_blank">
+                        Facebook
+                        <img src="assets/img/fb.svg" />
+                    </a>
+                    <a rel="me" [href]="linkedinShareLink() + '&summary=' + post()?.header" target="_blank">
+                        Linkedin
+                        <img src="assets/img/linkedin.svg" />
+                    </a>
+                </div>
+            </div>
+        </div> -->
+
+    </div>
+
+
+}
+
+<div class="post-background"></div>

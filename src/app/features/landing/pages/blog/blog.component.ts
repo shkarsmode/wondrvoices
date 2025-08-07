@@ -1,11 +1,13 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     computed,
     inject,
     OnInit,
     signal
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { take } from 'rxjs';
 import { PostsService } from '../../../../shared/services/posts.service';
 import { IPost } from '../../../../shared/types/IPost';
@@ -15,10 +17,12 @@ import { IPost } from '../../../../shared/types/IPost';
     templateUrl: './blog.component.html',
     styleUrls: ['./blog.component.scss'],
     standalone: true,
+    imports: [RouterLink],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BlogComponent implements OnInit {
     private readonly postsService = inject(PostsService);
+    private readonly changeDetectionRef = inject(ChangeDetectorRef);
 
     public readonly limit = 10;
 
@@ -67,14 +71,18 @@ export class BlogComponent implements OnInit {
         this.isLoading.set(true);
         const currentPage = this.page();
 
+
         this.postsService.getPosts(this.limit, currentPage)
             .pipe(take(1))
             .subscribe(response => {
+                console.log(response)
                 this.posts.set(
                     append ? [...this.posts(), ...response.posts] : response.posts
                 );
                 this.allPostsCount.set(response.allPostsCount);
                 this.isLoading.set(false);
+                // this.changeDetectionRef.detectChanges();
             });
+
     }
 }

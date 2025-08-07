@@ -38,6 +38,10 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/landing/pages/blog/blog.component')
                     .then(m => m.BlogComponent)
             },
+            {
+                path: 'blogs/:id', 
+                loadComponent: () => import('./features/landing/pages/post/post.component')
+                    .then(m => m.PostComponent) },
         ]
     },
 ];
