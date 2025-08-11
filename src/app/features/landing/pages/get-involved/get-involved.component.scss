@@ -14,7 +14,7 @@
     background: #f8f5f2;
 
     .text {
-        max-width: 600px;
+        max-width: 848px;
 
         h1 {
             font-size: 2.5rem;
@@ -72,7 +72,8 @@ app-swiper {
     flex-wrap: wrap;
 
     .ambassador-section {
-        max-width: 600px;
+        max-width: 848px;
+        width: 100%;
 
         h2 {
             font-size: 1.75rem;
@@ -142,7 +143,7 @@ $form-accent: #ffbfae;
 
 .form {
     font-family: 'Inter', sans-serif;
-    max-width: 600px;
+    max-width: 848px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;

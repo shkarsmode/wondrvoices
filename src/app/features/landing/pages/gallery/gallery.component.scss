@@ -174,16 +174,6 @@
     }
 }
 
-::ng-deep body:has(app-gallery) app-landing-page>.hero {
-    box-shadow: none !important;
-    background-color: #f8f5f2 !important;
-
-    .top-bar {
-        background-color: #f8f5f2 !important;
-        margin-bottom: 0 !important;
-    }
-}
-
 @keyframes card-show-anim {
     from {
         opacity: 0.5;
