@@ -23,6 +23,15 @@
                 <a href="#">Read our story →</a>
             </div>
         }
+        @if (filteredPosts().length === 0) {
+            <div class="no-posts">
+                <h2>No posts found</h2>
+                <p>We couldn't find any posts with the tag "{{ activeTab() }}".</p>
+            </div>
+        }
+        @if (filteredPosts().length % 2 === 1 && filteredPosts().length !== 1) {
+            <div class="blog-card blog-card--mock"></div>
+        }
     </div>
 } @else {
     <div class="content">
