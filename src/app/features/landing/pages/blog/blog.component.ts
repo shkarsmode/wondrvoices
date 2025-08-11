@@ -24,11 +24,15 @@ export class BlogComponent implements OnInit {
     private readonly postsService = inject(PostsService);
     private readonly changeDetectionRef = inject(ChangeDetectorRef);
 
-    public readonly limit = 10;
+    public readonly limit = 100;
 
     public readonly page = signal(0);
     public readonly allPostsCount = signal<number | null>(null);
     public readonly posts = signal<IPost[]>([]);
+    public readonly filteredPosts = computed(() => {
+        if (this.activeTab() === 'All') return this.posts();
+        return this.posts().filter(post => post.tag === this.activeTab());
+    });
     public readonly isLoading = signal(false);
     public readonly activeTab = signal<string>('All');
 
