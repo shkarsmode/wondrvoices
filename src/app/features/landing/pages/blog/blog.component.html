@@ -23,7 +23,7 @@
                 <a href="#">Read our story →</a>
             </div>
         }
-        @if (filteredPosts().length === 0) {
+        @if (posts().length === 0 && !isLoading()) {
             <div class="no-posts">
                 <h2>No posts found</h2>
                 <p>We couldn't find any posts with the tag "{{ activeTab() }}".</p>
@@ -35,6 +35,12 @@
     </div>
 } @else {
     <div class="content">
-        Spinner element
+        <div class="loader-wave">
+            <div class="wave-dot"></div>
+            <div class="wave-dot"></div>
+            <div class="wave-dot"></div>
+            <div class="wave-dot"></div>
+            <div class="wave-dot"></div>
+        </div>
     </div>
 }

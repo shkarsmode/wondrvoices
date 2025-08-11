@@ -33,7 +33,7 @@ export class BlogComponent implements OnInit {
         if (this.activeTab() === 'All') return this.posts();
         return this.posts().filter(post => post.tag === this.activeTab());
     });
-    public readonly isLoading = signal(false);
+    public readonly isLoading = signal(true);
     public readonly activeTab = signal<string>('All');
 
     public readonly tabs = ['All', 'Health', 'Art', 'Superhero Stories'] as const;
@@ -79,12 +79,15 @@ export class BlogComponent implements OnInit {
         this.postsService.getPosts(this.limit, currentPage)
             .pipe(take(1))
             .subscribe(response => {
-                console.log(response)
                 this.posts.set(
                     append ? [...this.posts(), ...response.posts] : response.posts
                 );
                 this.allPostsCount.set(response.allPostsCount);
-                this.isLoading.set(false);
+
+                setTimeout(() => {
+                    this.isLoading.set(false);
+                    this.changeDetectionRef.detectChanges();
+                }, 1500);
                 // this.changeDetectionRef.detectChanges();
             });
 

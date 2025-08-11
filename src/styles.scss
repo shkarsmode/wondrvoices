@@ -123,7 +123,7 @@ h2 {
 
 body:has(app-gallery) app-landing-page>.hero,
 body:has(app-get-involved) app-landing-page>.hero,
-body:has(app-spots) app-landing-page>.hero, 
+body:has(app-spots) app-landing-page>.hero,
 body:has(app-about-us) app-landing-page>.hero,
 body:has(app-blog) app-landing-page>.hero {
     box-shadow: none !important;
@@ -132,5 +132,84 @@ body:has(app-blog) app-landing-page>.hero {
     .top-bar {
         background-color: #f8f5f2 !important;
         margin-bottom: 0 !important;
+    }
+}
+
+// Alternative loader option - pulsing ring
+.loader-ring {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+
+    .ring {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f0f0f0;
+        border-top: 3px solid #FAAF71;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+// Alternative loader option - wave dots
+.loader-wave {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 40px 0;
+
+    .wave-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #FAAF71;
+        animation: wave 1.2s ease-in-out infinite;
+
+        &:nth-child(1) {
+            animation-delay: -0.24s;
+        }
+
+        &:nth-child(2) {
+            animation-delay: -0.12s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: 0s;
+        }
+
+        &:nth-child(4) {
+            animation-delay: 0.12s;
+        }
+
+        &:nth-child(5) {
+            animation-delay: 0.24s;
+        }
+    }
+}
+
+@keyframes wave {
+
+    0%,
+    40%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+
+    20% {
+        transform: translateY(-15px);
+        opacity: 1;
     }
 }
