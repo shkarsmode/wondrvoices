@@ -2,11 +2,22 @@
 @import url('./app/shared/styles/reset.scss');
 @import url('./app/shared/styles/buttons.scss');
 
+/* Prevent FOUT (Flash of Unstyled Text) */
+body {
+    font-display: swap;
+}
+
+/* Fallback font stack for better loading experience */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Ariata', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 @font-face {
     font-family: 'Ariata';
     src: url('/assets/fonts/Ariata-Font-Family/Ariata\ Display\ Regular.otf') format('opentype');
     font-weight: 400;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -14,6 +25,7 @@
     src: url('/assets/fonts/Ariata-Font-Family/Ariata\ Display\ Medium.otf') format('opentype');
     font-weight: 500;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -21,6 +33,7 @@
     src: url('/assets/fonts/Ariata-Font-Family/Ariata\ Display\ Bold.otf') format('opentype');
     font-weight: 700;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
@@ -28,6 +41,7 @@
     src: url('/assets/fonts/Ariata-Font-Family/Ariata\ Display\ Black.otf') format('opentype');
     font-weight: 900;
     font-style: normal;
+    font-display: swap;
 }
 
 html,
