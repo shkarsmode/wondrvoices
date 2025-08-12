@@ -32,6 +32,7 @@
         font-size: 16px;
         font-weight: 600;
         margin-bottom: 16px;
+        width: fit-content;
     }
 }
 
@@ -98,13 +99,18 @@
 
 
 .blog-card {
+    display: flex;
+    flex-direction: column;
+
     background: #fff;
     border-radius: 1rem;
     padding: 1.5rem;
     width: 100%;
+    height: 245px;
     max-width: 500px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
     text-align: left;
+    margin-bottom: auto;
 
     &--mock {
         opacity: 0;
@@ -114,10 +120,17 @@
     h3 {
         font-size: 24px;
         font-weight: 600;
-        line-height: 1.3;
+        line-height: 1.2;
         margin-bottom: 16px;
         color: #472B2F;
         font-family: "Inter", sans-serif;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        // max-height: 50px;
     }
 
     p {
@@ -126,6 +139,13 @@
         line-height: 1.3;
         color: #444;
         margin-bottom: 16px;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-bottom: auto;
     }
 
     a {

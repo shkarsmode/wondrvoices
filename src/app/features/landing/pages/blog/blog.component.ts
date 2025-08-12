@@ -8,7 +8,7 @@ import {
     signal
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { take } from 'rxjs';
+import { take, timeout } from 'rxjs';
 import { PostsService } from '../../../../shared/services/posts.service';
 import { IPost } from '../../../../shared/types/IPost';
 
@@ -44,7 +44,9 @@ export class BlogComponent implements OnInit {
     });
 
     public ngOnInit(): void {
-        this.fetchPosts();
+        if (typeof window !== 'undefined') {
+            this.fetchPosts();
+        }
     }
 
     public selectTab(tab: string): void {
@@ -73,11 +75,12 @@ export class BlogComponent implements OnInit {
 
     private fetchPosts(append: boolean = false): void {
         this.isLoading.set(true);
+        this.changeDetectionRef.detectChanges();
         const currentPage = this.page();
 
 
         this.postsService.getPosts(this.limit, currentPage)
-            .pipe(take(1))
+            .pipe(take(1), timeout(5000))
             .subscribe(response => {
                 this.posts.set(
                     append ? [...this.posts(), ...response.posts] : response.posts
@@ -88,7 +91,6 @@ export class BlogComponent implements OnInit {
                     this.isLoading.set(false);
                     this.changeDetectionRef.detectChanges();
                 }, 1500);
-                // this.changeDetectionRef.detectChanges();
             });
 
     }
