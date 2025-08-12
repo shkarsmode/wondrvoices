@@ -8,8 +8,9 @@
     font-family: 'Inter', sans-serif;
     color: #3c3c3c;
     width: 100%;
-    padding: 100px 0px;
+    padding: 100px 15px;
     background-color: #f8f5f2;
+    padding-bottom: 40px;
 
     .content {
         max-width: 848px;
@@ -101,8 +102,11 @@ h2 {
 .post-main-picture {
     width: 100%;
     height: auto;
+    margin: 0 auto;
+    max-width: 848px;
+
     border-radius: 8px;
-    margin: 32px 0;
+
 }
 
 .wrap-content {
@@ -119,6 +123,8 @@ h2 {
     line-height: 1.65;
     color: #333;
     max-width: 848px;
+    padding: 0 15px;
+    box-sizing: content-box;
 
     ::ng-deep {
 
@@ -177,7 +183,9 @@ h2 {
 .wrap-end-center {
     display: flex;
     justify-content: center;
-    margin-top: 40px;
+    width: 100%;
+    margin-bottom: 40px;
+    padding: 0 15px;
 }
 
 .wrap-end {
