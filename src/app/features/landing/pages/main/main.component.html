@@ -21,7 +21,7 @@
                 (mouseenter)="mouseEnterBlock1=true"
                 (mouseleave)="mouseEnterBlock1=false"
                 #heroImages1>
-                @for (img of images1; track img) {
+                @for (img of images1; track null) {
                     <img [src]="img" alt="">
                 }
             </div>
