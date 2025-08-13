@@ -41,7 +41,18 @@ export const routes: Routes = [
             {
                 path: 'blogs/:id', 
                 loadComponent: () => import('./features/landing/pages/post/post.component')
-                    .then(m => m.PostComponent) },
+                    .then(m => m.PostComponent) 
+            },
+            {
+                path: 'terms',
+                loadComponent: () => import('./features/landing/pages/terms/terms.component')
+                    .then(m => m.TermsComponent)
+            },
+            {
+                path: 'privacy',
+                loadComponent: () => import('./features/landing/pages/privacy/privacy.component')
+                    .then(m => m.PrivacyComponent)
+            }
         ]
     },
 ];

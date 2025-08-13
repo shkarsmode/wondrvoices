@@ -1,0 +1,43 @@
+:host {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 15px;
+}
+
+.content {
+    max-width: 850px;
+}
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+em {
+    display: block;
+    margin-bottom: 1.5em;
+    font-style: italic;
+    color: #555;
+}
+
+h2 {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+p {
+    margin-bottom: 1em;
+}
+
+ul {
+    margin: 0 0 1em 1.2em;
+}
+
+li {
+    margin-bottom: 0.5em;
+}

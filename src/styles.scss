@@ -139,7 +139,9 @@ body:has(app-gallery) app-landing-page>.hero,
 body:has(app-get-involved) app-landing-page>.hero,
 body:has(app-spots) app-landing-page>.hero,
 body:has(app-about-us) app-landing-page>.hero,
-body:has(app-blog) app-landing-page>.hero {
+body:has(app-blog) app-landing-page>.hero,
+body:has(app-privacy) app-landing-page>.hero,
+body:has(app-terms) app-landing-page>.hero {
     box-shadow: none !important;
     background-color: #f8f5f2 !important;
 
