@@ -39,7 +39,7 @@ export class GalleryComponent implements OnInit {
     public filteredCards = computed(() => {
         const tab = this.activeTab();
         if (tab === 'All') return this.cards();
-        return this.cards().filter(card => card.category === tab.toUpperCase());
+        return this.cards().filter(card => card.category.toUpperCase() === tab.toUpperCase());
     });
 
     public ngOnInit(): void {

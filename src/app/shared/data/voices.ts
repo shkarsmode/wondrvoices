@@ -242,7 +242,7 @@ export const voices = [
     {
         "id": 25,
         "image": "assets/voices/25.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Art Walk, Florida",
         "description": "",
         "author": "",
@@ -252,7 +252,7 @@ export const voices = [
     {
         "id": 26,
         "image": "assets/voices/26.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Farmers Market, Brooksville Florida",
         "description": "",
         "author": "",
@@ -262,7 +262,7 @@ export const voices = [
     {
         "id": 27,
         "image": "assets/voices/27.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Art Walk, Florida",
         "description": "",
         "author": "",
@@ -272,7 +272,7 @@ export const voices = [
     {
         "id": 28,
         "image": "assets/voices/28.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Art Walk, Florida",
         "description": "",
         "author": "",
@@ -282,7 +282,7 @@ export const voices = [
     {
         "id": 29,
         "image": "assets/voices/29.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Art Walk, Florida",
         "description": "",
         "author": "",
@@ -292,7 +292,7 @@ export const voices = [
     {
         "id": 30,
         "image": "assets/voices/30.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Farmers Market, Florida",
         "description": "",
         "author": "",
@@ -302,7 +302,7 @@ export const voices = [
     {
         "id": 31,
         "image": "assets/voices/31.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Farmers Market, Florida",
         "description": "",
         "author": "",
@@ -312,7 +312,7 @@ export const voices = [
     {
         "id": 32,
         "image": "assets/voices/32.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Farmers Market, Florida",
         "description": "",
         "author": "",
@@ -322,7 +322,7 @@ export const voices = [
     {
         "id": 33,
         "image": "assets/voices/33.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Farmers Market, Florida",
         "description": "",
         "author": "",
@@ -332,7 +332,7 @@ export const voices = [
     {
         "id": 34,
         "image": "assets/voices/34.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Farmers Market, Florida",
         "description": "",
         "author": "",
@@ -342,7 +342,7 @@ export const voices = [
     {
         "id": 35,
         "image": "assets/voices/35.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Farmers Market, Florida",
         "description": "",
         "author": "",
@@ -352,7 +352,7 @@ export const voices = [
     {
         "id": 36,
         "image": "assets/voices/36.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Gulfport Farmers Market, Florida",
         "description": "",
         "author": "",
@@ -362,7 +362,7 @@ export const voices = [
     {
         "id": 37,
         "image": "assets/voices/37.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Jonsin To Make a Difference, St Petersburg, Florida",
         "description": "",
         "author": "",
@@ -372,7 +372,7 @@ export const voices = [
     {
         "id": 38,
         "image": "assets/voices/38.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Laguna Niguel, California",
         "description": "",
         "author": "",
@@ -382,7 +382,7 @@ export const voices = [
     {
         "id": 39,
         "image": "assets/voices/39.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Tampa, Florida",
         "description": "",
         "author": "",
@@ -392,7 +392,7 @@ export const voices = [
     {
         "id": 40,
         "image": "assets/voices/40.webp",
-        "category": "ART BY KIDS",
+        "category": "kids art",
         "title": "Tampa, Florida",
         "description": "",
         "author": "",
@@ -402,7 +402,7 @@ export const voices = [
     {
         "id": 41,
         "image": "assets/voices/41.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "Gulfport Art Walk, Florida",
         "description": "",
         "author": "",
@@ -412,7 +412,7 @@ export const voices = [
     {
         "id": 42,
         "image": "assets/voices/42.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "Gulfport Art Walk, Florida",
         "description": "",
         "author": "",
@@ -422,7 +422,7 @@ export const voices = [
     {
         "id": 43,
         "image": "assets/voices/43.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "Gulfport Art Walk, Florida",
         "description": "",
         "author": "",
@@ -432,7 +432,7 @@ export const voices = [
     {
         "id": 44,
         "image": "assets/voices/44.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "Laguna Niguel, California",
         "description": "",
         "author": "",
@@ -442,7 +442,7 @@ export const voices = [
     {
         "id": 45,
         "image": "assets/voices/45.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "Laguna Niguel, California",
         "description": "",
         "author": "",
@@ -452,7 +452,7 @@ export const voices = [
     {
         "id": 46,
         "image": "assets/voices/46.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "St Petersburg, Florida",
         "description": "",
         "author": "",
@@ -462,7 +462,7 @@ export const voices = [
     {
         "id": 47,
         "image": "assets/voices/47.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "St Petersburg, Florida",
         "description": "",
         "author": "",
@@ -472,7 +472,7 @@ export const voices = [
     {
         "id": 48,
         "image": "assets/voices/48.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "St Petersburg, Florida",
         "description": "",
         "author": "",
@@ -482,7 +482,7 @@ export const voices = [
     {
         "id": 49,
         "image": "assets/voices/49.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "St Petersburg, Florida",
         "description": "",
         "author": "",
@@ -492,7 +492,7 @@ export const voices = [
     {
         "id": 50,
         "image": "assets/voices/50.webp",
-        "category": "LETTER",
+        "category": "letters",
         "title": "St Petersburg, Florida",
         "description": "",
         "author": "",
