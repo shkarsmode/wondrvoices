@@ -441,3 +441,32 @@
         max-width: 263px;
     }
 }
+
+.give-butter {
+    position: relative;
+    gap: 3px;
+    width: 100px;
+    height: 35px;
+    background-color: #fe8311 !important;
+
+    givebutter-widget {
+        position: fixed;
+        opacity: 0;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    div {
+        position: absolute !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        gap: 3px;
+        left: 0;
+        top: 0;
+    }
+}
