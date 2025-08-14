@@ -8,27 +8,112 @@
     No names or personal information will appear on the cards — only your art or words of kindness will be shared.
 </p>
 
-<form [formGroup]="form" (ngSubmit)="submit()" class="form">
+<form
+    class="form"
+    [formGroup]="form"
+    (ngSubmit)="submit()">
     @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
         <div class="form-group">
             <div class="input-wrapper">
-                <input [formControlName]="field" [placeholder]="' '" type="text" />
+                <input
+                    [formControlName]="field"
+                    [placeholder]="' '"
+                    type="text" />
                 <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
             </div>
         </div>
     }
 
+    <!-- What is this? -->
+    <section class="tags-section">
+        <div class="section-title">
+            <h3>What is this?</h3>
+            <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
+        </div>
+
+        <div class="chips">
+            @for (opt of whatOptions; track opt.key) {
+                <button
+                    class="chip"
+                    [class.active]="isSelected('what', opt.key)"
+                    [disabled]="disableChip('what', opt.key)"
+                    (click)="toggle('what', opt.key)"
+                    type="button">
+                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                </button>
+            }
+        </div>
+        <small class="hint">Choose up to 3.</small>
+    </section>
+
+    <!-- What does it express? -->
+    <section class="tags-section">
+        <div class="section-title">
+            <h3>What does it express?</h3>
+            <span class="counter">{{ form.get('express')?.value?.length || 0 }}/3</span>
+        </div>
+
+        <div class="chips">
+            @for (opt of expressOptions; track opt.key) {
+                <button
+                    class="chip"
+                    [class.active]="isSelected('express', opt.key)"
+                    [disabled]="disableChip('express', opt.key)"
+                    (click)="toggle('express', opt.key)"
+                    type="button">
+                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                </button>
+            }
+        </div>
+        <small class="hint">Choose up to 3.</small>
+    </section>
+
+    <!-- Who is this from? -->
+    <section class="tags-section">
+        <div class="section-title">
+            <h3>Who is this from?</h3>
+            <span class="counter">{{ form.get('from')?.value?.length || 0 }}/3</span>
+        </div>
+
+        <div class="chips">
+            @for (opt of fromOptions; track opt.key) {
+                <button
+                    class="chip"
+                    [class.active]="isSelected('from', opt.key)"
+                    [disabled]="disableChip('from', opt.key)"
+                    (click)="toggle('from', opt.key)"
+                    type="button">
+                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                </button>
+            }
+        </div>
+        <small class="hint">Choose up to 3.</small>
+    </section>
+
+    <!-- Optional note -->
+    <div class="form-group">
+        <div class="input-wrapper textarea">
+            <textarea
+                formControlName="note"
+                placeholder=" "
+                rows="1">
+            </textarea>
+            <label [class.focused]="form.get('note')?.value">Add a Note (Optional)</label>
+        </div>
+    </div>
+
+    <!-- Dropzone (как было) -->
     <div
         class="form-group dropzone"
         [class.dragover]="isDragOver()"
+        (click)="fileInput.click()"
         (dragleave)="onDragLeave()"
         (dragover)="onDragOver($event)"
-        (drop)="onFileDrop($event)"
-        (click)="fileInput.click()">
+        (drop)="onFileDrop($event)">
         <label class="upload-label">
             Upload a photo of your drawing, artwork, or handwritten message *
         </label>
-    
+
         <div class="dropzone-content">
             @if (!previewUrl()) {
                 <p>📁 Click to choose a file or drag here</p>
@@ -41,7 +126,7 @@
                     alt="preview" />
             }
         </div>
-    
+
         <input
             hidden
             (change)="onFileChange($event)"
@@ -51,14 +136,17 @@
 
     <div class="form-group checkbox">
         <input type="checkbox" formControlName="consent" id="consent" />
-        <label for="consent">I agree to let WondrVoices use my submission in printed or digital form to bring hope to patients. I understand that not
-        all submissions may be printed or shared.</label>
+        <label for="consent">
+            I agree to let WondrVoices use my submission in printed or digital form to bring hope to patients. I
+            understand that not
+            all submissions may be printed or shared.
+        </label>
     </div>
 
     <button
+        [disabled]="(form.invalid && form.touched && form.dirty) || submitted()"
         class="button submit-btn primary"
-        type="submit"
-        [disabled]="(form.invalid && form.touched && form.dirty) || submitted()">
+        type="submit">
         Submit
     </button>
 </form>

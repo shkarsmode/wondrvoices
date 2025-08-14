@@ -218,3 +218,110 @@ h3 {
         scale: 1.07;
     }
 }
+
+.tags-section {
+    margin-top: 6px;
+
+    .section-title {
+        display: flex;
+        align-items: baseline;
+        gap: .5rem;
+        margin-bottom: .6rem;
+
+        h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        .counter {
+            font-size: 12px;
+            color: #888;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #f2f2f2;
+        }
+    }
+
+    .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        border: 1.5px solid #ddd;
+        background: #fff;
+        color: $form-color;
+        border-radius: 999px;
+        padding: .45rem .75rem;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+        transition: all .15s ease;
+
+        .emoji {
+            font-size: 16px;
+        }
+
+        &:hover {
+            border-color: $form-accent;
+        }
+
+        &.active {
+            background: rgba($form-accent, .12);
+            border-color: $form-accent;
+            color: $form-color;
+        }
+
+        &:disabled:not(.active) {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+    }
+
+    .hint {
+        display: block;
+        margin-top: .4rem;
+        color: #888;
+        font-size: 12px;
+    }
+}
+
+/* label для textarea */
+.input-wrapper.textarea {
+    textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #ccc;
+        border-radius: $form-radius;
+        font-size: 1rem;
+        transition: border .3s;
+        resize: vertical;
+
+        &:focus {
+            outline: none;
+            border-color: $form-accent;
+        }
+    }
+
+    label {
+        position: absolute;
+        top: 12px;
+        left: .9rem;
+        transition: all .2s ease;
+    }
+
+    textarea:focus+label,
+    textarea:active+label,
+    & .focused {
+        top: 11px;
+        left: .9rem;
+        font-size: .75rem;
+        color: $form-accent;
+    }
+}
