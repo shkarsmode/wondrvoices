@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { SwiperComponent } from '../../components/swiper/swiper.component';
@@ -8,7 +8,8 @@ import { SwiperComponent } from '../../components/swiper/swiper.component';
     standalone: true,
     imports: [SwiperComponent, RouterLink],
     templateUrl: './main.component.html',
-    styleUrl: './main.component.scss'
+    styleUrl: './main.component.scss',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MainComponent implements OnInit {
     private title = inject(Title);
