@@ -93,7 +93,7 @@ export class FormComponent {
             // New tag groups + note
             what: this.fb.control<string[]>([], []),
             express: this.fb.control<string[]>([], []),
-            from: this.fb.control<string[]>([], []),
+            // from: this.fb.control<string[]>([], []),
             note: [''],
 
             file: [null, Validators.required],
@@ -172,7 +172,6 @@ export class FormComponent {
     public submit() {
         if (this.form.valid) {
             this.submitted.set(true);
-            // Здесь уже будут: what[], express[], from[], note
             console.log('Form submitted:', this.form.value);
         } else {
             this.form.markAllAsTouched();

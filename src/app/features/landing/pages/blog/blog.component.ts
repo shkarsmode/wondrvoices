@@ -87,10 +87,10 @@ export class BlogComponent implements OnInit {
                 );
                 this.allPostsCount.set(response.allPostsCount);
 
-                setTimeout(() => {
+                // setTimeout(() => {
                     this.isLoading.set(false);
                     this.changeDetectionRef.detectChanges();
-                }, 1500);
+                // }, 1500);
             });
 
     }
