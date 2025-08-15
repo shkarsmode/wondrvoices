@@ -36,7 +36,7 @@ export class BlogComponent implements OnInit {
     public readonly isLoading = signal(true);
     public readonly activeTab = signal<string>('All');
 
-    public readonly tabs = ['All', 'Health', 'Art', 'Superhero Stories'] as const;
+    public readonly tabs = signal(['All', 'Health', 'Art', 'Superhero Stories']);
 
     public readonly pagesCount = computed(() => {
         const total = this.allPostsCount();
@@ -86,6 +86,11 @@ export class BlogComponent implements OnInit {
                     append ? [...this.posts(), ...response.posts] : response.posts
                 );
                 this.allPostsCount.set(response.allPostsCount);
+
+                this.tabs.set([
+                    'All',
+                    ...this.posts().map(post => post.tag)
+                ]);
 
                 // setTimeout(() => {
                     this.isLoading.set(false);

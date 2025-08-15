@@ -4,7 +4,7 @@
 </p>
 
 <div class="tabs">
-    @for (tab of tabs; track tab) {
+    @for (tab of tabs(); track tab) {
         <button
             [class.active]="tab === activeTab()"
             (click)="selectTab(tab)">
