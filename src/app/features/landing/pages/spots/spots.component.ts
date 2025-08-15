@@ -21,7 +21,7 @@ export class SpotsComponent implements OnInit {
         organizationName: 'Organization Name',
         contactPerson: 'Contact Person',
         email: 'Email',
-        type: 'Type of Organization',
+        city: 'City',
     };
 
     constructor() {
@@ -29,8 +29,7 @@ export class SpotsComponent implements OnInit {
             organizationName: ['', Validators.required],
             contactPerson: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
-            type: ['', Validators.required],
-            consent: [false, Validators.requiredTrue]
+            city: ['', Validators.required]
         });
     }
 
