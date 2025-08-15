@@ -21,7 +21,7 @@
                 (mouseenter)="mouseEnterBlock1=true"
                 (mouseleave)="mouseEnterBlock1=false"
                 #heroImages1>
-                @for (img of images1; track null) {
+                @for (img of images1; track $index) {
                     <img [src]="img" alt="">
                 }
             </div>
@@ -30,7 +30,7 @@
                 (mouseenter)="mouseEnterBlock2=true"
                 (mouseleave)="mouseEnterBlock2=false"
                 #heroImages2>
-                @for (img of images2; track img) {
+                @for (img of images2; track $index) {
                     <img [src]="img" alt="">
                 }
             </div>
@@ -137,7 +137,7 @@
         <div class="logos-row-wrapper">
             <div class="logos-row scroll-left">
                 <div class="logos-track">
-                    @for (i of [1, 2, 3, 4]; track null) {
+                    @for (i of [1, 2, 3, 4]; track $index) {
                         <img src="assets/img/gang.png" alt="Woof gang">
                         <img src="assets/img/brook.png" alt="Brook">
                         <img src="assets/img/foul.png" alt="Foulkeways" />
@@ -149,7 +149,7 @@
 
             <div class="logos-row scroll-right">
                 <div class="logos-track">
-                    @for (i of [1, 2, 3, 4]; track null) {
+                    @for (i of [1, 2, 3, 4]; track $index) {
                         <img src="assets/img/artv.png" alt="artv">
                         <img src="assets/img/w.png" alt="Logo pink" />
                         <img src="assets/img/aegis.png" alt="aegis">
