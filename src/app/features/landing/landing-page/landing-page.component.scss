@@ -452,10 +452,10 @@
     givebutter-widget {
         position: fixed;
         opacity: 0;
-        left: 0;
-        top: 0;
-        width: 100% !important;
-        height: 100% !important;
+        left: unset !important;
+        top: unset !important;
+        width: unset !important;
+        height: unset !important;
     }
 
     div {
