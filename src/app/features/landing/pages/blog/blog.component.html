@@ -20,7 +20,7 @@
                 <span class="tag">{{ post.tag }}</span>
                 <h3>{{ post.header }}</h3>
                 <p>{{ post.subHeader }}</p>
-                <a href="#">Read our story →</a>
+                <a [routerLink]="['/blogs', post.id]">Read our story →</a>
             </div>
         }
         @if (posts().length === 0 && !isLoading()) {
