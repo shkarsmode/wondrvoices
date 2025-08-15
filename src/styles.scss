@@ -8,7 +8,12 @@ body {
 }
 
 /* Fallback font stack for better loading experience */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: 'Ariata', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -228,4 +233,8 @@ body:has(app-terms) app-landing-page>.hero {
         transform: translateY(-15px);
         opacity: 1;
     }
+}
+
+.submit-btn {
+    background-color: #eb5527 !important;
 }
