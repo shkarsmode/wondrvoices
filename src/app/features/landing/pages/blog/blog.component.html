@@ -6,6 +6,8 @@
 <div class="tabs">
     @for (tab of tabs(); track tab) {
         <button
+            [class.loading]="tab === ''"
+            [class.loaded]="tab !== ''"
             [class.active]="tab === activeTab()"
             (click)="selectTab(tab)">
             {{ tab }}

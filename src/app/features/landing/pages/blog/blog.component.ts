@@ -5,7 +5,8 @@ import {
     computed,
     inject,
     OnInit,
-    signal
+    signal,
+    WritableSignal
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { take, timeout } from 'rxjs';
@@ -36,7 +37,7 @@ export class BlogComponent implements OnInit {
     public readonly isLoading = signal(true);
     public readonly activeTab = signal<string>('All');
 
-    public readonly tabs = signal(['All', 'Health', 'Art', 'Superhero Stories']);
+    public readonly tabs: WritableSignal<Array<string>> = signal(['', '', '', '']);
 
     public readonly pagesCount = computed(() => {
         const total = this.allPostsCount();
@@ -87,15 +88,15 @@ export class BlogComponent implements OnInit {
                 );
                 this.allPostsCount.set(response.allPostsCount);
 
-                this.tabs.set([
-                    'All',
-                    ...this.posts().map(post => post.tag)
-                ]);
-
-                // setTimeout(() => {
+                
+                setTimeout(() => {
+                    this.tabs.set([
+                        'All',
+                        ...this.posts().map(post => post.tag)
+                    ]);
                     this.isLoading.set(false);
                     this.changeDetectionRef.detectChanges();
-                // }, 1500);
+                }, 1000);
             });
 
     }

@@ -345,7 +345,7 @@ a.wondrspot-link {
         transition: background 0.3s;
 
         &:hover {
-            background-color: darken($form-accent, 10%);
+            // background-color: darken($form-accent, 10%);
         }
     }
 }

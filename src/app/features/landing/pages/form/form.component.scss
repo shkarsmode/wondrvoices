@@ -101,7 +101,7 @@ $form-accent: #ffbfae;
         transition: background 0.3s;
 
         &:hover {
-            background-color: darken($form-accent, 10%);
+            // background-color: darken($form-accent, 10%);
         }
     }
 }
@@ -189,7 +189,7 @@ h3 {
         transition: background 0.3s;
 
         &:hover {
-            background-color: darken($form-accent, 10%);
+            // background-color: darken($form-accent, 10%);
         }
     }
 

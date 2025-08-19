@@ -63,8 +63,10 @@
 .tabs {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 1rem;
     margin-bottom: 2rem;
+    height: 42px;
 
     button {
         background: #fff;
@@ -88,6 +90,50 @@
         &:hover {
             background: #ffd5b8;
         }
+
+        &.loading {
+            background: #fee9d7;
+            border: none;
+            cursor: not-allowed;
+            pointer-events: none;
+            color: #472B2F4D;
+            width: 60px;
+            // height: 42px;
+
+            animation: anim-loading-tabs 1s infinite ease-in-out;
+
+            &:hover {
+                background: #fff;
+            }
+        }
+
+        &.loaded {
+            animation: anim-show-tabs 0.3s ease-in-out forwards;
+        }
+    }
+}
+
+@keyframes anim-loading-tabs {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes anim-show-tabs {
+    0% {
+        transform: scale(0.8);
+    }
+
+    100% {
+        transform: scale(1);
     }
 }
 

@@ -155,7 +155,7 @@ $form-accent: #ffbfae;
         // background-color: $form-accent;
 
         &:hover {
-            background-color: darken($form-accent, 10%);
+            // background-color: darken($form-accent, 10%);
         }
     }
 }
@@ -247,7 +247,7 @@ $form-accent: #ffbfae;
         transition: background 0.3s;
 
         &:hover {
-            background-color: darken($form-accent, 10%);
+            // background-color: darken($form-accent, 10%);
         }
     }
 }
