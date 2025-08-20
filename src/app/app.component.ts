@@ -22,7 +22,8 @@ export class AppComponent implements OnInit {
         // @ts-ignore
         this.router.events.subscribe(async (event: any) => {
             if (event instanceof NavigationEnd) {
-                await new Promise(resolve => setTimeout(resolve, 50));
+                if (event.urlAfterRedirects.match("#")) return;
+                // await new Promise(resolve => setTimeout(resolve, 50));
                 this.scrollToService.scrollToTop();
             }
         });
