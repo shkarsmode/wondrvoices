@@ -167,24 +167,17 @@
 <section class="latest-blogs">
     <h2>Latest Blogs</h2>
     <div class="blog-cards">
-        <div class="blog-card">
-            <h3>When Personalized and Compassionate Care Becomes the Turning Point</h3>
-            <p>
-                Share your creativity to lift someone’s spirit. Whether it’s a drawing, handwritten note, or warm words — your work will
-                be printed and delivered to a patient who needs a moment of comfort and connection.
-            </p>
-            <a href="#">View All →</a>
-        </div>
-        <div class="blog-card">
-            <h3>What Happens When There's No Clinical Trial for You?</h3>
-            <p>
-                Share your creativity to lift someone’s spirit. Whether it’s a drawing, handwritten note, or warm words — your work will
-                be printed and delivered to a patient who needs a moment of comfort and connection.
-            </p>
-            <a href="#">Read Our Story →</a>
-        </div>
+        @for (blog of latestBlogs(); track blog.id) {
+            <div class="blog-card">
+                <h3>{{ blog.header }}</h3>
+                <p>
+                    {{ blog.subHeader }}
+                </p>
+                <a [routerLink]="'blogs/' + blog.id">View All →</a>
+            </div>
+        }
     </div>
-    <button class="button primary">View All</button>
+    <button class="button primary" routerLink="/blog">View All</button>
 </section>
 
 <section class="donate">

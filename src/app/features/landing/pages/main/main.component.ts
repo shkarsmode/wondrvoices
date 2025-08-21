@@ -1,6 +1,9 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { first } from 'rxjs';
+import { PostsService } from '../../../../shared/services/posts.service';
+import { IPost } from '../../../../shared/types/IPost';
 import { SwiperComponent } from '../../components/swiper/swiper.component';
 
 @Component({
@@ -18,9 +21,13 @@ export class MainComponent implements OnInit {
     public mouseEnterBlock1: boolean = false;
     public mouseEnterBlock2: boolean = false;
 
+    private readonly postsService = inject(PostsService);
+
     public speed = 0.5;
     private offset1 = 0;
     private offset2 = 0;
+
+    public latestBlogs: WritableSignal<IPost[]> = signal([]);
 
     public slides = [
         { imageUrl: 'assets/voices/6.jpg' },
@@ -53,6 +60,12 @@ export class MainComponent implements OnInit {
         this.images1 = [...this.images1, ...this.images1, ...this.images1];
         this.images2 = [...this.images2, ...this.images2, ...this.images2];
         this.title.setTitle('Wondrvoices');
+
+        this.postsService.getPosts(2)
+            .pipe(first())
+            .subscribe(({ posts }) => 
+                this.latestBlogs.set(posts)
+            )
     }
 
     public ngAfterViewInit(): void {

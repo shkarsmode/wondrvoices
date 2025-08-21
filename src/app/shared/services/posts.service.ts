@@ -18,7 +18,7 @@ export class PostsService {
 
     public getPosts(
         limit: number, 
-        page: number, 
+        page: number = 0, 
         postponed: boolean = false
     ): Observable<AllPostsResponseDto> {
         return this.http.get<AllPostsResponseDto>(
