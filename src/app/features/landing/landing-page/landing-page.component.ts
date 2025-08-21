@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, CUSTOM_ELEMENTS_SCHEMA, DestroyRef,
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { ScrollToService } from '../../../shared/services/scroll-to.service';
 
 @Component({
     selector: 'app-landing-page',
@@ -15,6 +16,7 @@ import { filter } from 'rxjs';
 export class LandingPageComponent implements OnInit {
     private readonly router: Router = inject(Router);
     private readonly destroyRef: DestroyRef = inject(DestroyRef);
+    private readonly scrollToService: ScrollToService = inject(ScrollToService);
 
     public menuOpened = signal(false);
     public showStickyHeader = signal(false);
@@ -26,6 +28,10 @@ export class LandingPageComponent implements OnInit {
         this.onWindowScroll();
         this.addRippleEffectForButtons();
         this.initRouteListenerToUpdateThumb();
+    }
+
+    public scrollToTop(): void {
+        this.scrollToService.scrollToTop();
     }
 
     @HostListener('document:click', ['$event'])
