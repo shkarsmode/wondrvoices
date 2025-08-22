@@ -2,6 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { first } from 'rxjs';
+import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
 import { SwiperComponent } from '../../components/swiper/swiper.component';
 
 @Component({
@@ -13,6 +15,8 @@ import { SwiperComponent } from '../../components/swiper/swiper.component';
 })
 export class GetInvolvedComponent implements OnInit {
     private title = inject(Title);
+    private readonly formType: FormType = FormType.GetInvolved;
+    private readonly submissionService: SubmissionService = inject(SubmissionService);
     public slides = [
         { imageUrl: 'assets/voices/6.jpg' },
         { imageUrl: 'assets/voices/11.jpg' },
@@ -23,6 +27,7 @@ export class GetInvolvedComponent implements OnInit {
     ];
 
     public form: FormGroup;
+    public isLoading = signal(false);
     public submitted = signal(false);
 
     private fb: FormBuilder = inject(FormBuilder);
@@ -50,11 +55,18 @@ export class GetInvolvedComponent implements OnInit {
 
     public async submit(): Promise<void> {
         if (this.form.valid) {
-            this.submitted.set(true);
-            console.log('[Ambassador Form Submitted]:', this.form.value);
-            await this.generatePdfThankYou(this.form.value);
-
-            // Here you can send the form data to backend, e.g. via HttpClient
+            this.isLoading.set(true);
+            this.submissionService.create({
+                formType: this.formType,
+                data: this.form.value
+            })
+                .pipe(first())
+                .subscribe((res) => {
+                    this.isLoading.set(false);
+                    this.submitted.set(true);
+                    this.generatePdfThankYou(this.form.value).then();
+                });
+            console.log('[WondrGetInvolved Form Submitted]:', this.form.value);
         } else {
             this.form.markAllAsTouched();
         }

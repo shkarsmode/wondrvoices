@@ -50,30 +50,38 @@
 </section>
 
 <section class="ambassador-form">
-    <h2>Ready to join?</h2>
-    <h3>Whether you have five minutes or five hours, your effort matters.</h3>
-
-    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-        @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
-        <div class="form-group">
-            <div class="input-wrapper">
-                <input [formControlName]="field" [placeholder]="' '" type="text" />
-                <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+    @if (!submitted()) {
+        <h2>Ready to join?</h2>
+        <h3>Whether you have five minutes or five hours, your effort matters.</h3>
+    
+        <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+            @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input [formControlName]="field" [placeholder]="' '" type="text" />
+                        <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+                    </div>
+                </div>
+            }
+    
+            <div class="form-group checkbox">
+                <input type="checkbox" formControlName="consent" id="consent" />
+                <label for="consent">
+                    I agree to let Wondrvoices use my submission in printed or digital form to bring hope to patients.
+                    I understand that not all submissions may be printed or shared.
+                </label>
             </div>
-        </div>
-        }
-
-        <div class="form-group checkbox">
-            <input type="checkbox" formControlName="consent" id="consent" />
-            <label for="consent">
-                I agree to let Wondrvoices use my submission in printed or digital form to bring hope to patients.
-                I understand that not all submissions may be printed or shared.
-            </label>
-        </div>
-
-        <button class="button submit-btn primary" type="submit"
-            [disabled]="(form.invalid && form.touched && form.dirty) || submitted()">
-            Sign Me Up
-        </button>
-    </form>
+    
+            <button class="button submit-btn primary" type="submit"
+                [disabled]="(form.invalid && form.touched && form.dirty) || isLoading()">
+                Sign Me Up
+            </button>
+        </form>
+    } @else {
+        <h2>Thank you for joining as a WondrVoices Ambassador!</h2>
+        <p style="text-align: center;">
+            Your voice is now part of a growing movement that spreads kindness and hope. We’ll be in touch soon with more details
+            on how to get involved.
+        </p>
+    }
 </section>

@@ -2,6 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { first } from 'rxjs';
+import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
 
 @Component({
     selector: 'app-spots',
@@ -14,8 +16,13 @@ export class SpotsComponent implements OnInit {
     private title = inject(Title);
     private fb = inject(FormBuilder);
 
+    private readonly formType: FormType = FormType.JoinSpot;
+    private readonly submissionService: SubmissionService = inject(SubmissionService);
+
     public form: FormGroup;
+    public isLoading = signal(false);
     public submitted = signal(false);
+
 
     public fieldMap: Record<string, string> = {
         organizationName: 'Organization Name',
@@ -37,17 +44,31 @@ export class SpotsComponent implements OnInit {
         this.title.setTitle('Become a WondrSpot | WondrVoices');
     }
 
-    public async submit(): Promise<void> {
+    public submit(): void {
         if (this.form.valid) {
-            this.submitted.set(true);
+            this.isLoading.set(true);
+            this.submissionService.create({
+                formType: this.formType,
+                data: this.form.value
+            })
+                .pipe(first())
+                .subscribe((res) => {
+                    this.isLoading.set(false);
+                    this.submitted.set(true);
+                    this.generatePdfThankYou(this.form.value).then();
+                });
             console.log('[WondrSpot Form Submitted]:', this.form.value);
-            await this.generatePdfThankYou(this.form.value);
         } else {
             this.form.markAllAsTouched();
         }
     }
 
-    private async generatePdfThankYou(formData: any) {
+    private async generatePdfThankYou(formData: { 
+        contactPerson: string;
+        email: string;
+        organizationName: string;
+        city: string;
+     }) {
         const pdfDoc = await PDFDocument.create();
         const page = pdfDoc.addPage([600, 700]);
         const { width, height } = page.getSize();
@@ -101,11 +122,11 @@ export class SpotsComponent implements OnInit {
 
         const rows = [
             { label: 'Organization Name', value: formData.organizationName },
-            { label: 'Address', value: formData.address },
+            // { label: 'Address', value: formData.address },
             { label: 'City', value: formData.city },
             { label: 'Contact Person', value: formData.contactPerson },
             { label: 'Email', value: formData.email },
-            { label: 'Type of Org', value: formData.type }
+            // { label: 'Type of Org', value: formData.type }
         ];
 
         rows.forEach(row => {
