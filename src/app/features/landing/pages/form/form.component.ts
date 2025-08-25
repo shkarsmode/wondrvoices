@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
+import { VoicesService } from '../../../../shared/services/voices.service';
+import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
+import { CreateVoiceRequest } from '../../../../shared/types/voices';
 
 type TagGroup = 'what' | 'express' | 'from';
 
@@ -83,6 +87,9 @@ export class FormComponent {
         { key: 'volunteer', label: 'Volunteer', emoji: '🤍' }
     ];
 
+    public cloudinaryService: CloudinaryService = inject(CloudinaryService);
+    public voicesService: VoicesService = inject(VoicesService);
+
     constructor() {
         this.form = this.fb.group({
             firstName: ['', Validators.minLength(2)],
@@ -90,18 +97,15 @@ export class FormComponent {
             location: [''],
             creditTo: [''],
 
-            // New tag groups + note
             what: this.fb.control<string[]>([], []),
             express: this.fb.control<string[]>([], []),
-            // from: this.fb.control<string[]>([], []),
             note: [''],
 
-            file: [null, Validators.required],
+            img: [null, Validators.required],
             consent: [false, Validators.requiredTrue]
         });
     }
 
-    // --- Chip logic
     public isSelected(group: TagGroup, key: string): boolean {
         const arr = this.form.get(group) as FormControl<string[]>;
         const v = arr.value ?? [];
@@ -130,7 +134,6 @@ export class FormComponent {
         ctrl.markAsTouched();
     }
 
-    // --- Dropzone (без изменений)
     public onFileDrop(event: DragEvent) {
         event.preventDefault();
         this.isDragOver.set(false);
@@ -157,14 +160,15 @@ export class FormComponent {
 
     public onFileChange(event: any) {
         const file = event.target.files[0];
-        this.form.patchValue({ file });
+        this.form.patchValue({ img: file });
+
         const reader = new FileReader();
         reader.onload = () => this.previewUrl.set(reader.result as string);
         reader.readAsDataURL(file);
     }
 
     public clearFile(event: Event) {
-        this.form.patchValue({ file: null });
+        this.form.patchValue({ img: null });
         this.previewUrl.set(null);
         event.stopPropagation();
     }
@@ -172,9 +176,49 @@ export class FormComponent {
     public submit() {
         if (this.form.valid) {
             this.submitted.set(true);
+            this.prepareToUploadVoice();
             console.log('Form submitted:', this.form.value);
         } else {
             this.form.markAllAsTouched();
         }
+    }
+
+    public prepareToUploadVoice(): void {
+        if (this.form.invalid) return;
+
+        // this.isLoading = true;
+        this.uploadAngGetPictureUrl()
+    }
+
+    private uploadAngGetPictureUrl(): void {
+        this.cloudinaryService.uploadImageAndGetUrl(this.form.get('img')?.value)
+            .subscribe({
+                next: response => this.uploadVoice(response),
+                error: error => console.log(error)
+            })
+    }
+
+    private uploadVoice(response: ImageUrlResponseDto): void {
+        let img: string = response.imageUrl.url;
+
+        const body: CreateVoiceRequest = {
+            firstName: this.form.get('firstName')?.value,
+            email: this.form.get('email')?.value,
+            location: this.form.get('location')?.value,
+            creditTo: this.form.get('creditTo')?.value,
+            what: this.form.get('what')?.value,
+            express: this.form.get('express')?.value,
+            note: this.form.get('note')?.value,
+            img: img,
+            consent: this.form.get('consent')?.value
+        }
+
+        this.voicesService.createVoice(body)
+            .subscribe(res => {
+                console.log('thanks', res);
+                // this.isLoading = false;
+                // this.form.reset();
+                // this.preview.nativeElement.innerHTML = null;
+            });
     }
 }
