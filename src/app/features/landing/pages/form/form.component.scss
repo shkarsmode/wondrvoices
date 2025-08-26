@@ -325,3 +325,8 @@ h3 {
         color: $form-accent;
     }
 }
+
+h3 {text-align: center;}
+h3 + p {
+    margin-bottom: auto;
+}

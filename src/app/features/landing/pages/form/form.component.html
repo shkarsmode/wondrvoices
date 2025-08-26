@@ -1,151 +1,159 @@
-<p>
-    WondrVoices invites anyone to create artwork or handwritten messages that are printed on personalized cards and
-    delivered to patients facing cancer and other serious illnesses.
-    Your kind words or drawings can bring comfort and connection when someone needs it most.
-</p>
+@if (submitted()) {
+    <p>
+        WondrVoices invites anyone to create artwork or handwritten messages that are printed on personalized cards and
+        delivered to patients facing cancer and other serious illnesses.
+        Your kind words or drawings can bring comfort and connection when someone needs it most.
+    </p>
 
-<p>
-    No names or personal information will appear on the cards — only your art or words of kindness will be shared.
-</p>
-
-<form
-    class="form"
-    [formGroup]="form"
-    (ngSubmit)="submit()">
-    @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
+    <p>
+        No names or personal information will appear on the cards — only your art or words of kindness will be shared.
+    </p>
+    <form
+        class="form"
+        [formGroup]="form"
+        (ngSubmit)="submit()">
+        @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input
+                        [formControlName]="field"
+                        [placeholder]="' '"
+                        type="text" />
+                    <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+                </div>
+            </div>
+        }
+    
+        <!-- What is this? -->
+        <section class="tags-section">
+            <div class="section-title">
+                <h3>What is this?</h3>
+                <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
+            </div>
+    
+            <div class="chips">
+                @for (opt of whatOptions; track opt.key) {
+                    <button
+                        class="chip"
+                        [class.active]="isSelected('what', opt.key)"
+                        [disabled]="disableChip('what', opt.key)"
+                        (click)="toggle('what', opt.key)"
+                        type="button">
+                        <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                    </button>
+                }
+            </div>
+            <small class="hint">Choose up to 3.</small>
+        </section>
+    
+        <!-- What does it express? -->
+        <section class="tags-section">
+            <div class="section-title">
+                <h3>What does it express?</h3>
+                <span class="counter">{{ form.get('express')?.value?.length || 0 }}/3</span>
+            </div>
+    
+            <div class="chips">
+                @for (opt of expressOptions; track opt.key) {
+                    <button
+                        class="chip"
+                        [class.active]="isSelected('express', opt.key)"
+                        [disabled]="disableChip('express', opt.key)"
+                        (click)="toggle('express', opt.key)"
+                        type="button">
+                        <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                    </button>
+                }
+            </div>
+            <small class="hint">Choose up to 3.</small>
+        </section>
+    
+        <!-- Who is this from? -->
+        <!-- <section class="tags-section">
+            <div class="section-title">
+                <h3>Who is this from?</h3>
+                <span class="counter">{{ form.get('from')?.value?.length || 0 }}/3</span>
+            </div>
+    
+            <div class="chips">
+                @for (opt of fromOptions; track opt.key) {
+                    <button
+                        class="chip"
+                        [class.active]="isSelected('from', opt.key)"
+                        [disabled]="disableChip('from', opt.key)"
+                        (click)="toggle('from', opt.key)"
+                        type="button">
+                        <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                    </button>
+                }
+            </div>
+            <small class="hint">Choose up to 3.</small>
+        </section> -->
+    
+        <!-- Optional note -->
         <div class="form-group">
-            <div class="input-wrapper">
-                <input
-                    [formControlName]="field"
-                    [placeholder]="' '"
-                    type="text" />
-                <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+            <div class="input-wrapper textarea">
+                <textarea
+                    formControlName="note"
+                    placeholder=" "
+                    rows="1"></textarea>
+                <label [class.focused]="form.get('note')?.value">Add a Note (Optional)</label>
             </div>
         </div>
-    }
-
-    <!-- What is this? -->
-    <section class="tags-section">
-        <div class="section-title">
-            <h3>What is this?</h3>
-            <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
+    
+        <!-- Dropzone (как было) -->
+        <div
+            class="form-group dropzone"
+            [class.dragover]="isDragOver()"
+            (click)="fileInput.click()"
+            (dragleave)="onDragLeave()"
+            (dragover)="onDragOver($event)"
+            (drop)="onFileDrop($event)">
+            <label class="upload-label">
+                Upload a photo of your drawing, artwork, or handwritten message *
+            </label>
+    
+            <div class="dropzone-content">
+                @if (!previewUrl()) {
+                    <p>📁 Click to choose a file or drag here</p>
+                    <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
+                } @else {
+                    <div class="clear-file" (click)="clearFile($event)">✖</div>
+                    <img
+                        class="preview-img"
+                        [src]="previewUrl()"
+                        alt="preview" />
+                }
+            </div>
+    
+            <input
+                hidden
+                (change)="onFileChange($event)"
+                #fileInput
+                type="file" />
         </div>
-
-        <div class="chips">
-            @for (opt of whatOptions; track opt.key) {
-                <button
-                    class="chip"
-                    [class.active]="isSelected('what', opt.key)"
-                    [disabled]="disableChip('what', opt.key)"
-                    (click)="toggle('what', opt.key)"
-                    type="button">
-                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
-                </button>
-            }
+    
+        <div class="form-group checkbox">
+            <input type="checkbox" formControlName="consent" id="consent" />
+            <label for="consent">
+                I agree to let WondrVoices use my submission in printed or digital form to bring hope to patients. I
+                understand that not
+                all submissions may be printed or shared.
+            </label>
         </div>
-        <small class="hint">Choose up to 3.</small>
-    </section>
-
-    <!-- What does it express? -->
-    <section class="tags-section">
-        <div class="section-title">
-            <h3>What does it express?</h3>
-            <span class="counter">{{ form.get('express')?.value?.length || 0 }}/3</span>
-        </div>
-
-        <div class="chips">
-            @for (opt of expressOptions; track opt.key) {
-                <button
-                    class="chip"
-                    [class.active]="isSelected('express', opt.key)"
-                    [disabled]="disableChip('express', opt.key)"
-                    (click)="toggle('express', opt.key)"
-                    type="button">
-                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
-                </button>
-            }
-        </div>
-        <small class="hint">Choose up to 3.</small>
-    </section>
-
-    <!-- Who is this from? -->
-    <!-- <section class="tags-section">
-        <div class="section-title">
-            <h3>Who is this from?</h3>
-            <span class="counter">{{ form.get('from')?.value?.length || 0 }}/3</span>
-        </div>
-
-        <div class="chips">
-            @for (opt of fromOptions; track opt.key) {
-                <button
-                    class="chip"
-                    [class.active]="isSelected('from', opt.key)"
-                    [disabled]="disableChip('from', opt.key)"
-                    (click)="toggle('from', opt.key)"
-                    type="button">
-                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
-                </button>
-            }
-        </div>
-        <small class="hint">Choose up to 3.</small>
-    </section> -->
-
-    <!-- Optional note -->
-    <div class="form-group">
-        <div class="input-wrapper textarea">
-            <textarea
-                formControlName="note"
-                placeholder=" "
-                rows="1"></textarea>
-            <label [class.focused]="form.get('note')?.value">Add a Note (Optional)</label>
-        </div>
-    </div>
-
-    <!-- Dropzone (как было) -->
-    <div
-        class="form-group dropzone"
-        [class.dragover]="isDragOver()"
-        (click)="fileInput.click()"
-        (dragleave)="onDragLeave()"
-        (dragover)="onDragOver($event)"
-        (drop)="onFileDrop($event)">
-        <label class="upload-label">
-            Upload a photo of your drawing, artwork, or handwritten message *
-        </label>
-
-        <div class="dropzone-content">
-            @if (!previewUrl()) {
-                <p>📁 Click to choose a file or drag here</p>
-                <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
-            } @else {
-                <div class="clear-file" (click)="clearFile($event)">✖</div>
-                <img
-                    class="preview-img"
-                    [src]="previewUrl()"
-                    alt="preview" />
-            }
-        </div>
-
-        <input
-            hidden
-            (change)="onFileChange($event)"
-            #fileInput
-            type="file" />
-    </div>
-
-    <div class="form-group checkbox">
-        <input type="checkbox" formControlName="consent" id="consent" />
-        <label for="consent">
-            I agree to let WondrVoices use my submission in printed or digital form to bring hope to patients. I
-            understand that not
-            all submissions may be printed or shared.
-        </label>
-    </div>
-
-    <button
-        [disabled]="(form.invalid && form.touched && form.dirty) || submitted()"
-        class="button submit-btn primary"
-        type="submit">
-        Submit
-    </button>
-</form>
+    
+        <button
+            [disabled]="(form.invalid && form.touched && form.dirty) || isLoading()"
+            class="button submit-btn primary"
+            type="submit">
+            Submit
+        </button>
+    </form>
+} @else {
+    <h3>Thank you for your submission!</h3>
+    <p>
+        Your voice is now part of a growing community that spreads kindness and hope. We’ll be in touch soon with your
+        free postcard kit and more details on how to get involved.
+    </p>
+    
+}

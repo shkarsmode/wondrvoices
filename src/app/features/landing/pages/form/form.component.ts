@@ -24,6 +24,7 @@ interface TagOption {
 export class FormComponent {
     public form: FormGroup;
     public submitted = signal(false);
+    public isLoading = signal(false);
     public isDragOver = signal(false);
     public previewUrl = signal<string | null>(null);
 
@@ -175,7 +176,6 @@ export class FormComponent {
 
     public submit() {
         if (this.form.valid) {
-            this.submitted.set(true);
             this.prepareToUploadVoice();
             console.log('Form submitted:', this.form.value);
         } else {
@@ -186,7 +186,7 @@ export class FormComponent {
     public prepareToUploadVoice(): void {
         if (this.form.invalid) return;
 
-        // this.isLoading = true;
+        this.isLoading.set(true);
         this.uploadAngGetPictureUrl()
     }
 
@@ -215,6 +215,8 @@ export class FormComponent {
 
         this.voicesService.createVoice(body)
             .subscribe(res => {
+                this.isLoading.set(false);
+                this.submitted.set(true);
                 console.log('thanks', res);
                 // this.isLoading = false;
                 // this.form.reset();
