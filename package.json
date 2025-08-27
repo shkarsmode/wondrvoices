@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --disable-host-check",
-    "build": "ng build",
+    "start": "ng serve",
     "start:prod": "ng serve --configuration=production --open",
     "build:prod": "ng build --configuration=production",
     "build-dev": "npm run sharp && ng build",
@@ -13,7 +12,7 @@
     "serve:ssr": "node dist/wondrvoices/server/main.js",
     "build:ssr": "ng build && ng run wondrvoices:server",
     "prerender": "ng run wondrvoices:prerender",
-    "vercel-build": "npm run build:ssr && npm run postbuild",
+    "vercel-build": "ng build && node dist/wondrvoices/server/server.mjs",
     "postbuild": "cp dist/wondrvoices/browser/index.html dist/wondrvoices/server/index.server.html"
   },
   "private": true,
@@ -42,6 +41,7 @@
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
+    "browser-sync": "^3.0.4",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
