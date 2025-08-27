@@ -72,6 +72,7 @@ export class PostComponent {
         });
     }
 
+    
     private fetchPost(id: number) {
         this.postsService.getPostById(id)
             .pipe(first())
