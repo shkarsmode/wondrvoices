@@ -205,7 +205,7 @@ export class SpotsComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'og:image',
-            content: 'https://www.wondrlink.com/assets/img/spots/banner-1.png',
+            content: 'https://www.wondrvoices.com/assets/img/spots/banner-1.png',
         });
         this.meta.updateTag({
             property: 'og:image:alt',
@@ -213,7 +213,7 @@ export class SpotsComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'og:url',
-            content: 'https://www.wondrlink.com/wondrspots',
+            content: 'https://www.wondrvoices.com/spots',
         });
         this.meta.updateTag({
             property: 'twitter:title',
@@ -225,7 +225,7 @@ export class SpotsComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'twitter:image',
-            content: 'https://www.wondrlink.com/assets/img/spots/banner-1.png',
+            content: 'https://www.wondrvoices.com/assets/img/spots/banner-1.png',
         });
         this.meta.updateTag({
             name: 'twitter:card',

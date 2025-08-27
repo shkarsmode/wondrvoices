@@ -96,7 +96,7 @@ export class MainComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'og:url',
-            content: 'https://www.wondrlink.com',
+            content: 'https://www.wondrvoices.com',
         });
         this.meta.updateTag({
             property: 'twitter:title',

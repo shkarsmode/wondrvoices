@@ -123,7 +123,7 @@ export class BlogComponent implements OnInit {
         // });
         this.meta.updateTag({
             property: 'og:url',
-            content: 'https://www.wondrlink.com/blog',
+            content: 'https://www.wondrvoices.com/blog',
         });
         this.meta.updateTag({
             property: 'twitter:title',

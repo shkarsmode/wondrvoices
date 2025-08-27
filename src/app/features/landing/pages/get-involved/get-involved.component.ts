@@ -64,7 +64,7 @@ export class GetInvolvedComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'og:image',
-            content: 'https://www.wondrlink.com/assets/img/get-involved/hero.png',
+            content: '	https://www.wondrvoices.com/assets/img/spots/banner-1.png',
         });
         this.meta.updateTag({
             property: 'og:image:alt',
@@ -72,7 +72,7 @@ export class GetInvolvedComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'og:url',
-            content: 'https://www.wondrlink.com/get-involved',
+            content: 'https://www.wondrvoices.com/get-involved',
         });
         this.meta.updateTag({
             property: 'twitter:title',
@@ -84,7 +84,7 @@ export class GetInvolvedComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'twitter:image',
-            content: 'https://www.wondrlink.com/assets/img/get-involved/hero.png',
+            content: '	https://www.wondrvoices.com/assets/img/spots/banner-1.png',
         });
         this.meta.updateTag({
             name: 'twitter:card',
