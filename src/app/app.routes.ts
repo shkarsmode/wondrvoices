@@ -1,13 +1,19 @@
 import { Routes } from '@angular/router';
 import { LandingPageComponent } from './features/landing/landing-page/landing-page.component';
-import { GalleryComponent } from './features/landing/pages/gallery/gallery.component';
-import { MainComponent } from './features/landing/pages/main/main.component';
+import { PostComponent } from './features/landing/pages/post/post.component';
 
 export const routes: Routes = [
     {
         path: '', component: LandingPageComponent, children: [
-            { path: '', component: MainComponent },
-            { path: 'gallery', component: GalleryComponent },
+            { 
+                path: '',
+                loadComponent: () => import('./features/landing/pages/main/main.component')
+                .then(m => m.MainComponent),},
+            {
+                path: 'gallery', 
+                loadComponent: () => import('./features/landing/pages/gallery/gallery.component')
+                .then(m => m.GalleryComponent)
+            },
             { 
                 path: 'voices/:id', 
                 loadComponent: () => import('./features/landing/pages/voice/voice.component')
@@ -40,8 +46,7 @@ export const routes: Routes = [
             },
             {
                 path: 'blogs/:id', 
-                loadComponent: () => import('./features/landing/pages/post/post.component')
-                    .then(m => m.PostComponent) 
+                component: PostComponent,
             },
             {
                 path: 'terms',
