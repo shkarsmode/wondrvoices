@@ -1,8 +1,9 @@
 
 import { DatePipe, Location, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, computed, effect, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, computed, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { first } from 'rxjs';
 import { PostsService } from '../../../../shared/services/posts.service';
 import { IPost } from '../../../../shared/types/IPost';
 
@@ -57,35 +58,31 @@ export class PostComponent {
         private location: Location,
         private meta: Meta,
         private title: Title
-    ) {
-        // Effect to listen to route changes and fetch post
-        effect(() => {
-            const params = this.route.snapshot.params;
-            const id = +params['id'];
-            if (id && !isNaN(id)) {
-                this.postId.set(id);
-                this.fetchPost(id);
-            }
-        }, { allowSignalWrites: true });
+    ) { }
 
-        // Effect to update meta tags when post changes
-        effect(() => {
-            const post = this.post();
-            if (post) {
-                this.updateMetaTags(post);
-            }
-        }, { allowSignalWrites: true });
+    public ngOnInit(): void {
+        this.listenPostIdFromRoute();
+    }
+
+    private listenPostIdFromRoute(): void {
+        this.route.params.subscribe((params) => {
+            const id = +params['id'];
+            this.postId.set(id);
+            this.fetchPost(id);
+        });
     }
 
     private fetchPost(id: number) {
-        this.postsService.getPostById(id).subscribe({
-            next: (post) => {
-                this.post.set(post);
-                console.log(post);
-                this.setBackgroundImage();
-            },
-            error: (_) => this.router.navigate(['/not-found'])
-        });
+        this.postsService.getPostById(id)
+            .pipe(first())
+            .subscribe({
+                next: (post) => {
+                    this.post.set(post);
+                    this.updateMetaTags(post);
+                    this.setBackgroundImage();
+                },
+                error: (_) => this.router.navigate(['/not-found'])
+            });
     }
 
     private setBackgroundImage(): void {
