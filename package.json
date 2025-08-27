@@ -13,7 +13,8 @@
     "serve:ssr": "node dist/wondrvoices/server/main.js",
     "build:ssr": "ng build && ng run wondrvoices:server",
     "prerender": "ng run wondrvoices:prerender",
-    "vercel-build": "npm run build:ssr"
+    "vercel-build": "npm run build:ssr",
+    "postbuild": "cp dist/wondrvoices/browser/index.html dist/wondrvoices/server/index.server.html"
   },
   "private": true,
   "dependencies": {
