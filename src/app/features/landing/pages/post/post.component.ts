@@ -61,6 +61,7 @@ export class PostComponent {
     ) { }
 
     public ngOnInit(): void {
+        console.log('[PostComponent]: init');
         this.listenPostIdFromRoute();
     }
 
