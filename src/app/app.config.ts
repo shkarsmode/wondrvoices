@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withEnabledBlockingInitialNavigation } from '@angular/router';
+import { provideRouter } from '@angular/router';
 
 import { provideHttpClient } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -11,7 +11,7 @@ import { AUTH_PATH_API, BASE_PATH_API } from './shared/services/variables';
 export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
-        provideRouter(routes, withEnabledBlockingInitialNavigation()),
+        provideRouter(routes),
         provideClientHydration(),
         provideHttpClient(),
         { provide: AUTH_PATH_API, useValue: environment.authPathApi },
