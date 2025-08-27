@@ -5,10 +5,9 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import bootstrap from './src/main.server';
 
+// The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
-  server.set('trust proxy', true); // важно за прокси/Cloudflare
-
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
   const indexHtml = join(serverDistFolder, 'index.server.html');
@@ -18,30 +17,41 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // 1) Отдаём только статические файлы (*.js, *.css, картинки и т.п.)
-  server.get('*.*', express.static(browserDistFolder, { maxAge: '1y' }));
+  // Example Express Rest API endpoints
+  // server.get('/api/**', (req, res) => { });
+  // Serve static files from /browser
+  server.get('**', express.static(browserDistFolder, {
+    maxAge: '1y',
+    index: 'index.html',
+  }));
 
-  // 2) Все остальные роуты — через SSR
+  // All regular routes use the Angular engine
   server.get('**', (req, res, next) => {
-    const proto =
-      (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
-    const host =
-      (req.headers['x-forwarded-host'] as string) || req.headers.host;
-    const url = `${proto}://${host}${req.originalUrl}`;
+    const { protocol, originalUrl, baseUrl, headers } = req;
 
     commonEngine
       .render({
         bootstrap,
         documentFilePath: indexHtml,
-        url,
+        url: `${protocol}://${headers.host}${originalUrl}`,
         publicPath: browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
+        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
       })
-      .then(html => res.send(html))
-      .catch(next);
+      .then((html) => res.send(html))
+      .catch((err) => next(err));
   });
 
   return server;
 }
 
-// function run() { ... }
+function run(): void {
+  const port = process.env['PORT'] || 4000;
+
+  // Start up the Node server
+  const server = app();
+  server.listen(port, () => {
+    console.log(`Node Express server listening on http://localhost:${port}`);
+  });
+}
+
+// run();
