@@ -21,7 +21,7 @@ const shareLinks = {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PostComponent {
-    private readonly copyLink = 'https://wondrlink.com/api/posts/shared/';
+    private readonly copyLink = 'https://www.wondrvoices.com/blogs/';
 
     @ViewChild('wrap', { static: true }) wrap!: ElementRef<HTMLDivElement>;
 
@@ -114,6 +114,7 @@ export class PostComponent {
         this.meta.updateTag({ property: 'twitter:title', content: post.header });
         this.meta.updateTag({ property: 'twitter:description', content: post.subHeader });
         this.meta.updateTag({ property: 'twitter:image', content: post.mainPicture });
+        this.meta.updateTag({ property: 'twitter:image:src', content: post.mainPicture });
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     }
 
