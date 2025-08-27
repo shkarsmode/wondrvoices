@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, inject, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { first } from 'rxjs';
 import { PostsService } from '../../../../shared/services/posts.service';
@@ -16,6 +16,7 @@ import { SwiperComponent } from '../../components/swiper/swiper.component';
 })
 export class MainComponent implements OnInit {
     private title = inject(Title);
+    private meta = inject(Meta);
     @ViewChild('heroImages1') heroImages1!: ElementRef<HTMLDivElement>;
     @ViewChild('heroImages2') heroImages2!: ElementRef<HTMLDivElement>;
     public mouseEnterBlock1: boolean = false;
@@ -69,11 +70,50 @@ export class MainComponent implements OnInit {
     }
 
     public ngAfterViewInit(): void {
+        this.updateMetaTags();
         if (typeof window === 'undefined') return;
         // if (window.innerWidth < 1430) return;
         setTimeout(() => {
             this.startAnimation();
         }, 100);
+    }
+
+    private updateMetaTags(): void {
+        this.title.setTitle(`Wondrvoices`);
+        this.meta.updateTag({ name: 'description', content: 'WondrVoices is a 501(c)(3) non-profit organization that spreads hope and kindness through anonymous acts of creative expression.' });
+        this.meta.updateTag({ property: 'og:title', content: 'Wondrvoices' });
+        this.meta.updateTag({
+            property: 'og:description',
+            content: 'WondrVoices is a 501(c)(3) non-profit organization that spreads hope and kindness through anonymous acts of creative expression.',
+        });
+        this.meta.updateTag({
+            property: 'og:image',
+            content: 'https://play-lh.googleusercontent.com/ieK2B2z7PLxd1UQJ6flvxYRiX8hXPs_8Xs3yPdL4YqIVo5puOZOFUb-4y3AqeT3LyF3RMalHT5mPKdnoYctsfA=w2560-h1440-rw',
+        });
+        this.meta.updateTag({
+            property: 'og:image:alt',
+            content: 'WondrVoices',
+        });
+        this.meta.updateTag({
+            property: 'og:url',
+            content: 'https://www.wondrlink.com',
+        });
+        this.meta.updateTag({
+            property: 'twitter:title',
+            content: 'Wondrvoices',
+        });
+        this.meta.updateTag({
+            property: 'twitter:description',
+            content: 'WondrVoices is a 501(c)(3) non-profit organization that spreads hope and kindness through anonymous acts of creative expression.',
+        });
+        this.meta.updateTag({
+            property: 'twitter:image',
+            content: 'https://play-lh.googleusercontent.com/ieK2B2z7PLxd1UQJ6flvxYRiX8hXPs_8Xs3yPdL4YqIVo5puOZOFUb-4y3AqeT3LyF3RMalHT5mPKdnoYctsfA=w2560-h1440-rw',
+        });
+        this.meta.updateTag({
+            name: 'twitter:card',
+            content: 'summary_large_image',
+        });
     }
 
     private startAnimation(): void {

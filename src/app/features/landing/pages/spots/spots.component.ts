@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
+import { Meta, Title } from '@angular/platform-browser';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { first } from 'rxjs';
 import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
@@ -14,6 +14,7 @@ import { FormType, SubmissionService } from '../../../../shared/services/submiss
 })
 export class SpotsComponent implements OnInit {
     private title = inject(Title);
+    private meta = inject(Meta);
     private fb = inject(FormBuilder);
 
     private readonly formType: FormType = FormType.JoinSpot;
@@ -41,7 +42,7 @@ export class SpotsComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.title.setTitle('Become a WondrSpot | WondrVoices');
+        this.updateMetaTags();
     }
 
     public submit(): void {
@@ -192,5 +193,43 @@ export class SpotsComponent implements OnInit {
         a.click();
 
         URL.revokeObjectURL(url);
+    }
+
+    private updateMetaTags(): void {
+        this.title.setTitle('Become a WondrSpot | WondrVoices');
+        this.meta.updateTag({ name: 'description', content: 'Become a WondrSpot and help spread hope and kindness.' });
+        this.meta.updateTag({ property: 'og:title', content: 'Become a WondrSpot | WondrVoices' });
+        this.meta.updateTag({
+            property: 'og:description',
+            content: 'Become a WondrSpot and help spread hope and kindness.',
+        });
+        this.meta.updateTag({
+            property: 'og:image',
+            content: 'https://www.wondrlink.com/assets/img/spots/banner-1.png',
+        });
+        this.meta.updateTag({
+            property: 'og:image:alt',
+            content: 'WondrSpots',
+        });
+        this.meta.updateTag({
+            property: 'og:url',
+            content: 'https://www.wondrlink.com/wondrspots',
+        });
+        this.meta.updateTag({
+            property: 'twitter:title',
+            content: 'Become a WondrSpot | WondrVoices',
+        });
+        this.meta.updateTag({
+            property: 'twitter:description',
+            content: 'Become a WondrSpot and help spread hope and kindness.',
+        });
+        this.meta.updateTag({
+            property: 'twitter:image',
+            content: 'https://www.wondrlink.com/assets/img/spots/banner-1.png',
+        });
+        this.meta.updateTag({
+            name: 'twitter:card',
+            content: 'summary_large_image',
+        });
     }
 }

@@ -8,6 +8,7 @@ import {
     signal,
     WritableSignal
 } from '@angular/core';
+import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { take, timeout } from 'rxjs';
 import { PostsService } from '../../../../shared/services/posts.service';
@@ -24,6 +25,8 @@ import { IPost } from '../../../../shared/types/IPost';
 export class BlogComponent implements OnInit {
     private readonly postsService = inject(PostsService);
     private readonly changeDetectionRef = inject(ChangeDetectorRef);
+    private meta = inject(Meta);
+    private title = inject(Title);
 
     public readonly limit = 100;
 
@@ -45,6 +48,7 @@ export class BlogComponent implements OnInit {
     });
 
     public ngOnInit(): void {
+        this.updateMetaTags();
         if (typeof window !== 'undefined') {
             this.fetchPosts();
         }
@@ -99,5 +103,43 @@ export class BlogComponent implements OnInit {
                 }, 1000);
             });
 
+    }
+
+    private updateMetaTags(): void {
+        this.title.setTitle(`Blog | Wondrvoices`);
+        this.meta.updateTag({ name: 'description', content: 'Get the latest trends from the WondrVoices blog' });
+        this.meta.updateTag({ property: 'og:title', content: 'Blog | Wondrvoices' });
+        this.meta.updateTag({
+            property: 'og:description',
+            content: 'Get the latest trends from the WondrVoices blog',
+        });
+        // this.meta.updateTag({
+        //     property: 'og:image',
+        //     content: 'https://www.wondrlink.com/assets/img/blog.webp',
+        // });
+        // this.meta.updateTag({
+        //     property: 'og:image:alt',
+        //     content: 'Blog',
+        // });
+        this.meta.updateTag({
+            property: 'og:url',
+            content: 'https://www.wondrlink.com/blog',
+        });
+        this.meta.updateTag({
+            property: 'twitter:title',
+            content: 'Blog | Wondrvoices',
+        });
+        this.meta.updateTag({
+            property: 'twitter:description',
+            content: 'Get the latest trends from the WondrVoices blog',
+        });
+        // this.meta.updateTag({
+        //     property: 'twitter:image',
+        //     content: 'https://www.wondrlink.com/assets/img/blog.webp',
+        // });
+        // this.meta.updateTag({
+        //     name: 'twitter:card',
+        //     content: 'summary_large_image',
+        // });
     }
 }
