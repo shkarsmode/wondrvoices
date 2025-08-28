@@ -6,6 +6,7 @@ import { appConfig } from './app/app.config';
 if (typeof window !== undefined) {
   registerSwiperElements();
 }
+
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));
 
