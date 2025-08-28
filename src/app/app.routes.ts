@@ -60,7 +60,7 @@ export const routes: Routes = [
     //     ],
     // },
     {
-        path: 'blogs/:id',
+        path: 'blog',
         component: PostComponent,
     },
 ];
