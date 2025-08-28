@@ -5,15 +5,11 @@
     "ng": "ng",
     "start": "ng serve",
     "start:prod": "ng serve --configuration=production --open",
-    "build:prod": "ng build --configuration=production",
-    "build-dev": "npm run sharp && ng build",
     "watch": "ng build --watch --configuration development",
     "dev:ssr": "ng run wondrvoices:serve-ssr",
     "serve:ssr": "node dist/wondrvoices/server/main.js",
-    "build:ssr": "ng build && ng run wondrvoices:server",
     "prerender": "ng run wondrvoices:prerender",
-    "vercel-build": "ng build && node dist/wondrvoices/server/server.mjs",
-    "postbuild": "cp dist/wondrvoices/browser/index.html dist/wondrvoices/server/index.server.html"
+    "vercel-build": "ng build && node dist/wondrvoices/server/server.mjs"
   },
   "private": true,
   "dependencies": {
