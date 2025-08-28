@@ -17,7 +17,7 @@ export class VoiceComponent implements OnInit {
     private title = inject(Title);
     private meta = inject(Meta);
     public card?: VoiceCard;
-    public history: typeof history = history;
+    public history: typeof history | {} = typeof history !== 'undefined' ? history : {};
 
     public ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id');
