@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
     }
 
     private async listenRoutesTransition(): Promise<void> {
-        // @ts-ignore
         this.router.events.subscribe(async (event: any) => {
             if (event instanceof NavigationEnd) {
                 if (event.urlAfterRedirects.match("#")) return;

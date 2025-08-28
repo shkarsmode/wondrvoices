@@ -54,7 +54,7 @@ export const routes: Routes = [
                     .then(m => m.TermsComponent)
             },
             {
-                path: 'privacy',
+                path: 'privacy/privacy',
                 loadComponent: () => import('./features/landing/pages/privacy/privacy.component')
                     .then(m => m.PrivacyComponent)
             }
