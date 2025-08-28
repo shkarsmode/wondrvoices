@@ -1,16 +1,31 @@
 {
     "version": 2,
-    "public": true,
-    "name": "wondrvoices",
-    "rewrites": [
+    "routes": [
         {
-            "source": "/(.*)",
-            "destination": "/api"
+            "src": "/assets/(.*)",
+            "dest": "/assets/$1"
+        },
+        {
+            "src": "/favicon(.*)",
+            "dest": "/favicon$1"
+        },
+        {
+            "src": "/(.*)\\.(css|js|mjs|map|png|jpg|jpeg|gif|svg|webp|ico|woff2?)",
+            "dest": "/$1.$2"
+        },
+        {
+            "src": "/api/(.*)",
+            "dest": "/api/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/index"
         }
     ],
     "functions": {
-        "api/index.js": {
-            "includeFiles": "dist/wondrvoices/**"
+        "index": {
+            "runtime": "nodejs20.x",
+            "maxDuration": 10
         }
     }
 }

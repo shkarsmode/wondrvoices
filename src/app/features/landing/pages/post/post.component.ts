@@ -66,13 +66,12 @@ export class PostComponent {
     }
 
     private listenPostIdFromRoute(): void {
-        // this.route.params.subscribe((params) => {
-            // const id = +params['id'];
-            const id = 115;
+        this.route.params.subscribe((params) => {
+            const id = +params['id'];
             console.log('listenPostIdFromRoute', id);
             this.postId.set(id);
             this.fetchPost(id);
-        // });
+        });
     }
 
     
