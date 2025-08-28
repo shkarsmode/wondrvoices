@@ -9,7 +9,8 @@ export const routes: Routes = [
             { 
                 path: '',
                 loadComponent: () => import('./features/landing/pages/main/main.component')
-                .then(m => m.MainComponent),},
+                .then(m => m.MainComponent)
+            },
             {
                 path: 'gallery', 
                 loadComponent: () => import('./features/landing/pages/gallery/gallery.component')
@@ -57,11 +58,11 @@ export const routes: Routes = [
                 path: 'privacy',
                 loadComponent: () => import('./features/landing/pages/privacy/privacy.component')
                     .then(m => m.PrivacyComponent)
-            },
-            {
-                path: '**',
-                redirectTo: ''
             }
-        ]
+        ],
     },
+    {
+        path: '**',
+        redirectTo: ''
+    }
 ];
