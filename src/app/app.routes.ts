@@ -41,7 +41,7 @@ export const routes: Routes = [
                     .then(m => m.SpotsComponent)
             },
             {
-                path: 'blogs',
+                path: 'blog',
                 component: BlogComponent
             },
             {
@@ -57,6 +57,10 @@ export const routes: Routes = [
                 path: 'privacy',
                 loadComponent: () => import('./features/landing/pages/privacy/privacy.component')
                     .then(m => m.PrivacyComponent)
+            },
+            {
+                path: '**',
+                redirectTo: ''
             }
         ]
     },
