@@ -40,7 +40,7 @@ export const routes: Routes = [
                     .then(m => m.SpotsComponent)
             },
             {
-                path: 'blog',
+                path: 'blogs',
                 loadComponent: () => import('./features/landing/pages/blog/blog.component')
                     .then(m => m.BlogComponent)
             },
