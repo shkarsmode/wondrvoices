@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   if (!appPromise) {
     appPromise = import("../dist/wondrvoices/server/server.mjs");
   }
-  console.log(req, res);
+
   const { app } = await appPromise; // app: (req, res) => any
   return app(req, res);
 }

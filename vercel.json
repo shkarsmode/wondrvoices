@@ -1,5 +1,13 @@
 {
     "version": 2,
+    "public": true,
+    "name": "wondrvoices",
+    "functions": {
+        "api/index.js": {
+            "runtime": "nodejs20.x",
+            "maxDuration": 10
+        }
+    },
     "routes": [
         {
             "src": "/assets/(.*)",
@@ -19,13 +27,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "/index"
+            "dest": "/api/index"
         }
-    ],
-    "functions": {
-        "index": {
-            "runtime": "nodejs20.x",
-            "maxDuration": 10
-        }
-    }
+    ]
 }
