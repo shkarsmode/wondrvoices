@@ -30,15 +30,19 @@ export class VoiceComponent implements OnInit {
     private updateMetaTags(): void {
         if (!this.card) return;
 
+        const url = 'https://www.wondrvoices.com/';
         this.title.setTitle(this.card.title);
         this.meta.updateTag({ name: 'description', content: this.card.description });
         this.meta.updateTag({ property: 'og:title', content: this.card.title });
         this.meta.updateTag({ property: 'og:description', content: this.card.description });
-        this.meta.updateTag({ property: 'og:image', content: this.card.image });
-        this.meta.updateTag({ property: 'og:image:alt', content: this.card.image });
+        this.meta.updateTag({ property: 'og:image', content: url + this.card.image });
+        this.meta.updateTag({ property: 'og:image:alt', content: url + this.card.image });
         this.meta.updateTag({ property: 'twitter:title', content: this.card.title });
         this.meta.updateTag({ property: 'twitter:description', content: this.card.description });
-        this.meta.updateTag({ property: 'twitter:image', content: this.card.image });
+        this.meta.updateTag({ property: 'twitter:image', content: url + this.card.image });
+        this.meta.updateTag({ property: 'twitter:image:src', content: url + this.card.image });
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+
+        console.log(this.card.image);
     }
 }
