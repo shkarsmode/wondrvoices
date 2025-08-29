@@ -33,12 +33,12 @@ export class GetInvolvedComponent implements OnInit {
 
     private fb: FormBuilder = inject(FormBuilder);
 
-    public fieldMap: Record<string, string> = {
-        firstName: 'First Name',
-        email: 'Email',
-        location: 'City, State',
-        creditTo: 'Social Handle (optional)'
-    };
+    public fields = [
+        { key: 'firstName', label: 'First Name', type: 'text', autocomplete: 'given-name' as const },
+        { key: 'email', label: 'Email', type: 'email', autocomplete: 'email' as const },
+        { key: 'location', label: 'City, State', type: 'text', autocomplete: 'address-level2' as const },
+        { key: 'creditTo', label: 'Social Handle (optional)', type: 'text', autocomplete: 'nickname' as const },
+      ];
 
     constructor() {
         this.form = this.fb.group({

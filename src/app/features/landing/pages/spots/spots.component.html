@@ -76,15 +76,25 @@
 <section class="wondrspot-form" id="wondrspot">
     @if (!submitted()) {
         <h3>Become a WondrSpot?</h3>
-        <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-            @for (field of ['organizationName', 'contactPerson', 'email', 'city']; track field) {
+        <form [formGroup]="form" (ngSubmit)="submit()" class="form" autocomplete="on">
+            @for (f of fields; track f.key) {
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input [formControlName]="field" [placeholder]="' '" type="text" />
-                        <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+                        <input
+                            [id]="f.key"
+                            [formControlName]="f.key"
+                            [attr.name]="f.key"
+                            [type]="f.type"
+                            [attr.autocomplete]="f.autocomplete"
+                            placeholder=" "/>
+                        <label
+                            [class.focused]="form.get(f.key)?.value"
+                            [for]="f.key">
+                            {{ f.label }}
+                        </label>
                     </div>
                 </div>
-            }
+              }
     
             <!-- <div class="form-group checkbox">
                 <input type="checkbox" formControlName="consent" id="consent" />

@@ -54,15 +54,21 @@
         <h2>Ready to join?</h2>
         <h3>Whether you have five minutes or five hours, your effort matters.</h3>
     
-        <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-            @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
+        <form [formGroup]="form" (ngSubmit)="submit()" class="form" autocomplete="on">
+            @for (f of fields; track f.key) {
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input [formControlName]="field" [placeholder]="' '" type="text" />
-                        <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
+                        <input
+                        [id]="f.key"
+                        [formControlName]="f.key"
+                        [attr.name]="f.key"
+                        [type]="f.type"
+                        [attr.autocomplete]="f.autocomplete"
+                        placeholder=" "/>
+                        <label [for]="f.key" [class.focused]="form.get(f.key)?.value">{{ f.label }}</label>
                     </div>
                 </div>
-            }
+              }
     
             <div class="form-group checkbox">
                 <input type="checkbox" formControlName="consent" id="consent" />

@@ -25,12 +25,13 @@ export class SpotsComponent implements OnInit {
     public submitted = signal(false);
 
 
-    public fieldMap: Record<string, string> = {
-        organizationName: 'Organization Name',
-        contactPerson: 'Contact Person',
-        email: 'Email',
-        city: 'City',
-    };
+    public fields = [
+        { key: 'organizationName', label: 'Organization Name', type: 'text',  autocomplete: 'organization' as const },
+        { key: 'contactPerson',    label: 'Contact Person',    type: 'text',  autocomplete: 'name' as const },
+        { key: 'email',            label: 'Email',             type: 'email', autocomplete: 'email' as const },
+        { key: 'city',             label: 'City',              type: 'text',  autocomplete: 'address-level2' as const }
+      ];
+      
 
     constructor() {
         this.form = this.fb.group({
