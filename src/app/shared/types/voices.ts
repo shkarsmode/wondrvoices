@@ -6,8 +6,8 @@ export enum VoiceStatus {
 
 export interface IVoice {
     id: number;
-    createdAt: string | Date;
-    status: VoiceStatus;
+    createdAt?: string | Date;
+    status?: VoiceStatus;
 
     firstName?: string | null;
     email?: string | null;
@@ -20,8 +20,9 @@ export interface IVoice {
 
     /** URL to the uploaded image/file (you said you'll pass a ready URL) */
     img: string;
+    category?: string;
 
-    consent: boolean;
+    consent?: boolean;
 }
 
 export interface VoicesListResponse {

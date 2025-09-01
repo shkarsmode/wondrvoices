@@ -24,13 +24,15 @@
                 <div class="card-image-wrap">
                     <img
                         class="card-image"
-                        [src]="card.image"
+                        [src]="card.img"
                         alt="card image" />
                 </div>
                 <div class="card-content">
-                    <span class="category">{{ card.category }}</span>
-                    <h2 class="card-title">{{ card.title }}</h2>
-                    <p class="card-description">{{ card.author }}</p>
+                    @if (card.category) {
+                        <span class="category">{{ card.category }}</span>
+                    }
+                    <h2 class="card-title">{{ card.location }}</h2>
+                    <!-- <p class="card-description">{{ card.author }}</p> -->
                     <!-- <div class="card-author">
                         <img class="avatar" [src]="card.avatar" alt="avatar" />
                         <div>

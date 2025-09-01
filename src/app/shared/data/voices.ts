@@ -1,502 +1,354 @@
-export const voices = [
+import { IVoice } from "../types/voices";
+
+export const voices: IVoice[] = [
     {
         "id": 1,
-        "image": "assets/voices/1.webp",
+        "img": "assets/voices/1.webp",
         "category": "ART",
-        "title": "Gainesville, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gainesville, Florida",
+        
     },
     {
         "id": 2,
-        "image": "assets/voices/2.webp",
+        "img": "assets/voices/2.webp",
         "category": "ART",
-        "title": "Gainesville, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gainesville, Florida",
+        
     },
     {
         "id": 3,
-        "image": "assets/voices/3.webp",
+        "img": "assets/voices/3.webp",
         "category": "ART",
-        "title": "Gainesville, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gainesville, Florida",
+        
     },
     {
         "id": 4,
-        "image": "assets/voices/4.webp",
+        "img": "assets/voices/4.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 5,
-        "image": "assets/voices/5.webp",
+        "img": "assets/voices/5.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 6,
-        "image": "assets/voices/6.webp",
+        "img": "assets/voices/6.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 7,
-        "image": "assets/voices/7.webp",
+        "img": "assets/voices/7.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 8,
-        "image": "assets/voices/8.webp",
+        "img": "assets/voices/8.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 9,
-        "image": "assets/voices/9.webp",
+        "img": "assets/voices/9.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 10,
-        "image": "assets/voices/10.webp",
+        "img": "assets/voices/10.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 11,
-        "image": "assets/voices/11.webp",
+        "img": "assets/voices/11.webp",
         "category": "ART",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 12,
-        "image": "assets/voices/12.webp",
+        "img": "assets/voices/12.webp",
         "category": "ART",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 13,
-        "image": "assets/voices/13.webp",
+        "img": "assets/voices/13.webp",
         "category": "ART",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 14,
-        "image": "assets/voices/14.webp",
+        "img": "assets/voices/14.webp",
         "category": "ART",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 15,
-        "image": "assets/voices/15.webp",
+        "img": "assets/voices/15.webp",
         "category": "ART",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 16,
-        "image": "assets/voices/16.webp",
+        "img": "assets/voices/16.webp",
         "category": "ART",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 17,
-        "image": "assets/voices/17.webp",
+        "img": "assets/voices/17.webp",
         "category": "ART",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 18,
-        "image": "assets/voices/18.webp",
+        "img": "assets/voices/18.webp",
         "category": "ART",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 19,
-        "image": "assets/voices/19.webp",
+        "img": "assets/voices/19.webp",
         "category": "ART",
-        "title": "",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "",
+        
     },
     {
         "id": 20,
-        "image": "assets/voices/20.webp",
+        "img": "assets/voices/20.webp",
         "category": "ART",
-        "title": "Hill City Tap House, Seattle Washington",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Hill City Tap House, Seattle Washington",
+        
     },
     {
         "id": 21,
-        "image": "assets/voices/21.webp",
+        "img": "assets/voices/21.webp",
         "category": "ART",
-        "title": "Jonesin' - To Make a Difference, St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Jonesin' - To Make a Difference, St Petersburg, Florida",
+        
     },
     {
         "id": 22,
-        "image": "assets/voices/22.webp",
+        "img": "assets/voices/22.webp",
         "category": "ART",
-        "title": "Jonesin' - To Make a Difference, St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Jonesin' - To Make a Difference, St Petersburg, Florida",
+        
     },
     {
         "id": 23,
-        "image": "assets/voices/23.webp",
+        "img": "assets/voices/23.webp",
         "category": "ART",
-        "title": "St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "St Petersburg, Florida",
+        
     },
     {
         "id": 24,
-        "image": "assets/voices/24.webp",
+        "img": "assets/voices/24.webp",
         "category": "ART",
-        "title": "St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "St Petersburg, Florida",
+        
     },
     {
         "id": 25,
-        "image": "assets/voices/25.webp",
+        "img": "assets/voices/25.webp",
         "category": "kids art",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 26,
-        "image": "assets/voices/26.webp",
+        "img": "assets/voices/26.webp",
         "category": "kids art",
-        "title": "Farmers Market, Brooksville Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Farmers Market, Brooksville Florida",
+        
     },
     {
         "id": 27,
-        "image": "assets/voices/27.webp",
+        "img": "assets/voices/27.webp",
         "category": "kids art",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 28,
-        "image": "assets/voices/28.webp",
+        "img": "assets/voices/28.webp",
         "category": "kids art",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 29,
-        "image": "assets/voices/29.webp",
+        "img": "assets/voices/29.webp",
         "category": "kids art",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 30,
-        "image": "assets/voices/30.webp",
+        "img": "assets/voices/30.webp",
         "category": "kids art",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 31,
-        "image": "assets/voices/31.webp",
+        "img": "assets/voices/31.webp",
         "category": "kids art",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 32,
-        "image": "assets/voices/32.webp",
+        "img": "assets/voices/32.webp",
         "category": "kids art",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 33,
-        "image": "assets/voices/33.webp",
+        "img": "assets/voices/33.webp",
         "category": "kids art",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 34,
-        "image": "assets/voices/34.webp",
+        "img": "assets/voices/34.webp",
         "category": "kids art",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 35,
-        "image": "assets/voices/35.webp",
+        "img": "assets/voices/35.webp",
         "category": "kids art",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 36,
-        "image": "assets/voices/36.webp",
+        "img": "assets/voices/36.webp",
         "category": "kids art",
-        "title": "Gulfport Farmers Market, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Farmers Market, Florida",
+        
     },
     {
         "id": 37,
-        "image": "assets/voices/37.webp",
+        "img": "assets/voices/37.webp",
         "category": "kids art",
-        "title": "Jonsin To Make a Difference, St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Jonsin To Make a Difference, St Petersburg, Florida",
+        
     },
     {
         "id": 38,
-        "image": "assets/voices/38.webp",
+        "img": "assets/voices/38.webp",
         "category": "kids art",
-        "title": "Laguna Niguel, California",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Laguna Niguel, California",
+        
     },
     {
         "id": 39,
-        "image": "assets/voices/39.webp",
+        "img": "assets/voices/39.webp",
         "category": "kids art",
-        "title": "Tampa, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Tampa, Florida",
+        
     },
     {
         "id": 40,
-        "image": "assets/voices/40.webp",
+        "img": "assets/voices/40.webp",
         "category": "kids art",
-        "title": "Tampa, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Tampa, Florida",
+        
     },
     {
         "id": 41,
-        "image": "assets/voices/41.webp",
+        "img": "assets/voices/41.webp",
         "category": "letters",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 42,
-        "image": "assets/voices/42.webp",
+        "img": "assets/voices/42.webp",
         "category": "letters",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 43,
-        "image": "assets/voices/43.webp",
+        "img": "assets/voices/43.webp",
         "category": "letters",
-        "title": "Gulfport Art Walk, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Gulfport Art Walk, Florida",
+        
     },
     {
         "id": 44,
-        "image": "assets/voices/44.webp",
+        "img": "assets/voices/44.webp",
         "category": "letters",
-        "title": "Laguna Niguel, California",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Laguna Niguel, California",
+        
     },
     {
         "id": 45,
-        "image": "assets/voices/45.webp",
+        "img": "assets/voices/45.webp",
         "category": "letters",
-        "title": "Laguna Niguel, California",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "Laguna Niguel, California",
+        
     },
     {
         "id": 46,
-        "image": "assets/voices/46.webp",
+        "img": "assets/voices/46.webp",
         "category": "letters",
-        "title": "St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "St Petersburg, Florida",
+        
     },
     {
         "id": 47,
-        "image": "assets/voices/47.webp",
+        "img": "assets/voices/47.webp",
         "category": "letters",
-        "title": "St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "St Petersburg, Florida",
+        
     },
     {
         "id": 48,
-        "image": "assets/voices/48.webp",
+        "img": "assets/voices/48.webp",
         "category": "letters",
-        "title": "St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "St Petersburg, Florida",
+        
     },
     {
         "id": 49,
-        "image": "assets/voices/49.webp",
+        "img": "assets/voices/49.webp",
         "category": "letters",
-        "title": "St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "St Petersburg, Florida",
+        
     },
     {
         "id": 50,
-        "image": "assets/voices/50.webp",
+        "img": "assets/voices/50.webp",
         "category": "letters",
-        "title": "St Petersburg, Florida",
-        "description": "",
-        "author": "",
-        "date": "",
-        "avatar": ""
+        "location": "St Petersburg, Florida",
+        
     }
 ];

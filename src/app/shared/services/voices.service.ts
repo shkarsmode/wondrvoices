@@ -27,11 +27,13 @@ export class VoicesService {
             .set('page', String(page));
         if (status) params = params.set('status', status);
 
+        const approvedUrl = status ===  VoiceStatus.Approved ? '/approved' : '';
         return this.http.get<VoicesListResponse>(
-            `${this.basePathApi}/${this.path}`,
+            `${this.basePathApi}/${this.path}${approvedUrl}`,
             { params }
         );
     }
+    
 
     /** Convenience: fetch only approved voices (public feed use-case) */
     public getApprovedVoices(limit: number, page: number): Observable<VoicesListResponse> {
