@@ -32,11 +32,11 @@ export class MainComponent implements OnInit {
 
     public slides = [
         { imageUrl: 'assets/voices/6.jpg' },
-        { imageUrl: 'assets/voices/11.jpg' }, 
-        { imageUrl: 'assets/voices/4.jpg' }, 
-        { imageUrl: 'assets/voices/9.jpg' }, 
+        { imageUrl: 'assets/voices/11.jpg' },
+        { imageUrl: 'assets/voices/4.jpg' },
+        { imageUrl: 'assets/voices/9.jpg' },
         { imageUrl: 'assets/voices/15.jpg' },
-        { imageUrl: 'assets/voices/19.jpg' },   
+        { imageUrl: 'assets/voices/19.jpg' },
     ];
 
     public images1 = [
@@ -65,7 +65,7 @@ export class MainComponent implements OnInit {
 
         this.postsService.getPosts(2)
             .pipe(first())
-            .subscribe(({ posts }) => 
+            .subscribe(({ posts }) =>
                 this.latestBlogs.set(posts)
             )
     }
@@ -122,7 +122,7 @@ export class MainComponent implements OnInit {
         const block2 = this.heroImages2.nativeElement;
 
         const step = () => {
-            
+
             if (!this.mouseEnterBlock1) {
                 this.offset1 -= this.speed;
             }
