@@ -28,7 +28,6 @@ export class VoiceComponent implements OnInit {
         this.card.set(voices.find(voice => voice.id === +id));
         if (!this.card()) {
             const card = await this.voicesService.getApprovedVoiceById(+id).toPromise();
-            console.log(card);
             this.card.set(card);
         }
         this.updateMetaTags();
