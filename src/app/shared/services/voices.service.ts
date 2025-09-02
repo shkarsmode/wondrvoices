@@ -40,9 +40,14 @@ export class VoicesService {
         return this.getVoices(limit, page, VoiceStatus.Approved);
     }
 
-    public getVoiceById(id: number): Observable<IVoice> {
+    public getApprovedVoiceById(id: number): Observable<IVoice> {
+        return this.getVoiceById(id, VoiceStatus.Approved);
+    }
+
+    public getVoiceById(id: number, status?: VoiceStatus): Observable<IVoice> {
+        const approvedUrl = status ===  VoiceStatus.Approved ? '/approved' : '';
         return this.http.get<IVoice>(
-            `${this.basePathApi}/${this.path}/${id}`
+            `${this.basePathApi}/${this.path}${approvedUrl}/${id}`
         );
     }
 
