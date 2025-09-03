@@ -29,7 +29,7 @@ export class VoicesService {
 
         const approvedUrl = status ===  VoiceStatus.Approved ? '/approved' : '';
         return this.http.get<VoicesListResponse>(
-            `${this.basePathApi}/${this.path}${approvedUrl}`,
+            `${this.basePathApi}/${this.path}${approvedUrl}?timestamp=${Date.now()}`,
             { params }
         );
     }
