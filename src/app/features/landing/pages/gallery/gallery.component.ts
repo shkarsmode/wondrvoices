@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
 import { first } from 'rxjs';
@@ -11,7 +12,7 @@ import { voices } from '../../../../shared/data/voices';
 @Component({
     selector: 'app-gallery',
     standalone: true,
-    imports: [RouterModule],
+    imports: [RouterModule, JsonPipe],
     templateUrl: './gallery.component.html',
     styleUrl: './gallery.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,9 +25,7 @@ export class GalleryComponent implements OnInit {
     private voicesService = inject(VoicesService);
     private meta = inject(Meta);
 
-    private allCards: IVoice[] = voices.sort(() => Math.random() - 0.5);
-
-    public cards = signal<IVoice[]>(this.allCards);
+    public cards = signal<IVoice[]>(voices);
 
     private router: Router = inject(Router);
 
@@ -36,9 +35,10 @@ export class GalleryComponent implements OnInit {
         return this.cards().filter(card => card?.category?.toUpperCase() === tab.toUpperCase());
     });
 
-    public ngOnInit(): void {
-        this.getApprovedVoices();
+    public isLoading: WritableSignal<boolean> = signal(true);
 
+
+    public ngOnInit(): void {
         const description = 'Explore heartfelt cards, creative art, and inspiring words from people who care. Every message is a reminder that you’re never alone on your journey.'
 
         const title = 'Messages and moments that lift us up';
@@ -53,14 +53,19 @@ export class GalleryComponent implements OnInit {
         this.meta.updateTag({ property: 'twitter:description', content: description });
         // this.meta.updateTag({ property: 'twitter:image', content: this.card.image });
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+
+        if (typeof window !== 'undefined') {
+            this.getApprovedVoices();
+        }
     }
 
     private getApprovedVoices(): void {
         this.voicesService.getApprovedVoices(100, 1)
             .pipe(first())
-            .subscribe(({ items }) => this.cards.update(cards => {
-                return items.concat(cards);
-            }));
+            .subscribe(({ items }) => {
+                this.cards.set([...items, ...this.cards()]);
+                this.isLoading.set(false);
+            });
     }
 
     public selectTab(tab: string) {

@@ -14,34 +14,45 @@
             </button>
         }
     </div>
-
-    <div class="card-grid">
-        @for (card of filteredCards(); track card; let i = $index) {
-            <div
-                class="card"
-                [style]="'--i: ' + i*0.10 + 's'"
-                (click)="openVoicePage(card.id)">
-                <div class="card-image-wrap">
-                    <img
-                        class="card-image"
-                        [src]="card.img"
-                        alt="card image" />
+    @if (!isLoading()) {
+        <div class="card-grid">
+            @for (card of filteredCards(); track card; let i = $index) {
+                <div
+                    class="card"
+                    [style]="'--i: ' + i*0.10 + 's'"
+                    (click)="openVoicePage(card.id)">
+                    <div class="card-image-wrap">
+                        <img
+                            class="card-image"
+                            [src]="card.img"
+                            alt="card image" />
+                    </div>
+                    <div class="card-content">
+                        @if (card.category) {
+                            <span class="category">{{ card.category }}</span>
+                        }
+                        <h2 class="card-title">{{ card.location }}</h2>
+                        <!-- <p class="card-description">{{ card.author }}</p> -->
+                        <!-- <div class="card-author">
+                            <img class="avatar" [src]="card.avatar" alt="avatar" />
+                            <div>
+                                <div class="name">{{ card.author }}</div>
+                                <div class="date">{{ card.date }}</div>
+                            </div>
+                        </div> -->
+                    </div>
                 </div>
-                <div class="card-content">
-                    @if (card.category) {
-                        <span class="category">{{ card.category }}</span>
-                    }
-                    <h2 class="card-title">{{ card.location }}</h2>
-                    <!-- <p class="card-description">{{ card.author }}</p> -->
-                    <!-- <div class="card-author">
-                        <img class="avatar" [src]="card.avatar" alt="avatar" />
-                        <div>
-                            <div class="name">{{ card.author }}</div>
-                            <div class="date">{{ card.date }}</div>
-                        </div>
-                    </div> -->
-                </div>
+            }
+        </div>
+    } @else {
+        <div class="content">
+            <div class="loader-wave">
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
             </div>
-        }
-    </div>
+        </div>
+    }
 </div>
