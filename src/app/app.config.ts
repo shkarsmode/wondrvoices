@@ -17,5 +17,5 @@ export const appConfig: ApplicationConfig = {
         { provide: AUTH_PATH_API, useValue: environment.authPathApi },
         { provide: BASE_PATH_API, useValue: environment.basePathApi },
         BrowserAnimationsModule,
-    ]
+    ],
 };

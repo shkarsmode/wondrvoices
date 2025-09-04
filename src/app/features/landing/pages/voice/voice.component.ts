@@ -1,3 +1,4 @@
+import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -7,7 +8,7 @@ import { IVoice } from 'src/app/shared/types/voices';
 @Component({
     selector: 'app-voice',
     standalone: true,
-    imports: [],
+    imports: [JsonPipe],
     templateUrl: './voice.component.html',
     styleUrl: './voice.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
