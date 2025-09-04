@@ -28,9 +28,17 @@
                             alt="card image" />
                     </div>
                     <div class="card-content">
-                        @if (card.category) {
-                            <span class="category">{{ card.category }}</span>
-                        }
+                        <div class="wrap-category">
+                            @if (card.category) {
+                                <span class="category">{{ card.category }}</span>
+                            }
+                            @for (tag of card.what; track tag) {
+                                <span class="category">{{ tag }}</span>
+                            }
+                            @for (tag of card.express; track tag) {
+                                <span class="category">{{ tag }}</span>
+                            }
+                        </div>
                         <h2 class="card-title">{{ card.location }}</h2>
                         <!-- <p class="card-description">{{ card.author }}</p> -->
                         <!-- <div class="card-author">

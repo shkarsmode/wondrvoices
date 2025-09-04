@@ -134,6 +134,11 @@
                 text-transform: uppercase;
             }
 
+            .wrap-category {
+                display: flex;
+                gap: 5px;
+            }
+
             .card-title {
                 font-size: 16px;
                 color: #472B2F;
