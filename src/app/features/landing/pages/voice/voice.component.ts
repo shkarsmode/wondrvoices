@@ -3,7 +3,6 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
-import { voices } from '../../../../shared/data/voices';
 
 @Component({
     selector: 'app-voice',
@@ -25,11 +24,11 @@ export class VoiceComponent implements OnInit {
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) return;
 
-        this.card.set(voices.find(voice => voice.id === +id));
-        if (!this.card()) {
-            const card = await this.voicesService.getApprovedVoiceById(+id).toPromise();
-            this.card.set(card);
-        }
+        // this.card.set(voices.find(voice => voice.id === +id));
+        // if (!this.card()) {
+        const card = await this.voicesService.getApprovedVoiceById(+id).toPromise();
+        this.card.set(card);
+        // }
         this.updateMetaTags();
     }
 

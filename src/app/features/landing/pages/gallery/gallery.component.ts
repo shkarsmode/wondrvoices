@@ -5,7 +5,6 @@ import { Router, RouterModule } from '@angular/router';
 import { first } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
-import { voices } from '../../../../shared/data/voices';
 
 
 
@@ -25,7 +24,7 @@ export class GalleryComponent implements OnInit {
     private voicesService = inject(VoicesService);
     private meta = inject(Meta);
 
-    public cards = signal<IVoice[]>(voices);
+    public cards = signal<IVoice[]>([]);
 
     private router: Router = inject(Router);
 
