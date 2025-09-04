@@ -88,6 +88,25 @@ export class FormComponent {
         { key: 'volunteer', label: 'Volunteer', emoji: '🤍' }
     ];
 
+    public autocompleteMap: Record<string, string> = {
+    firstName: 'given-name',  
+    email: 'email',             
+    location: 'address-level2',  
+    creditTo: 'organization' 
+    };
+    
+    public inputModeMap: Record<string, string> = {
+        email: 'email'
+    };
+    
+    public typeMap: Record<string, string> = {
+        email: 'email'
+    };
+    
+    public autocapitalizeMap: Record<string, string> = {
+        firstName: 'words'
+    };
+
     public cloudinaryService: CloudinaryService = inject(CloudinaryService);
     public voicesService: VoicesService = inject(VoicesService);
 

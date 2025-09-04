@@ -11,14 +11,22 @@
     <form
         class="form"
         [formGroup]="form"
-        (ngSubmit)="submit()">
+        (ngSubmit)="submit()"
+        autocomplete="on">
         @for (field of ['firstName', 'email', 'location', 'creditTo']; track field) {
             <div class="form-group">
                 <div class="input-wrapper">
                     <input
                         [formControlName]="field"
                         [placeholder]="' '"
-                        type="text" />
+                        [formControlName]="field"
+                        [placeholder]="' '"
+                        [type]="typeMap[field] || 'text'"
+                        [attr.autocomplete]="autocompleteMap[field] || null"
+                        [attr.inputmode]="inputModeMap[field] || null"
+                        [attr.autocapitalize]="autocapitalizeMap[field] || null"
+                        [attr.name]="field"
+                        [attr.spellcheck]="field==='email' ? 'false' : null"/>
                     <label [class.focused]="form.get(field)?.value">{{ fieldMap[field] }}</label>
                 </div>
             </div>
