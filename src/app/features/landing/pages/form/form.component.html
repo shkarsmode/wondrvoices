@@ -34,25 +34,65 @@
     
         <!-- What is this? -->
         <section class="tags-section">
-            <div class="section-title">
-                <h3>What is this?</h3>
-                <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
-            </div>
-    
-            <div class="chips">
-                @for (opt of whatOptions; track opt.key) {
+                <div class="section-title">
+                    <h3>What is this?</h3>
+                    <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
+                </div>
+            
+                <div class="chips">
+                    @for (opt of whatOptions; track opt.key) {
+                        <button
+                            class="chip"
+                            [class.active]="isSelected('what', opt.key)"
+                            [disabled]="disableChip('what', opt.key)"
+                            (click)="toggle('what', opt.key)"
+                            type="button">
+                            <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                        </button>
+                    }
                     <button
                         class="chip"
-                        [class.active]="isSelected('what', opt.key)"
-                        [disabled]="disableChip('what', opt.key)"
-                        (click)="toggle('what', opt.key)"
+                        style="border: 1px solid orangered"
+                        #refCustom1
+                        (click)="refCustom1.style.display = 'none'"
                         type="button">
-                        <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
+                        <span class="emoji">➕</span>
                     </button>
+                </div>
+            
+                @if (refCustom1.style.display === 'none') {
+                    <!-- own tag input -->
+                    <div class="add-own" [style.opacity]="disableChip('what', '') ? 0.3 : 1">
+                        <input
+                            class="own-input"
+                            type="text"
+                            [value]="draftWhat"
+                            (input)="draftWhat = ($any($event.target).value || '').slice(0, 24)"
+                            (keydown.enter)="addCustomTag('what')"
+                            placeholder="Add your own" />
+                    
+                        <button
+                            class="btn add"
+                            type="button"
+                            (click)="addCustomTag('what')"
+                            [disabled]="!canAddDraft('what')">
+                            Add
+                        </button>
+                    </div>
                 }
-            </div>
-            <small class="hint">Choose up to 3.</small>
-        </section>
+            
+                <!-- selected tags (both predefined + custom) -->
+                <div class="selected-list" *ngIf="(form.get('what')?.value?.length || 0) > 0">
+                    @for (key of form.get('what')?.value; track key) {
+                        <span class="token">
+                            {{ resolveLabel('what', key) }}
+                            <button type="button" class="x" (click)="removeTag('what', key)">×</button>
+                        </span>
+                    }
+                </div>
+            
+                <small class="hint">Choose up to 3. You can add your own.</small>
+          </section>
     
         <!-- What does it express? -->
         <section class="tags-section">
@@ -72,8 +112,37 @@
                         <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
                     </button>
                 }
+                <button
+                    class="chip"
+                    style="border: 1px solid orangered"
+                    #refCustom2
+                    (click)="refCustom2.style.display = 'none'"
+                    type="button">
+                    <span class="emoji">➕</span>
+                </button>
             </div>
-            <small class="hint">Choose up to 3.</small>
+
+            @if (refCustom2.style.display === 'none') {
+                <div class="add-own" [style.opacity]="disableChip('express', '') ? 0.3 : 1">
+                    <input
+                        class="own-input"
+                        type="text"
+                        [value]="draftExpress"
+                        (input)="draftExpress = ($any($event.target).value || '').slice(0, 24)"
+                        (keydown.enter)="addCustomTag('express')"
+                        placeholder="Add your own" />
+                
+                    <button
+                        class="btn add"
+                        type="button"
+                        (click)="addCustomTag('express')"
+                        [disabled]="!canAddDraft('express')">
+                        Add
+                    </button>
+                </div>
+            }
+        
+            <small class="hint">Choose up to 3. You can add your own.</small>
         </section>
     
         <!-- Who is this from? -->
@@ -182,7 +251,7 @@
 
         <button
             class="button submit primary"
-            (click)="submitted.set(false)">
+            (click)="submitted.set(false); form.reset()">
             Submit Another →
         </button>
     </div>

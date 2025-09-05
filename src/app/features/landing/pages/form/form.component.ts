@@ -11,6 +11,7 @@ interface TagOption {
     key: string;   // machine key
     label: string; // human label without emoji
     emoji: string; // leading emoji for UI
+    custom?: boolean;
 }
 
 @Component({
@@ -52,7 +53,7 @@ export class FormComponent {
         { key: 'thought', label: 'Thought', emoji: '💭' },
         { key: 'pet', label: 'Pet', emoji: '🐾' },
         { key: 'nature', label: 'Nature', emoji: '🌿' },
-        { key: 'other', label: 'Other', emoji: '🌀' }
+        { key: 'other', label: 'Other', emoji: '🌀' },
     ];
 
     public expressOptions: TagOption[] = [
@@ -89,20 +90,20 @@ export class FormComponent {
     ];
 
     public autocompleteMap: Record<string, string> = {
-    firstName: 'given-name',  
-    email: 'email',             
-    location: 'address-level2',  
-    creditTo: 'organization' 
+        firstName: 'given-name',
+        email: 'email',
+        location: 'address-level2',
+        creditTo: 'organization'
     };
-    
+
     public inputModeMap: Record<string, string> = {
         email: 'email'
     };
-    
+
     public typeMap: Record<string, string> = {
         email: 'email'
     };
-    
+
     public autocapitalizeMap: Record<string, string> = {
         firstName: 'words'
     };
@@ -247,5 +248,101 @@ export class FormComponent {
         const textarea = event.target as HTMLTextAreaElement;
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    public draftWhat = '';
+    public draftExpress = '';
+
+    // нормализация: "My Tag" -> "my-tag"
+    private slugifyLabel(label: string): string {
+        return (label || '')
+            .trim()
+            .toLowerCase()
+            .normalize('NFKD')
+            .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')  // только буквы/цифры/пробел/дефис
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+
+    private findOptionByKey(group: TagGroup, key: string): TagOption | undefined {
+        const list = group === 'what' ? 
+            this.whatOptions : group === 'express' ? 
+            this.expressOptions : this.fromOptions;
+            
+        return list.find(o => o.key === key);
+    }
+
+    public resolveLabel(group: TagGroup, key: string): string {
+        // if (key.startsWith('custom:')) {
+        //     const pipe = key.indexOf('|');
+        //     return pipe > -1 ? key.slice(pipe + 1) : key.replace(/^custom:/, '');
+        // }
+        return this.findOptionByKey(group, key)?.label ?? key;
+    }
+
+    public canAddDraft(group: 'what' | 'express'): boolean {
+        const draft = group === 'what' ? this.draftWhat : this.draftExpress;
+        const v = (draft || '').trim();
+        if (v.length < 2 || v.length > 24) return false;
+
+        // валидация символов
+        if (!/^[\p{Letter}\p{Number}\s-]+$/u.test(v)) return false;
+
+        const ctrl = this.form.get(group) as FormControl<string[]>;
+        const selected = ctrl.value ?? [];
+        if (selected.length >= 3) return false;
+
+        // дубль по метке (регистронезависимый)
+        const norm = v.toLowerCase();
+        const duplicateByLabel =
+            selected.some(k => this.resolveLabel(group, k).toLowerCase() === norm);
+
+        if (duplicateByLabel) return false;
+
+        const slug = this.slugifyLabel(v);
+        const existsInOptions = 
+            !!this.findOptionByKey('what', slug) || 
+            !!this.findOptionByKey('express', slug);
+        if (existsInOptions) return false;
+
+        return true;
+    }
+
+    public addCustomTag(group: 'what' | 'express'): void {
+        if (!this.canAddDraft(group)) return;
+
+        const draft = (group === 'what' ? this.draftWhat : this.draftExpress).trim();
+        const slug = this.slugifyLabel(draft);
+
+        // const key = `custom:${slug}|${draft}`;
+        const key = draft;
+
+        const ctrl = this.form.get(group) as FormControl<string[]>;
+        const current = (ctrl.value ?? []).slice();
+
+        if (current.length >= 3) return;
+
+        current.push(key);
+        ctrl.setValue(current);
+        ctrl.markAsDirty();
+        ctrl.markAsTouched();
+
+        if (group === 'what') {
+            this.whatOptions.push({ key, label: draft, emoji: '✍️', custom: true });
+            this.draftWhat = '';
+        } else {
+            this.expressOptions.push({ key, label: draft, emoji: '✍️', custom: true });
+            this.draftExpress = '';
+        }
+    }
+
+    // удалить тег (predefined или custom — без разницы)
+    public removeTag(group: TagGroup, key: string): void {
+        const ctrl = this.form.get(group) as FormControl<string[]>;
+        const current = (ctrl.value ?? []).filter(k => k !== key);
+        ctrl.setValue(current);
+        ctrl.markAsDirty();
+        ctrl.markAsTouched();
     }
 }
