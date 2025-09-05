@@ -17,7 +17,8 @@ import { IVoice } from 'src/app/shared/types/voices';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GalleryComponent implements OnInit {
-    public tabs = ['All', 'Art', 'Kids Art', 'Letters'];
+    // public tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).map(this.deslugify);
+    public tabs: string[] = [];
     public activeTab = signal<string>('All');
 
     private title = inject(Title);
@@ -31,7 +32,12 @@ export class GalleryComponent implements OnInit {
     public filteredCards = computed(() => {
         const tab = this.activeTab();
         if (tab === 'All') return this.cards();
-        return this.cards().filter(card => card?.category?.toUpperCase() === tab.toUpperCase());
+
+        const includedTags = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)].map(tag => tag.toLowerCase());
+        return this.cards().filter(
+            card => card.what?.some(tag => includedTags.includes(tag.toLowerCase())) || 
+            card.express?.some(tag => includedTags.includes(tag.toLowerCase()))
+        );
     });
 
     public isLoading: WritableSignal<boolean> = signal(true);
@@ -62,19 +68,54 @@ export class GalleryComponent implements OnInit {
         this.voicesService.getApprovedVoices(100, 1)
             .pipe(first())
             .subscribe(({ items }) => {
-                this.cards.set([...items, ...this.cards()]);
+                this.cards.set(items);
                 this.isLoading.set(false);
+
+                const cardsTags = Array.from(new Set(this.cards().flatMap(
+                    ({ what, express }) => [...(what || []), ...(express || [])]
+                ))).map(tag => this.deslugify(tag.toLowerCase()));
+
+                this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).filter(highLevelTag => {
+                    const tags = HIGH_LEVEL_TAGS_MAP[highLevelTag];
+                    return tags.some(
+                        tag =>
+                            cardsTags.includes(this.deslugify(tag.toLowerCase()))
+                    ) || tags.length === 0
+                }).map(this.deslugify);
             });
     }
 
     public selectTab(tab: string) {
-        this.activeTab.set('');
-        setTimeout(() => {
-            this.activeTab.set(tab);
-        });
+        this.activeTab.set(tab);
     }
 
     public openVoicePage(id: number): void {
         this.router.navigateByUrl('voices/' + id);
     }
+
+    public deslugify(slug: string): string {
+        return String(slug)
+            .split("_")
+            .filter(Boolean)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    }
+
+    public slugify(label: string): string {
+        return String(label)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "_")
+            .replace(/^_+|_+$/g, "");
+    }
 }
+
+const HIGH_LEVEL_TAGS_MAP: { [key: string]: string[] } = {
+    all:              [],
+    visual:           ["drawing", "painting", "photo", "kids_art"],
+    writing:          ["letter", "poem", "quote"],
+    spirit:           ["prayer", "wish", "faith", "gratitude"],
+    heart_positivity: ["love", "peace", "hope", "joy", "friendship", "connection", "encouragement", "compassion"],
+    recovery:         ["strength", "resilience", "healing", "support"],
+    comfort_memory:   ["comfort", "grief", "memory", "thought"],
+    nature_other:     ["nature", "pet", "other"],
+};
