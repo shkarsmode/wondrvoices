@@ -326,7 +326,27 @@ h3 {
     }
 }
 
-h3 {text-align: center;}
-h3 + p {
-    margin-bottom: auto;
+.submit-another-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+
+    button {
+        margin-bottom: 85px;
+    }
+
+    h3 {text-align: center;}
+    h3 + p {
+        max-width: 500px;
+        margin-bottom: 30px;
+
+        font-size: 20px !important;
+        text-align: justify;
+        font-weight: 400;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-bottom: 20px;
+        line-height: 1.3;
+    }
 }

@@ -151,18 +151,39 @@
             </label>
         </div>
     
-        <button
-            [disabled]="(form.invalid && form.touched && form.dirty) || isLoading()"
-            class="button submit-btn primary"
-            type="submit">
-            Submit
-        </button>
+
+        @if (!isLoading()) {
+            <button
+                [disabled]="(form.invalid && form.touched && form.dirty) || isLoading()"
+                class="button submit-btn primary"
+                type="submit">
+                Submit
+            </button>
+        } @else {
+            <div class="content">
+                <div class="loader-wave">
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                </div>
+            </div>
+        }
+
     </form>
 } @else {
-    <h3>Thank you for your submission!</h3>
-    <p>
-        Your voice is now part of a growing community that spreads kindness and hope. We’ll be in touch soon with your
-        free postcard kit and more details on how to get involved.
-    </p>
-    
+    <div class="submit-another-wrap">
+        <h3>Thank you for your submission!</h3>
+        <p>
+            Your voice is now part of a growing community that spreads kindness and hope. We’ll be in touch soon with your
+            free postcard kit and more details on how to get involved.
+        </p>
+
+        <button
+            class="button submit primary"
+            (click)="submitted.set(false)">
+            Submit Another →
+        </button>
+    </div>
 }
