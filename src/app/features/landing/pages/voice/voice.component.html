@@ -20,6 +20,12 @@
             <h1 class="title">{{ card().location }}</h1>
             <p class="description">{{ card().description }}</p>
             <p class="description">{{ card().note }}</p>
+            @if (card().creditTo) {
+                <p class="description">
+                    <span>Credit To:</span> 
+                    <strong>{{ card().creditTo }}</strong>
+                </p>
+            }
     
             <!-- <div class="author">
                 <img class="avatar" [src]="card.avatar" alt="avatar">
