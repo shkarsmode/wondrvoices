@@ -104,7 +104,8 @@
                 <textarea
                     formControlName="note"
                     placeholder=" "
-                    rows="1"></textarea>
+                    rows="1"
+                    (input)="autoResize($event)"></textarea>
                 <label [class.focused]="form.get('note')?.value">Add a Note (Optional)</label>
             </div>
         </div>
