@@ -1,8 +1,8 @@
 import { JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
-import { first } from 'rxjs';
+import { catchError, first, of } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
 
@@ -29,18 +29,26 @@ export class GalleryComponent implements OnInit {
 
     private router: Router = inject(Router);
 
+    public pageSize = 24;
+    public page = signal(1);
+    public isFetchingMore = signal(false);
+    public hasMore = signal(true);
+    private observer?: IntersectionObserver;
+
     public filteredCards = computed(() => {
         const tab = this.activeTab();
         if (tab === 'All') return this.cards();
 
         const includedTags = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)].map(tag => tag.toLowerCase());
         return this.cards().filter(
-            card => card.what?.some(tag => includedTags.includes(tag.toLowerCase())) || 
-            card.express?.some(tag => includedTags.includes(tag.toLowerCase()))
+            card => card.what?.some(tag => includedTags.includes(tag.toLowerCase())) ||
+                card.express?.some(tag => includedTags.includes(tag.toLowerCase()))
         );
     });
 
     public isLoading: WritableSignal<boolean> = signal(true);
+
+    @ViewChild('sentinel', { static: true }) sentinelRef?: ElementRef<HTMLElement>;
 
 
     public ngOnInit(): void {
@@ -60,28 +68,87 @@ export class GalleryComponent implements OnInit {
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
 
         if (typeof window !== 'undefined') {
-            this.getApprovedVoices();
+            this.loadPage(1, true);
         }
     }
 
-    private getApprovedVoices(): void {
-        this.voicesService.getApprovedVoices(100, 1)
-            .pipe(first())
+    public ngAfterViewInit(): void {
+        if (typeof window === 'undefined') return;
+
+        this.observer = new IntersectionObserver(
+            entries => {
+                const entry = entries[0];
+
+                if (!entry?.isIntersecting) return;
+
+                if (this.hasMore() && !this.isFetchingMore() && !this.isLoading()) {
+                    this.loadPage(this.page() + 1, false);
+                }
+            },
+            {
+                root: null,
+                rootMargin: '400px 0px',
+                threshold: 0,
+            },
+        );
+    }
+
+    private loadPage(nextPage: number, initial: boolean): void {
+        if (initial) this.isLoading.set(true);
+        else this.isFetchingMore.set(true);
+
+        this.voicesService
+            .getApprovedVoices(this.pageSize, nextPage)
+            .pipe(
+                first(),
+                catchError((err) => {
+                    console.error('getApprovedVoices error', err);
+                    if (err?.status === 404 || err?.status === 204) {
+                        this.hasMore.set(false);
+                    }
+                    return of({ items: [] as IVoice[] });
+                }),
+            )
             .subscribe(({ items }) => {
-                this.cards.set(items);
+                const newItems = Array.isArray(items) ? items : [];
+
+                if (initial) {
+                    this.cards.set(newItems);
+                } else {
+                    const map = new Map<number, IVoice>();
+                    for (const c of this.cards()) map.set(c.id, c);
+                    for (const n of newItems) map.set(n.id, n);
+                    this.cards.set(Array.from(map.values()));
+                }
+
+                this.page.set(nextPage);
+                this.hasMore.set(newItems.length >= this.pageSize);
                 this.isLoading.set(false);
+                this.isFetchingMore.set(false);
 
-                const cardsTags = Array.from(new Set(this.cards().flatMap(
-                    ({ what, express }) => [...(what || []), ...(express || [])]
-                ))).map(tag => this.deslugify(tag.toLowerCase()));
+                if (initial) {
+                    setTimeout(() => {
+                        const el = document.querySelector('.sentinel')
+                        if (el) this.observer?.observe(el);
+                    }, 1000);
 
-                this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).filter(highLevelTag => {
-                    const tags = HIGH_LEVEL_TAGS_MAP[highLevelTag];
-                    return tags.some(
-                        tag =>
-                            cardsTags.includes(this.deslugify(tag.toLowerCase()))
-                    ) || tags.length === 0
-                }).map(this.deslugify);
+
+                    const cardsTags = Array.from(
+                        new Set(
+                            this.cards().flatMap(({ what, express }) => [...(what || []), ...(express || [])]),
+                        ),
+                    ).map(tag => this.deslugify(tag.toLowerCase()));
+
+                    this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP)
+                        .filter(highLevelTag => {
+                            const tags = HIGH_LEVEL_TAGS_MAP[highLevelTag];
+                            return (
+                                tags.some(tag => cardsTags.includes(this.deslugify(tag.toLowerCase()))) ||
+                                tags.length === 0
+                            );
+                        })
+                        .map(this.deslugify);
+                }
             });
     }
 
@@ -107,15 +174,19 @@ export class GalleryComponent implements OnInit {
             .replace(/[^a-z0-9]+/g, "_")
             .replace(/^_+|_+$/g, "");
     }
+
+    public ngOnDestroy(): void {
+        this.observer?.disconnect();
+    }
 }
 
 const HIGH_LEVEL_TAGS_MAP: { [key: string]: string[] } = {
-    all:              [],
-    visual:           ["drawing", "painting", "photo", "kids_art"],
-    writing:          ["letter", "poem", "quote"],
-    spirit:           ["prayer", "wish", "faith", "gratitude"],
+    all: [],
+    visual: ["drawing", "painting", "photo", "kids_art"],
+    writing: ["letter", "poem", "quote"],
+    spirit: ["prayer", "wish", "faith", "gratitude"],
     heart_positivity: ["love", "peace", "hope", "joy", "friendship", "connection", "encouragement", "compassion"],
-    recovery:         ["strength", "resilience", "healing", "support"],
-    comfort_memory:   ["comfort", "grief", "memory", "thought"],
-    nature_other:     ["nature", "pet", "other"],
+    recovery: ["strength", "resilience", "healing", "support"],
+    comfort_memory: ["comfort", "grief", "memory", "thought"],
+    nature_other: ["nature", "pet", "other"],
 };

@@ -19,7 +19,7 @@
             @for (card of filteredCards(); track card; let i = $index) {
                 <div
                     class="card"
-                    [style]="'--i: ' + i*0.10 + 's'"
+                    [style]="'--i: ' + ((i - (pageSize * (page() - 1))) * 0.10) + 's'"
                     (click)="openVoicePage(card.id)">
                     <div class="card-image-wrap">
                         <img
@@ -52,6 +52,22 @@
                 </div>
             }
         </div>
+
+        @if (isFetchingMore()) {
+            <div class="infinite-loader">
+              <div class="loader-wave">
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+                <div class="wave-dot"></div>
+              </div>
+            </div>
+        }
+      
+        @if (hasMore()) {
+            <div #sentinel class="sentinel" aria-hidden="true"></div>
+        }
     } @else {
         <div class="content">
             <div class="loader-wave">
