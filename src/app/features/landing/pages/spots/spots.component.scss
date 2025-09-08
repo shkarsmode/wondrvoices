@@ -37,12 +37,20 @@
                 font-size: 2.5rem;
                 color: #5c4033;
                 margin-bottom: 1rem;
+
+                @media screen and (max-width: 700px) {
+                    text-align: left;
+                }
             }
 
             p {
                 font-size: 1.1rem;
                 margin-bottom: 1.5rem;
                 max-width: 580px;
+
+                @media screen and (max-width: 700px) {
+                    text-align: left;
+                }
             }
         }
 
