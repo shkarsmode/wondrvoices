@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LandingPageComponent } from './features/landing/landing-page/landing-page.component';
-import { BlogComponent } from './features/landing/pages/blog/blog.component';
 import { PostComponent } from './features/landing/pages/post/post.component';
 
 export const routes: Routes = [
@@ -43,7 +42,8 @@ export const routes: Routes = [
             },
             {
                 path: 'blog',
-                component: BlogComponent
+                loadComponent: () => import('./features/landing/pages/blog/blog.component')
+                    .then(m => m.BlogComponent)
             },
             {
                 path: 'blogs/:id', 
@@ -59,7 +59,7 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/landing/pages/privacy/privacy.component')
                     .then(m => m.PrivacyComponent)
             },
-            { path: '**', component: BlogComponent }
+            { path: '**', redirectTo: '/blog' }
         ],
     },
 ];

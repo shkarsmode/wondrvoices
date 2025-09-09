@@ -8,11 +8,13 @@ import { CreateVoiceRequest } from '../../../../shared/types/voices';
 type TagGroup = 'what' | 'express' | 'from';
 
 interface TagOption {
-    key: string;   // machine key
-    label: string; // human label without emoji
-    emoji: string; // leading emoji for UI
+    key: string;
+    label: string;
+    emoji: string;
     custom?: boolean;
 }
+
+type Step = 1 | 2 | 3;
 
 @Component({
     selector: 'app-form',
@@ -29,7 +31,12 @@ export class FormComponent {
     public isDragOver = signal(false);
     public previewUrl = signal<string | null>(null);
 
+    step = signal<Step>(1);
+    rotationDeg = signal(0);
+
     private fb: FormBuilder = inject(FormBuilder);
+    public cloudinaryService: CloudinaryService = inject(CloudinaryService);
+    public voicesService: VoicesService = inject(VoicesService);
 
     public fieldMap: Record<string, string> = {
         firstName: 'First Name (optional)',
@@ -38,7 +45,6 @@ export class FormComponent {
         creditTo: 'Give Credit To (optional)'
     };
 
-    // --- Tag options (keys are API-friendly)
     public whatOptions: TagOption[] = [
         { key: 'drawing', label: 'Drawing', emoji: '✏️' },
         { key: 'painting', label: 'Painting', emoji: '🖌️' },
@@ -96,20 +102,9 @@ export class FormComponent {
         creditTo: 'organization'
     };
 
-    public inputModeMap: Record<string, string> = {
-        email: 'email'
-    };
-
-    public typeMap: Record<string, string> = {
-        email: 'email'
-    };
-
-    public autocapitalizeMap: Record<string, string> = {
-        firstName: 'words'
-    };
-
-    public cloudinaryService: CloudinaryService = inject(CloudinaryService);
-    public voicesService: VoicesService = inject(VoicesService);
+    public inputModeMap: Record<string, string> = { email: 'email' };
+    public typeMap: Record<string, string> = { email: 'email' };
+    public autocapitalizeMap: Record<string, string> = { firstName: 'words' };
 
     constructor() {
         this.form = this.fb.group({
@@ -117,11 +112,9 @@ export class FormComponent {
             email: ['', [Validators.email]],
             location: [''],
             creditTo: [''],
-
             what: this.fb.control<string[]>([], []),
             express: this.fb.control<string[]>([], []),
             note: [''],
-
             img: [null, Validators.required],
             consent: [false, Validators.requiredTrue]
         });
@@ -135,21 +128,15 @@ export class FormComponent {
 
     public disableChip(group: TagGroup, key: string): boolean {
         const selected = (this.form.get(group)?.value as string[]) ?? [];
-        // chip is disabled if already 3 selected and this chip is not selected
         return selected.length >= 3 && !selected.includes(key);
     }
 
     public toggle(group: TagGroup, key: string): void {
         const ctrl = this.form.get(group) as FormControl<string[]>;
         const current = (ctrl.value ?? []).slice();
-
         const i = current.indexOf(key);
-        if (i >= 0) {
-            current.splice(i, 1);
-        } else {
-            if (current.length >= 3) return; // guard
-            current.push(key);
-        }
+        if (i >= 0) current.splice(i, 1);
+        else if (current.length < 3) current.push(key);
         ctrl.setValue(current);
         ctrl.markAsDirty();
         ctrl.markAsTouched();
@@ -172,32 +159,66 @@ export class FormComponent {
     }
 
     private setFile(file: File) {
-        this.form.patchValue({ file });
-
+        this.form.patchValue({ img: file });
         const reader = new FileReader();
         reader.onload = () => this.previewUrl.set(reader.result as string);
         reader.readAsDataURL(file);
+        this.rotationDeg.set(0);
     }
 
     public onFileChange(event: any) {
         const file = event.target.files[0];
-        this.form.patchValue({ img: file });
-
-        const reader = new FileReader();
-        reader.onload = () => this.previewUrl.set(reader.result as string);
-        reader.readAsDataURL(file);
+        if (!file) return;
+        this.setFile(file);
     }
 
     public clearFile(event: Event) {
         this.form.patchValue({ img: null });
         this.previewUrl.set(null);
+        this.rotationDeg.set(0);
         event.stopPropagation();
+    }
+
+    rotateLeft() { this.rotationDeg.update(v => v - 90); }
+    rotateRight() { this.rotationDeg.update(v => v + 90); }
+
+    private async maybeRotatedFile(file: File): Promise<File> {
+        const deg = ((this.rotationDeg() % 360) + 360) % 360;
+        if (!deg || !file.type.startsWith('image/')) return file;
+
+        return new Promise<File>((resolve, reject) => {
+            const fr = new FileReader();
+            fr.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    const rad = deg * Math.PI / 180;
+                    const swap = deg === 90 || deg === 270;
+                    const cw = swap ? img.height : img.width;
+                    const ch = swap ? img.width : img.height;
+                    const c = document.createElement('canvas');
+                    c.width = cw;
+                    c.height = ch;
+                    const ctx = c.getContext('2d')!;
+                    ctx.translate(cw / 2, ch / 2);
+                    ctx.rotate(rad);
+                    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                    c.toBlob(b => {
+                        if (!b) return reject();
+                        const out = new File([b], file.name.replace(/\.[^.]+$/, '') + '_rot.jpg', { type: 'image/jpeg' });
+                        resolve(out);
+                    }, 'image/jpeg', 0.92);
+                };
+                img.onerror = () => reject();
+                img.src = fr.result as string;
+            };
+            fr.onerror = () => reject();
+            fr.readAsDataURL(file);
+        });
     }
 
     public submit() {
         if (this.form.valid) {
             this.prepareToUploadVoice();
-            console.log('Form submitted:', this.form.value);
         } else {
             this.form.markAllAsTouched();
         }
@@ -205,22 +226,29 @@ export class FormComponent {
 
     public prepareToUploadVoice(): void {
         if (this.form.invalid) return;
-
         this.isLoading.set(true);
-        this.uploadAngGetPictureUrl()
+        this.uploadAngGetPictureUrl();
     }
 
-    private uploadAngGetPictureUrl(): void {
-        this.cloudinaryService.uploadImageAndGetUrl(this.form.get('img')?.value)
-            .subscribe({
+    private async uploadAngGetPictureUrl(): Promise<void> {
+        try {
+            const original: File = this.form.get('img')?.value;
+            const toUpload = await this.maybeRotatedFile(original);
+            this.cloudinaryService.uploadImageAndGetUrl(toUpload).subscribe({
                 next: response => this.uploadVoice(response),
-                error: error => console.log(error)
-            })
+                error: () => this.isLoading.set(false)
+            });
+        } catch {
+            const fallback: File = this.form.get('img')?.value;
+            this.cloudinaryService.uploadImageAndGetUrl(fallback).subscribe({
+                next: response => this.uploadVoice(response),
+                error: () => this.isLoading.set(false)
+            });
+        }
     }
 
     private uploadVoice(response: ImageUrlResponseDto): void {
-        let img: string = response.imageUrl.url;
-
+        const img: string = response.imageUrl.url;
         const body: CreateVoiceRequest = {
             firstName: this.form.get('firstName')?.value,
             email: this.form.get('email')?.value,
@@ -229,19 +257,16 @@ export class FormComponent {
             what: this.form.get('what')?.value,
             express: this.form.get('express')?.value,
             note: this.form.get('note')?.value,
-            img: img,
+            img,
             consent: this.form.get('consent')?.value
-        }
-
-        this.voicesService.createVoice(body)
-            .subscribe(res => {
+        };
+        this.voicesService.createVoice(body).subscribe({
+            next: () => {
                 this.isLoading.set(false);
                 this.submitted.set(true);
-                console.log('thanks', res);
-                // this.isLoading = false;
-                // this.form.reset();
-                // this.preview.nativeElement.innerHTML = null;
-            });
+            },
+            error: () => this.isLoading.set(false)
+        });
     }
 
     public autoResize(event: Event): void {
@@ -253,31 +278,20 @@ export class FormComponent {
     public draftWhat = '';
     public draftExpress = '';
 
-    // нормализация: "My Tag" -> "my-tag"
     private slugifyLabel(label: string): string {
-        return (label || '')
-            .trim()
-            .toLowerCase()
-            .normalize('NFKD')
-            .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')  // только буквы/цифры/пробел/дефис
+        return (label || '').trim().toLowerCase().normalize('NFKD')
+            .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')
             .replace(/\s+/g, '-')
             .replace(/-+/g, '-')
             .replace(/^-|-$/g, '');
     }
 
     private findOptionByKey(group: TagGroup, key: string): TagOption | undefined {
-        const list = group === 'what' ? 
-            this.whatOptions : group === 'express' ? 
-            this.expressOptions : this.fromOptions;
-            
+        const list = group === 'what' ? this.whatOptions : group === 'express' ? this.expressOptions : this.fromOptions;
         return list.find(o => o.key === key);
     }
 
     public resolveLabel(group: TagGroup, key: string): string {
-        // if (key.startsWith('custom:')) {
-        //     const pipe = key.indexOf('|');
-        //     return pipe > -1 ? key.slice(pipe + 1) : key.replace(/^custom:/, '');
-        // }
         return this.findOptionByKey(group, key)?.label ?? key;
     }
 
@@ -285,49 +299,30 @@ export class FormComponent {
         const draft = group === 'what' ? this.draftWhat : this.draftExpress;
         const v = (draft || '').trim();
         if (v.length < 2 || v.length > 24) return false;
-
-        // валидация символов
         if (!/^[\p{Letter}\p{Number}\s-]+$/u.test(v)) return false;
-
         const ctrl = this.form.get(group) as FormControl<string[]>;
         const selected = ctrl.value ?? [];
         if (selected.length >= 3) return false;
-
-        // дубль по метке (регистронезависимый)
         const norm = v.toLowerCase();
-        const duplicateByLabel =
-            selected.some(k => this.resolveLabel(group, k).toLowerCase() === norm);
-
+        const duplicateByLabel = selected.some(k => this.resolveLabel(group, k).toLowerCase() === norm);
         if (duplicateByLabel) return false;
-
         const slug = this.slugifyLabel(v);
-        const existsInOptions = 
-            !!this.findOptionByKey('what', slug) || 
-            !!this.findOptionByKey('express', slug);
+        const existsInOptions = !!this.findOptionByKey('what', slug) || !!this.findOptionByKey('express', slug);
         if (existsInOptions) return false;
-
         return true;
     }
 
     public addCustomTag(group: 'what' | 'express'): void {
         if (!this.canAddDraft(group)) return;
-
         const draft = (group === 'what' ? this.draftWhat : this.draftExpress).trim();
-        const slug = this.slugifyLabel(draft);
-
-        // const key = `custom:${slug}|${draft}`;
         const key = draft;
-
         const ctrl = this.form.get(group) as FormControl<string[]>;
         const current = (ctrl.value ?? []).slice();
-
         if (current.length >= 3) return;
-
         current.push(key);
         ctrl.setValue(current);
         ctrl.markAsDirty();
         ctrl.markAsTouched();
-
         if (group === 'what') {
             this.whatOptions.push({ key, label: draft, emoji: '✍️', custom: true });
             this.draftWhat = '';
@@ -337,12 +332,21 @@ export class FormComponent {
         }
     }
 
-    // удалить тег (predefined или custom — без разницы)
     public removeTag(group: TagGroup, key: string): void {
         const ctrl = this.form.get(group) as FormControl<string[]>;
         const current = (ctrl.value ?? []).filter(k => k !== key);
         ctrl.setValue(current);
         ctrl.markAsDirty();
         ctrl.markAsTouched();
+    }
+
+    goNext() {
+        if (this.step() === 1 && !this.form.get('img')?.value) return;
+        if (this.step() === 3) return;
+        this.step.update(s => (s + 1) as Step);
+    }
+    goBack() {
+        if (this.step() === 1) return;
+        this.step.update(s => (s - 1) as Step);
     }
 }
