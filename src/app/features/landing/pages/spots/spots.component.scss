@@ -16,8 +16,12 @@
     // padding-top: 300px;
 
     @media screen and (max-width: 1000px) {
-        padding-top: 90px;
-        height: 100vh;
+        // padding-top: 90px;
+        align-items: flex-start;
+        padding: 10px;
+        padding-top: 5px;
+        height: 100%;
+        min-height: unset;
     }
 
 
@@ -28,7 +32,7 @@
         flex-wrap: wrap;
         align-items: center;
         gap: 2rem;
-        margin-top: -3%;
+        // margin-top: -3%;
 
         .text {
             flex: 1 1 400px;
@@ -37,9 +41,11 @@
                 font-size: 2.5rem;
                 color: #5c4033;
                 margin-bottom: 1rem;
+                font-weight: 500;
 
                 @media screen and (max-width: 700px) {
                     text-align: left;
+                    font-size: 30px;
                 }
             }
 
@@ -50,6 +56,8 @@
 
                 @media screen and (max-width: 700px) {
                     text-align: left;
+                    font-size: 16px;
+                    line-height: 1.3;
                 }
             }
         }
@@ -530,7 +538,7 @@ a.wondrspot-link {
 
     .wondrspot-description,
     .wondrspot-form {
-        padding: 32px 16px;
+        padding: 32px 10px;
     }
 
     h2 {

@@ -16,8 +16,8 @@
 
     @media screen and (max-width: 500px) {
         padding-top: 0px;
-        padding-right: 20px;
-        padding-left: 20px;
+        padding-right: 10px;
+        padding-left: 10px;
 
         align-items: flex-start;
 
@@ -283,6 +283,10 @@ h1 span {
         position: relative;
     }
 
+    @media screen and (max-width: 1000px) {
+        padding: 80px 10px !important;
+    }
+
     // @media screen and (max-width: 500px) {
     //     box-shadow: 0px -18px 20px 3px rgba(248, 245, 242, 0.91), 0px -20px 20px 60px rgba(248, 245, 242, 0.66);
     //     position: relative;
@@ -456,6 +460,10 @@ h1 span {
         gap: 20px;
     }
 
+    @media screen and (max-width: 1000px) {
+        padding: 80px 10px;
+    }
+
     @media screen and (max-width: 600px) {
         img {
             width: 100%;
@@ -511,6 +519,10 @@ h1 span {
         box-shadow: 0px -18px 20px 3px rgba(248, 245, 242, 0.91), 0px -20px 20px 60px rgba(248, 245, 242, 0.66);
         position: relative;
     }
+
+    @media screen and (max-width: 1000px) {
+        padding: 80px 10px;
+    }
 }
 
 .impact {
@@ -526,6 +538,10 @@ h1 span {
     @media screen and (max-width: 1430px) {
         height: 100%;
         padding: 80px 20px;
+    }
+
+    @media screen and (max-width: 1000px) {
+        padding: 80px 10px;
     }
 
     h2 {
@@ -673,6 +689,10 @@ h1 span {
     background-color: #f0ebe6;
     text-align: center;
     padding: 0 20px;
+
+    @media screen and (max-width: 1000px) {
+        padding: 0px 10px;
+    }
 
     h2 {
         font-size: 48px;
