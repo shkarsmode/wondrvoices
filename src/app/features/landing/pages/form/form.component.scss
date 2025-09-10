@@ -20,10 +20,10 @@ $form-accent: #ffbfae;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0px;
 
     @media screen and (max-width: 500px) {
-        gap: 1rem;
+        gap: 5px;
     }
 
     .form-group {
@@ -36,7 +36,7 @@ $form-accent: #ffbfae;
             input {
                 width: 100%;
                 padding: 1rem;
-                border: 2px solid #ccc;
+                border: 1px solid #ccc;
                 border-radius: $form-radius;
                 font-size: 1rem;
                 transition: border 0.3s;
@@ -392,7 +392,7 @@ h3 {
     textarea {
         width: 100%;
         padding: 1rem;
-        border: 2px solid #ccc;
+        border: 1px solid #ccc;
         border-radius: $form-radius;
         font-size: 1rem;
         transition: border .3s;
@@ -449,31 +449,94 @@ h3 {
     }
 }
 
-.wizard { max-width: 720px; margin: 0 auto; }
+.wizard {
+    max-width: 720px;
+    margin: 0 auto;
+}
 
 .steps {
-  display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;
-  .dot { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #ededed; color: #777; font-weight: 800; }
-  .dot.active { background: $form-accent; color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.08); }
-  .line { height: 4px; width: 80px; border-radius: 3px; background: #e9e9e9; }
-  .line.active { background: rgba($form-accent, .6); }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .dot {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: #ededed;
+        color: #777;
+        font-weight: 800;
+    }
+
+    .dot.active {
+        background: $form-accent;
+        color: #fff;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, .08);
+    }
+
+    .line {
+        height: 4px;
+        width: 80px;
+        border-radius: 3px;
+        background: #e9e9e9;
+    }
+
+    .line.active {
+        background: rgba($form-accent, .6);
+    }
 }
 
 .rotate-tools {
-  display: flex; gap: 10px; justify-content: center; margin-top: 10px;
-  .btn { border: 0; border-radius: 12px; padding: 10px 14px; background: #f3f3f3; font-weight: 700; cursor: pointer; }
-  .btn:hover { background: #ececec; }
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+
+    .btn {
+        border: 0;
+        border-radius: 12px;
+        padding: 10px 14px;
+        background: #f3f3f3;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background: #ececec;
+    }
 }
 
 .nav {
-  display: flex; justify-content: space-between; align-items: center; margin-top: 10px;
-  .ghost { background: #f1f1f1; color: #333; }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+
+    .ghost {
+        background: #f1f1f1;
+        color: #333;
+    }
 }
 
 .loader {
-  width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff; border-top-color: transparent; display: inline-block; animation: spin .8s linear infinite;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    display: inline-block;
+    animation: spin .8s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg) } }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg)
+    }
+}
 
 h1 {
     font-size: 30px;
@@ -506,4 +569,98 @@ h4 {
             transform: scale(1.05);
         }
     }
+}
+
+.info-block {
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+
+    &.public {
+        background: #fffdf9;
+        border-color: #ffe9d9;
+    }
+
+    &.private {
+        background: #f8f9ff;
+        border-color: #e3e6ff;
+    }
+
+    .block-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+
+        .ico {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .t h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .t small {
+            display: block;
+            color: #7d7d7d;
+            margin-top: 2px;
+        }
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+/* Счётчик в правом верхнем углу инпута */
+.input-wrapper.with-counter {
+    position: relative;
+
+    .counter {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        font-size: 12px;
+        color: #9a9a9a;
+        background: #f2f2f2;
+        padding: 2px 8px;
+        border-radius: 999px;
+        pointer-events: none;
+    }
+
+    /* кнопка с иконкой локации (по желанию) */
+    .loc-btn {
+        position: absolute;
+        right: 10px;
+        bottom: 8px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        font-size: 18px;
+        opacity: .75;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    /* чтобы счётчик не наезжал на label в фокусе */
+    input:focus+label~.counter,
+    input:active+label~.counter {
+        opacity: .9;
+    }
+}
+
+/* Подправим label, чтобы не закрывал счётчик */
+.input-wrapper input {
+    padding-right: 74px;
 }

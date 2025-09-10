@@ -31,6 +31,13 @@ export class FormComponent {
     public isDragOver = signal(false);
     public previewUrl = signal<string | null>(null);
 
+    public maxMap = {
+        location: 100,     // City
+        creditTo: 50,
+        firstName: 50,
+        email: 50
+    };
+
     step = signal<Step>(1);
     rotationDeg = signal(0);
 
@@ -105,19 +112,20 @@ export class FormComponent {
     public inputModeMap: Record<string, string> = { email: 'email' };
     public typeMap: Record<string, string> = { email: 'email' };
     public autocapitalizeMap: Record<string, string> = { firstName: 'words' };
+    
 
     constructor() {
         this.form = this.fb.group({
-            firstName: ['', Validators.minLength(2)],
-            email: ['', [Validators.email]],
-            location: [''],
-            creditTo: [''],
+            firstName: ['', [Validators.maxLength(this.maxMap.firstName)]],
+            email: ['', [Validators.email, Validators.maxLength(this.maxMap.email)]],
+            location: ['', [Validators.required, Validators.maxLength(this.maxMap.location)]],
+            creditTo: ['', [Validators.maxLength(this.maxMap.creditTo)]],
             what: this.fb.control<string[]>([], []),
             express: this.fb.control<string[]>([], []),
             note: [''],
             img: [null, Validators.required],
             consent: [false, Validators.requiredTrue]
-        });
+          });
     }
 
     public isSelected(group: TagGroup, key: string): boolean {
@@ -310,6 +318,11 @@ export class FormComponent {
         const existsInOptions = !!this.findOptionByKey('what', slug) || !!this.findOptionByKey('express', slug);
         if (existsInOptions) return false;
         return true;
+    }
+
+    public getLen(field: keyof typeof this.maxMap): number {
+        const v = (this.form.get(field)?.value ?? '') as string;
+        return v.length;
     }
 
     public addCustomTag(group: 'what' | 'express'): void {
