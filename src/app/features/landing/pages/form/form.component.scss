@@ -143,6 +143,7 @@ h3 {
 .dropzone {
     position: relative;
 
+    background: white;
     border: 2px dashed #ccc;
     border-radius: $form-radius;
     padding: 5rem 2rem;
@@ -156,6 +157,10 @@ h3 {
         padding: 2rem;
         width: fit-content;
         margin: 0 auto;
+    }
+
+    button {
+        margin-bottom: 15px;
     }
 
     .upload-label {
