@@ -1,39 +1,92 @@
 @if (card()) {
     <div class="card-details">
         <button class="back-btn" (click)="history.back()">← Back</button>
-    
+
         <div class="image">
-            <img [src]="card().img" alt="Card image">
+            <img [src]="card()!.img" alt="Card image">
         </div>
+
         <div class="content">
             <div class="wrap-category">
-                @if (card().category) {
-                    <span class="category">{{ card().category }}</span>
+                @if (card()!.category) {
+                    <span class="category">{{ card()!.category }}</span>
                 }
-                @for (tag of card().what; track tag) {
+                @for (tag of card()!.what; track tag) {
                     <span class="category">{{ tag }}</span>
                 }
-                @for (tag of card().express; track tag) {
+                @for (tag of card()!.express; track tag) {
                     <span class="category">{{ tag }}</span>
                 }
             </div>
-            <h1 class="title">{{ card().location }}</h1>
-            <p class="description">{{ card().description }}</p>
-            <p class="description">{{ card().note }}</p>
-            @if (card().creditTo) {
+
+            <h1 class="title">{{ card()!.location }}</h1>
+            <p class="description">{{ card()!.description }}</p>
+            <p class="description">{{ card()!.note }}</p>
+
+            @if (card()!.creditTo) {
                 <p class="description">
-                    <span>Credit To:</span> 
-                    <strong>{{ card().creditTo }}</strong>
+                    <span>Credit To:</span>
+                    <strong>{{ card()!.creditTo }}</strong>
                 </p>
             }
-    
-            <!-- <div class="author">
-                <img class="avatar" [src]="card.avatar" alt="avatar">
-                <div>
-                    <span class="name">{{ card.author }}</span>
-                    <span class="date">{{ card.createdAt }}</span>
-                </div>
-            </div> -->
+        </div>
+
+        <!-- Share bar -->
+        <div class="share-bar">
+            <button
+                class="share-chip"
+                type="button"
+                (click)="copyVoiceLink()"
+                [title]="card()!.location">
+                <span class="material-symbols-outlined">
+                    {{ isCopied() ? 'library_add_check' : 'content_copy' }}
+                </span>
+                <span class="label">
+                    {{ isCopied() ? 'Copied' : 'Copy link' }}
+                </span>
+            </button>
+
+            <a
+                class="share-chip"
+                [href]="buildShareLink('twitter')"
+                target="_blank"
+                rel="noopener noreferrer me"
+                aria-label="Share on X (Twitter)"
+                title="Share on X">
+                <img src="assets/svg/twitter.svg" alt="Twitter">
+                <span class="label">Twitter</span>
+            </a>
+
+            <a
+                class="share-chip"
+                [href]="buildShareLink('facebook')"
+                target="_blank"
+                rel="noopener noreferrer me"
+                aria-label="Share on Facebook"
+                title="Share on Facebook">
+                <img src="assets/svg/fb.svg" alt="Facebook">
+                <span class="label">Facebook</span>
+            </a>
+
+            <a
+                class="share-chip"
+                [href]="buildShareLink('linkedin')"
+                target="_blank"
+                rel="noopener noreferrer me"
+                aria-label="Share on LinkedIn"
+                title="Share on LinkedIn">
+                <img src="assets/svg/linkedin.svg" alt="LinkedIn">
+                <span class="label">LinkedIn</span>
+            </a>
+
+            <button
+                class="share-chip only-web-share"
+                type="button"
+                (click)="shareNative()"
+                title="Share via system dialog">
+                <span class="material-symbols-outlined">ios_share</span>
+                <span class="label">Share</span>
+            </button>
         </div>
     </div>
 }
