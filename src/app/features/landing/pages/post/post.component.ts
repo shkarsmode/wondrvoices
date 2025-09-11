@@ -1,16 +1,17 @@
-
-import { DatePipe, Location, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, computed, signal } from '@angular/core';
+import { DatePipe, Location, NgIf, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, ElementRef, Inject, PLATFORM_ID, ViewChild, computed, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
 import { PostsService } from '../../../../shared/services/posts.service';
 import { IPost } from '../../../../shared/types/IPost';
 
-const shareLinks = {
-    twitter: "https://x.com/intent/tweet?url=",
-    facebook: "https://www.facebook.com/sharer/sharer.php?u=",
-    linkedin: "https://www.linkedin.com/sharing/share-offsite/?url="
+type SharePlatform = 'twitter' | 'facebook' | 'linkedin';
+
+const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
+    twitter: 'https://x.com/intent/tweet',
+    facebook: 'https://www.facebook.com/sharer/sharer.php',
+    linkedin: 'https://www.linkedin.com/sharing/share-offsite/'
 };
 
 @Component({
@@ -22,34 +23,23 @@ const shareLinks = {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PostComponent {
-    private readonly copyLink = 'https://www.wondrvoices.com/blogs/';
+    // Если домен когда-то поменяется — достаточно скорректировать только этот basePath.
+    private readonly canonicalBasePath: string = '/blogs/';
 
-    @ViewChild('wrap', { static: true }) wrap!: ElementRef<HTMLDivElement>;
+    @ViewChild('wrap', { static: true }) public wrap!: ElementRef<HTMLDivElement>;
 
-    // Signals
     public post = signal<IPost | null>(null);
-    public isCopied = signal(false);
+    public isCopied = signal<boolean>(false);
     public postId = signal<number | null>(null);
 
-    // Share links as computed signals
-    public twitterShareLink = computed(() => {
-        const post = this.post();
-        const id = this.postId();
-        if (!post || !id) return '';
-        return `${shareLinks.twitter}${this.copyLink}${id}&text=${post.header}&via=Wondrlnk`;
-    });
-    public facebookShareLink = computed(() => {
-        const post = this.post();
-        const id = this.postId();
-        if (!post || !id) return '';
-        return `${shareLinks.facebook}${this.copyLink}${id}&text=${post.header}&via=Wondrlnk`;
-    });
-    public linkedinShareLink = computed(() => {
-        const post = this.post();
-        const id = this.postId();
-        if (!post || !id) return '';
-        return `${shareLinks.linkedin}${this.copyLink}${id}&text=${post.header}&via=Wondrlnk`;
-    });
+    public twitterShareLink = computed(() => this.postId() && this.post() ?
+        this.buildShareLink('twitter', this.postId()!) : '');
+
+    public facebookShareLink = computed(() => this.postId() ?
+        this.buildShareLink('facebook', this.postId()!) : '');
+
+    public linkedinShareLink = computed(() => this.postId() ?
+        this.buildShareLink('linkedin', this.postId()!) : '');
 
     constructor(
         private route: ActivatedRoute,
@@ -57,26 +47,29 @@ export class PostComponent {
         private postsService: PostsService,
         private location: Location,
         private meta: Meta,
-        private title: Title
+        private title: Title,
+        @Inject(PLATFORM_ID) private platformId: Object
     ) { }
 
     public ngOnInit(): void {
-        console.log('[PostComponent]: init');
         this.listenPostIdFromRoute();
     }
 
     private listenPostIdFromRoute(): void {
         this.route.params.subscribe((params) => {
-            const id = +params['id'];
-            console.log('listenPostIdFromRoute', id);
-            this.postId.set(id);
-            this.fetchPost(id);
+            const id = Number(params['id']);
+            if (Number.isFinite(id)) {
+                this.postId.set(id);
+                this.fetchPost(id);
+            } else {
+                this.router.navigate(['/not-found']);
+            }
         });
     }
 
-    
-    private fetchPost(id: number) {
-        this.postsService.getPostById(id)
+    private fetchPost(id: number): void {
+        this.postsService
+            .getPostById(id)
             .pipe(first())
             .subscribe({
                 next: (post) => {
@@ -84,47 +77,124 @@ export class PostComponent {
                     this.updateMetaTags(post);
                     this.setBackgroundImage();
                 },
-                error: (_) => this.router.navigate(['/not-found'])
+                error: () => this.router.navigate(['/not-found'])
             });
     }
 
     private setBackgroundImage(): void {
-        // if (this.wrap && this.post()) {
-        //     this.wrap.nativeElement.style.backgroundImage = `url('${this.post()!.mainPicture}')`;
+        // Optionally enable if нужен фон из mainPicture
+        // const p = this.post();
+        // if (this.wrap && p?.mainPicture) {
+        //     this.wrap.nativeElement.style.backgroundImage = `url('${p.mainPicture}')`;
         // }
     }
 
-    public async copyCurrentPost() {
-        this.isCopied.set(true);
-        // Clipboard logic can be added here if needed
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        this.isCopied.set(false);
+    public async copyCurrentPost(): Promise<void> {
+        const id = this.postId();
+        if (!id) return;
+        const url = this.buildCanonicalUrl(id);
+
+        const copied = (await this.tryNavigatorClipboard(url));
+        this.isCopied.set(copied);
+
+        setTimeout(() => this.isCopied.set(false), 2000);
     }
 
-    public goBack = () => this.location.back();
+    public goBack = (): void => this.location.back();
+
+    public shareNative(): void {
+        const post = this.post();
+        const id = this.postId();
+        if (!post || !id) return;
+
+        if (isPlatformBrowser(this.platformId) && 'share' in navigator) {
+            const url = this.buildCanonicalUrl(id);
+            navigator.share({
+                title: post.header,
+                text: post.subHeader ?? post.header,
+                url
+            }).catch(() => {
+                // Игнорируем отмену; без логов
+            });
+        }
+    }
+
+    private async tryNavigatorClipboard(text: string): Promise<boolean> {
+        if (isPlatformBrowser(this.platformId) && navigator.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private buildCanonicalUrl(id: number): string {
+        if (isPlatformBrowser(this.platformId)) {
+            // const origin = window.location.origin.replace(/\/+$/, '');
+            const origin = 'https://www.wondrvoices.com';
+            const path = `${this.canonicalBasePath.replace(/^\/+/, '')}${id}`;
+            return `${origin}/${path}`;
+        }
+        return `${this.canonicalBasePath}${id}`;
+    }
+
+    private buildShareLink(
+        platform: 'twitter' | 'facebook' | 'linkedin', 
+        id: number
+    ): string {
+        const url = this.buildCanonicalUrl(id);
+        const title = this.post()?.header;
+
+        switch (platform) {
+            case 'twitter':
+                return `${SHARE_ENDPOINTS.twitter}?${new URLSearchParams({
+                    url,
+                    text: title ?? '',
+                    via: 'Wondrlnk'
+                })}`;
+            case 'facebook':
+                return `${SHARE_ENDPOINTS.facebook}?${new URLSearchParams({ u: url, text: title ?? '', })}`;
+            case 'linkedin':
+                return `${SHARE_ENDPOINTS.linkedin}?${new URLSearchParams({ url, text: title ?? '', })}`;
+            default:
+                return url;
+        }
+    }
 
     private updateMetaTags(post: IPost): void {
+        const id = this.postId();
+        const canonicalUrl = id ? this.buildCanonicalUrl(id) : undefined;
+
         this.title.setTitle(post.header);
         this.meta.updateTag({ name: 'description', content: post.subHeader });
+
+        this.meta.updateTag({ property: 'og:type', content: 'article' });
         this.meta.updateTag({ property: 'og:title', content: post.header });
         this.meta.updateTag({ property: 'og:description', content: post.subHeader });
-        this.meta.updateTag({ property: 'og:image', content: post.mainPicture });
-        this.meta.updateTag({ property: 'og:image:alt', content: post.header });
-        this.meta.updateTag({ property: 'og:url', content: `${this.copyLink}${post.id}` });
-        this.meta.updateTag({ property: 'twitter:title', content: post.header });
-        this.meta.updateTag({ property: 'twitter:description', content: post.subHeader });
-        this.meta.updateTag({ property: 'twitter:image', content: post.mainPicture });
-        this.meta.updateTag({ property: 'twitter:image:src', content: post.mainPicture });
+        if (post.mainPicture) {
+            this.meta.updateTag({ property: 'og:image', content: post.mainPicture });
+            this.meta.updateTag({ property: 'og:image:alt', content: post.header });
+        }
+        if (canonicalUrl) {
+            this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+        }
+
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+        this.meta.updateTag({ name: 'twitter:title', content: post.header });
+        this.meta.updateTag({ name: 'twitter:description', content: post.subHeader });
+        if (post.mainPicture) {
+            this.meta.updateTag({ name: 'twitter:image', content: post.mainPicture });
+        }
     }
 
-    public loadEnd() {
-        console.log('main picture load end');
+    public loadEnd(): void {
+        console.log('[PostComponent] main picture load end');
     }
 
-    public onError() {
-        let postImage = document.querySelector('post-main-picture') as HTMLElement;
-        // if(postImage) { postImage.style.display = }
-        console.log('picture load error');
+    public onError(): void {
+        console.log('[PostComponent] main picture load error');
     }
 }
