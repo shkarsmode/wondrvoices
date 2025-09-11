@@ -139,7 +139,7 @@ export class VoiceComponent implements OnInit {
         this.meta.updateTag({ property: 'og:image:alt', content: this.card().location});
         // @ts-ignore
         this.meta.updateTag({ property: 'twitter:title', content: this.card().location });
-        // this.meta.updateTag({ property: 'twitter:description', content: this.card.description });
+        this.meta.updateTag({ property: 'twitter:description', content: 'Heartfelt cards and creative art that lift spirits and show you’re not alone — part of the global WondrVoices community.' });
         // @ts-ignore
         this.meta.updateTag({ property: 'twitter:image', content: this.card().img });
         // @ts-ignore
