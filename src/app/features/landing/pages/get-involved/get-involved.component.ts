@@ -34,7 +34,7 @@ export class GetInvolvedComponent implements OnInit {
     private fb: FormBuilder = inject(FormBuilder);
 
     public fields = [
-        { key: 'firstName', label: 'First Name', type: 'text', autocomplete: 'given-name' as const },
+        { key: 'contactPerson', label: 'Name', type: 'text', autocomplete: 'name' as const },
         { key: 'email', label: 'Email', type: 'email', autocomplete: 'email' as const },
         { key: 'location', label: 'City, State', type: 'text', autocomplete: 'address-level2' as const },
         { key: 'creditTo', label: 'Social Handle (optional)', type: 'text', autocomplete: 'nickname' as const },

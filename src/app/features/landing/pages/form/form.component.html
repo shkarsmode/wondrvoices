@@ -238,11 +238,11 @@
                       formControlName="firstName"
                       placeholder=" "
                       [attr.maxlength]="maxMap.firstName"
-                      autocomplete="given-name"
+                      autocomplete="name"
                       autocapitalize="words"
-                      name="firstName"/>
+                      name="name"/>
                     <label [class.focused]="form.get('firstName')?.value">Name</label>
-                    <span class="counter">{{ getLen('firstName') }}/{{ maxMap.firstName }}</span>
+                    <span class="counter">{{ getLen('firstName') }}/{{ maxMap.name }}</span>
                   </div>
                 </div>
           

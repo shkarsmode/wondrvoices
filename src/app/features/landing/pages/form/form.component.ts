@@ -34,7 +34,7 @@ export class FormComponent {
     public maxMap = {
         location: 100,     // City
         creditTo: 50,
-        firstName: 50,
+        name: 50,
         email: 50
     };
 
@@ -44,13 +44,6 @@ export class FormComponent {
     private fb: FormBuilder = inject(FormBuilder);
     public cloudinaryService: CloudinaryService = inject(CloudinaryService);
     public voicesService: VoicesService = inject(VoicesService);
-
-    public fieldMap: Record<string, string> = {
-        firstName: 'First Name (optional)',
-        email: 'Email (optional)',
-        location: 'City, State (optional)',
-        creditTo: 'Give Credit To (optional)'
-    };
 
     public whatOptions: TagOption[] = [
         { key: 'drawing', label: 'Drawing', emoji: '✏️' },
@@ -103,7 +96,7 @@ export class FormComponent {
     ];
 
     public autocompleteMap: Record<string, string> = {
-        firstName: 'given-name',
+        firstName: 'name',
         email: 'email',
         location: 'address-level2',
         creditTo: 'organization'
@@ -116,7 +109,7 @@ export class FormComponent {
 
     constructor() {
         this.form = this.fb.group({
-            firstName: ['', [Validators.maxLength(this.maxMap.firstName)]],
+            firstName: ['', [Validators.maxLength(this.maxMap.name)]],
             email: ['', [Validators.email, Validators.maxLength(this.maxMap.email)]],
             location: ['', [Validators.required, Validators.maxLength(this.maxMap.location)]],
             creditTo: ['', [Validators.maxLength(this.maxMap.creditTo)]],
