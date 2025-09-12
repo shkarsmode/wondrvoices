@@ -73,10 +73,15 @@
 <section class="wondrspot-description" id="spots_form">
     <h2>📦 Join our Growing Community</h2>
 </section>
+
 <section class="wondrspot-form" id="wondrspot">
     @if (!submitted()) {
         <h3>Become a WondrSpot?</h3>
-        <form [formGroup]="form" (ngSubmit)="submit()" class="form" autocomplete="on">
+        <form
+            [formGroup]="form"
+            (ngSubmit)="submit()"
+            class="form"
+            autocomplete="on">
             @for (f of fields; track f.key) {
                 <div class="form-group">
                     <div class="input-wrapper">
@@ -86,7 +91,7 @@
                             [attr.name]="f.key"
                             [type]="f.type"
                             [attr.autocomplete]="f.autocomplete"
-                            placeholder=" "/>
+                            placeholder=" " />
                         <label
                             [class.focused]="form.get(f.key)?.value"
                             [for]="f.key">
@@ -94,16 +99,33 @@
                         </label>
                     </div>
                 </div>
-              }
-    
-            <!-- <div class="form-group checkbox">
-                <input type="checkbox" formControlName="consent" id="consent" />
-                <label for="consent">
-                    I agree to let WondrVoices use my submission to promote hope and kindness.
-                </label>
-            </div> -->
-    
-            <button class="button primary wondrspot-btn" type="submit"
+            }
+
+            <!-- Optional partner logo -->
+            <div class="form-group">
+                <div class="input-wrapper file">
+                    <input
+                        id="logo"
+                        name="logo"
+                        type="file"
+                        accept=".png, .jpg, .jpeg, image/png, image/jpeg"
+                        (change)="onLogoSelected($event)" />
+                    <label
+                        [class.focused]="form.get('logoFileName')?.value"
+                        for="logo">
+                        Upload your logo (optional, PNG/JPEG up to 5MB)
+                    </label>
+                    @if (form.get('logoFileName')?.value) {
+                        <small class="file-note">
+                            Selected: {{ form.get('logoFileName')?.value }}
+                        </small>
+                    }
+                </div>
+            </div>
+
+            <button
+                class="button primary wondrspot-btn"
+                type="submit"
                 [disabled]="(form.invalid && form.touched && form.dirty) || isLoading()">
                 Join
             </button>
@@ -114,13 +136,23 @@
             Your space is now part of a growing community that spreads kindness and hope. We’ll be in touch soon with your
             free postcard kit and more details on how to get involved.
         </p>
-    }
-</section>
 
-<section class="wondrspot-description">
-    <h2>📣 Help Us Spread the Word</h2>
-    <p>
-        The more WondrSpots we have, the more hearts we reach. Tell a friend, a favorite café, or your local bookstore.
-        Every new space is another light for someone in the dark.
-    </p>
+        @if (pdfUrl()) {
+            <p>
+                View your confirmation PDF:
+                <a
+                    [href]="pdfUrl()"
+                    target="_blank"
+                    rel="noopener">
+                    open in a new tab
+                </a>
+                or
+                <a
+                    [href]="pdfUrl()"
+                    download="WondrSpot_Thank_You.pdf">
+                    download
+                </a>.
+            </p>
+        }
+    }
 </section>
