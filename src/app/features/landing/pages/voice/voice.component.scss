@@ -173,8 +173,8 @@
     gap: 8px;
     padding: 8px 12px;
     border-radius: 9999px;
-    background: #ffffff;
-    border: 1px solid #e6e0da;
+    background: transparent;
+    border: none;
     color: #3c3c3c;
     text-decoration: none;
     cursor: pointer;
@@ -211,16 +211,9 @@
        добавь [class.success]="isCopied()" на иконку copy */
 }
 
-/* Мобильный стек */
-@media (max-width: 480px) {
-    .share-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
-    .share-chip {
-        justify-content: center;
-        width: 100%;
-        padding: 10px 14px;
+@media (max-width: 768px) {
+    .share-bar .label {
+        display: none;
     }
 }
+

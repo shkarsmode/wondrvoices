@@ -359,10 +359,10 @@ $loading-animation: loading 1.8s linear infinite;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 15px;
+    padding: 8px 15px !important;
     border-radius: 9999px;
-    background: #ffffff;
-    border: 1px solid #e6e0da;
+    background: transparent;
+    border: none;
     color: #3c3c3c;
     text-decoration: none;
     cursor: pointer;
@@ -378,11 +378,10 @@ $loading-animation: loading 1.8s linear infinite;
     .material-symbols-outlined { font-size: 18px; line-height: 1; }
 }
 
-/* Hover/Active */
 .share-item:hover {
     transform: translateY(-1px);
-    background: #fffdfb;
-    border-color: #d9d2cb;
+    background: #fffdfb !important;
+    border-color: #d9d2cb !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
 }
 
@@ -391,54 +390,33 @@ $loading-animation: loading 1.8s linear infinite;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Focus — доступность */
 .share-item:focus-visible {
     outline: 2px solid #5a5af6;
     outline-offset: 2px;
 }
 
-/* Состояние "Copied" — мягкий зелёный */
 .share-item.copied {
     color: #176c46;
     background: #f0faf5;
     border-color: #cfe8da;
 }
 
-/* Вписываемся в твою палитру */
 .wrap-end .left {
     color: #4a4a4a;
     font-weight: 600;
 }
 
-/* Кнопка системного шаринга показывается естественно на тач-девайсах */
 .only-web-share {
     @media (hover: none) { display: inline-flex; }
 }
 
-/* Уважение к reduced motion */
 @media (prefers-reduced-motion: reduce) {
     .share-item { transition: none; }
     .share-item:hover,
     .share-item:active { transform: none; box-shadow: none; }
 }
 
-body.dark .share-item {
-    background: #1f1f1f;
-    border-color: #2a2a2a;
-    color: #eaeaea;
-}
-body.dark .share-item:hover {
-    background: #242424;
-    border-color: #3a3a3a;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
-}
-body.dark .share-item.copied {
-    color: #b7ffd7;
-    background: #0f2a1e;
-    border-color: #1d4d35;
-}
 
-/* Share block responsive */
 .wrap-end {
     .right.share {
         display: flex;
@@ -447,50 +425,9 @@ body.dark .share-item.copied {
     }
 }
 
-/* ====== Адаптив ====== */
-
-/* Планшеты */
 @media (max-width: 768px) {
-    .wrap-end {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-
-        .left {
-            font-size: 15px;
-            margin-bottom: 4px;
-        }
-
-        .right.share {
-            justify-content: flex-start;
-        }
-    }
-
     .share-item {
-        font-size: 13px;
-        padding: 6px 10px;
-        img,
-        .material-symbols-outlined {
-            width: 16px;
-            height: 16px;
-            font-size: 16px;
-        }
-    }
-}
-
-@media (max-width: 480px) {
-    .wrap-end {
-        .right.share {
-            flex-direction: column;
-            align-items: stretch;
-            width: 100%;
-        }
-    }
-
-    .share-item {
-        justify-content: center;
-        width: 100%;
-        padding: 10px 14px;
-        font-size: 14px;
+        font-size: 0 !important;
+        gap: 0px;
     }
 }
