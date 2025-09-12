@@ -34,7 +34,7 @@ export class GetInvolvedComponent implements OnInit {
     private fb: FormBuilder = inject(FormBuilder);
 
     public fields = [
-        { key: 'contactPerson', label: 'Name', type: 'text', autocomplete: 'name' as const },
+        { key: 'firstName', label: 'Name', type: 'text', autocomplete: 'name' as const },
         { key: 'email', label: 'Email', type: 'email', autocomplete: 'email' as const },
         { key: 'location', label: 'City, State', type: 'text', autocomplete: 'address-level2' as const },
         { key: 'creditTo', label: 'Social Handle (optional)', type: 'text', autocomplete: 'nickname' as const },
@@ -103,7 +103,7 @@ export class GetInvolvedComponent implements OnInit {
                 .subscribe((res) => {
                     this.isLoading.set(false);
                     this.submitted.set(true);
-                    this.generatePdfThankYou(this.form.value).then();
+                    // this.generatePdfThankYou(this.form.value).then();
                 });
             console.log('[WondrGetInvolved Form Submitted]:', this.form.value);
         } else {
