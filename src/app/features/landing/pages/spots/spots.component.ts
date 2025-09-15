@@ -1,18 +1,17 @@
+import { NgIf } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { first } from 'rxjs';
-import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
-
-// === добавлено: сервис и тип, как в примере ===
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
+import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
 
 @Component({
     selector: 'app-spots',
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, NgIf],
     templateUrl: './spots.component.html',
     styleUrl: './spots.component.scss'
 })
@@ -23,18 +22,18 @@ export class SpotsComponent implements OnInit, OnDestroy {
 
     private readonly formType: FormType = FormType.JoinSpot;
     private readonly submissionService: SubmissionService = inject(SubmissionService);
-
-    // === добавлено: cloudinary ===
     private readonly cloudinaryService: CloudinaryService = inject(CloudinaryService);
 
     public form: FormGroup;
     public isLoading = signal(false);
     public submitted = signal(false);
-
     public pdfUrl = signal<string | null>(null);
 
-    // файл лого (для PDF и для загрузки в облако)
+    // Selected file and preview state
     private uploadedLogoFile: File | null = null;
+    public logoPreviewUrl = signal<string | null>(null);
+    public logoError = signal<string | null>(null);
+    public isDragOver = signal<boolean>(false);
 
     public fields = [
         { key: 'organizationName', label: 'Organization Name', type: 'text',  autocomplete: 'organization' as const },
@@ -49,7 +48,6 @@ export class SpotsComponent implements OnInit, OnDestroy {
             contactPerson: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             city: ['', Validators.required],
-            // === добавлено: управление file-input через форму (опционально) ===
             logo: [null],
             logoFileName: ['']
         });
@@ -62,6 +60,9 @@ export class SpotsComponent implements OnInit, OnDestroy {
     public ngOnDestroy(): void {
         const url = this.pdfUrl();
         if (url) URL.revokeObjectURL(url);
+
+        // Revoke preview URL to avoid memory leaks
+        this.revokePreviewUrl();
     }
 
     public submit(): void {
@@ -71,7 +72,6 @@ export class SpotsComponent implements OnInit, OnDestroy {
         }
         this.isLoading.set(true);
 
-        // === как в примере: сперва заливаем файл, затем вызываем create ===
         const file: File | null = this.uploadedLogoFile ?? this.form.get('logo')?.value ?? null;
 
         if (file) {
@@ -81,41 +81,89 @@ export class SpotsComponent implements OnInit, OnDestroy {
                     await this.createSubmissionAndPdf(logoUrl);
                 },
                 error: async () => {
-                    // если загрузка лого упала — всё равно создаём заявку без лого
+                    // Proceed without logo if upload failed
                     await this.createSubmissionAndPdf(undefined);
                 }
             });
         } else {
-            // без лого — сразу создаём
             this.createSubmissionAndPdf(undefined);
         }
     }
 
-    // обработчик выбора файла из HTML
     public onLogoSelected(event: Event): void {
         const input = event.target as HTMLInputElement;
         const file = input.files && input.files[0] ? input.files[0] : null;
+        this.applyLogoFile(file);
+    }
+
+    public onDragOver(event: DragEvent): void {
+        event.preventDefault();
+        this.isDragOver.set(true);
+    }
+
+    public onDragLeave(event: DragEvent): void {
+        event.preventDefault();
+        this.isDragOver.set(false);
+    }
+
+    public onDropLogo(event: DragEvent): void {
+        event.preventDefault();
+        this.isDragOver.set(false);
+        const file = event.dataTransfer?.files?.[0] ?? null;
+        this.applyLogoFile(file);
+    }
+
+    public triggerFileDialog(inputRef: HTMLInputElement): void {
+        inputRef.click();
+    }
+
+    public clearLogo(inputRef: HTMLInputElement): void {
+        this.uploadedLogoFile = null;
+        this.form.patchValue({ logo: null, logoFileName: '' });
+        inputRef.value = '';
+        this.revokePreviewUrl();
+        this.logoError.set(null);
+    }
+
+    private applyLogoFile(file: File | null): void {
+        this.logoError.set(null);
 
         if (!file) {
             this.uploadedLogoFile = null;
             this.form.patchValue({ logo: null, logoFileName: '' });
+            this.revokePreviewUrl();
             return;
         }
 
         const isValidType = /image\/(png|jpeg)/i.test(file.type);
         const isValidSize = file.size <= 5 * 1024 * 1024;
-        if (!isValidType || !isValidSize) {
-            this.uploadedLogoFile = null;
-            this.form.patchValue({ logo: null, logoFileName: '' });
-            alert('Please upload a PNG or JPEG logo up to 5MB.');
+
+        if (!isValidType) {
+            this.logoError.set('Please upload PNG or JPEG only.');
+            return;
+        }
+        if (!isValidSize) {
+            this.logoError.set('Max file size is 5 MB.');
             return;
         }
 
         this.uploadedLogoFile = file;
         this.form.patchValue({ logo: file, logoFileName: file.name });
+
+        // Update preview
+        this.revokePreviewUrl();
+        const objectUrl = URL.createObjectURL(file);
+        this.logoPreviewUrl.set(objectUrl);
     }
 
-    // === общий путь создания + генерация PDF-URL, без автоскачивания ===
+    private revokePreviewUrl(): void {
+        const current = this.logoPreviewUrl();
+        if (current) {
+            URL.revokeObjectURL(current);
+            this.logoPreviewUrl.set(null);
+        }
+    }
+
     private async createSubmissionAndPdf(logoUrl?: string): Promise<void> {
         this.submissionService
             .create({
@@ -125,15 +173,11 @@ export class SpotsComponent implements OnInit, OnDestroy {
                     contactPerson: this.form.value.contactPerson,
                     email: this.form.value.email,
                     city: this.form.value.city,
-                    // добавляем, если есть
                     ...(logoUrl ? { logoUrl } : {})
                 }
             })
             .pipe(first())
             .subscribe(async () => {
-                // после успешной отправки генерим PDF локально;
-                // если был logoUrl — в PDF используем локальный файл (лучшее качество),
-                // иначе просто без партнёрского логотипа
                 this.submitted.set(true);
                 this.isLoading.set(false);
 
@@ -144,7 +188,6 @@ export class SpotsComponent implements OnInit, OnDestroy {
                     city: this.form.value.city
                 });
                 this.pdfUrl.set(pdfUrl);
-
             }, () => {
                 this.isLoading.set(false);
             });
@@ -198,7 +241,7 @@ export class SpotsComponent implements OnInit, OnDestroy {
             color: rgb(0.95, 0.38, 0.16)
         });
 
-        // если пользователь загрузил логотип — покажем его на PDF
+        // Draw partner logo if user provided it
         if (this.uploadedLogoFile) {
             const bytes = await this.uploadedLogoFile.arrayBuffer();
             const embedded = /image\/png/i.test(this.uploadedLogoFile.type)

@@ -103,23 +103,66 @@
 
             <!-- Optional partner logo -->
             <div class="form-group">
-                <div class="input-wrapper file">
+                <div
+                    *ngIf="true"
+                    id="logo-dropzone"
+                    class="input-wrapper file dropzone"
+                    [class.is-dragover]="isDragOver()"
+                    (dragover)="onDragOver($event)"
+                    (dragleave)="onDragLeave($event)"
+                    (drop)="onDropLogo($event)">
+            
+                    <!-- Preview or placeholder -->
+                    <div *ngIf="logoPreviewUrl(); else logoPlaceholder" class="preview">
+                        <img
+                            id="logo-preview"
+                            [src]="logoPreviewUrl()!"
+                            alt="Selected logo preview" />
+                    </div>
+            
+                    <ng-template #logoPlaceholder>
+                        <div class="placeholder">
+                            <span class="icon" aria-hidden="true">🖼️</span>
+                            <span class="hint">PNG or JPEG, up to 5 MB</span>
+                        </div>
+                    </ng-template>
+            
+                    <!-- Hidden file input, triggered by label or button -->
                     <input
                         id="logo"
-                        name="logo"
+                        #logoInput
                         type="file"
-                        accept=".png, .jpg, .jpeg, image/png, image/jpeg"
-                        (change)="onLogoSelected($event)" />
+                        (change)="onLogoSelected($event)"
+                        name="logo"
+                        accept=".png,.jpg,.jpeg,image/png,image/jpeg" />
+            
                     <label
                         [class.focused]="form.get('logoFileName')?.value"
                         for="logo">
-                        Upload your logo (optional, PNG/JPEG up to 5MB)
+                        {{ form.get('logoFileName')?.value || 'Upload your logo (optional)' }}
                     </label>
-                    @if (form.get('logoFileName')?.value) {
-                        <small class="file-note">
-                            Selected: {{ form.get('logoFileName')?.value }}
-                        </small>
-                    }
+            
+                    <!-- Quick actions -->
+                    <div *ngIf="form.get('logoFileName')?.value" class="actions">
+                        <button
+                            type="button"
+                            class="button sm"
+                            (click)="triggerFileDialog(logoInput)">
+                            Change
+                        </button>
+            
+                        <button
+                            type="button"
+                            class="button sm ghost"
+                            (click)="clearLogo(logoInput)">
+                            Remove
+                        </button>
+                    </div>
+            
+                    <!-- Validation / error -->
+                    <small *ngIf="logoError()" class="file-note error">
+                        {{ logoError() }}
+                    </small>
                 </div>
             </div>
 
