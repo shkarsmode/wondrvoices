@@ -583,7 +583,7 @@ export class SpotsComponent implements OnInit, OnDestroy {
     
             // simple social placeholders row
             const socialsY = qy + 18;
-            page.drawText(`f  ig  x  t   ${cfg.socialHandle}`, {
+            page.drawText(`${cfg.socialHandle}`, {
                 x: qx + qrSize + 12,
                 y: socialsY,
                 size: 11.5,
