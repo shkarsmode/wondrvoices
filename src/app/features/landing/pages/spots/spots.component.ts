@@ -3,6 +3,7 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { degrees, PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { first } from 'rxjs';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
 import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
@@ -164,19 +165,19 @@ export class SpotsComponent implements OnInit, OnDestroy {
     }
 
     private async createSubmissionAndPdf(logoUrl?: string): Promise<void> {
-        // this.submissionService
-        //     .create({
-        //         formType: this.formType,
-        //         data: {
-        //             organizationName: this.form.value.organizationName,
-        //             contactPerson: this.form.value.contactPerson,
-        //             email: this.form.value.email,
-        //             city: this.form.value.city,
-        //             ...(logoUrl ? { logoUrl } : {})
-        //         }
-        //     })
-        //     .pipe(first())
-        //     .subscribe(async () => {
+        this.submissionService
+            .create({
+                formType: this.formType,
+                data: {
+                    organizationName: this.form.value.organizationName,
+                    contactPerson: this.form.value.contactPerson,
+                    email: this.form.value.email,
+                    city: this.form.value.city,
+                    ...(logoUrl ? { logoUrl } : {})
+                }
+            })
+            .pipe(first())
+            .subscribe(async () => {
                 this.submitted.set(true);
                 this.isLoading.set(false);
 
@@ -215,9 +216,9 @@ export class SpotsComponent implements OnInit, OnDestroy {
                     siteUrlText: 'https://wondrvoices.com'
                 });
                 this.pdfUrl.set(pdfUrl);
-            // }, () => {
-            //     this.isLoading.set(false);
-            // });
+            }, () => {
+                this.isLoading.set(false);
+            });
     }
 
     private async generatePdfWelcomeSign(cfg: {
