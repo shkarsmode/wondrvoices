@@ -28,7 +28,7 @@ export class VoiceComponent implements OnInit {
     private voicesService = inject(VoicesService);
 
     public card: WritableSignal<IVoice | null> = signal<IVoice | null>(null);
-    public history: typeof history | {} = typeof history !== 'undefined' ? history : {};
+    public history: typeof history | any = typeof history !== 'undefined' ? history : { back: () => {} };
     public isCopied = signal<boolean>(false);
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
