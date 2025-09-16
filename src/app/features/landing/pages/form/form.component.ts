@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
 import { VoicesService } from '../../../../shared/services/voices.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
@@ -44,6 +45,7 @@ export class FormComponent {
     private fb: FormBuilder = inject(FormBuilder);
     public cloudinaryService: CloudinaryService = inject(CloudinaryService);
     public voicesService: VoicesService = inject(VoicesService);
+    private readonly scrollToService: ScrollToService = inject(ScrollToService);
 
     public whatOptions: TagOption[] = [
         { key: 'drawing', label: 'Drawing', emoji: '✏️' },
@@ -350,9 +352,12 @@ export class FormComponent {
         if (this.step() === 1 && !this.form.get('img')?.value) return;
         if (this.step() === 3) return;
         this.step.update(s => (s + 1) as Step);
+        this.scrollToService.scrollToTop();
+        
     }
     goBack() {
         if (this.step() === 1) return;
         this.step.update(s => (s - 1) as Step);
+        this.scrollToService.scrollToTop();
     }
 }
