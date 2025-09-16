@@ -49,7 +49,14 @@
                     <button class="button submit-btn primary" type="button">Choose a file</button>
                 }
   
-              <div class="dropzone-content">
+              <div 
+                class="dropzone-content"
+                [class.dropzone-content--rotated]="rotated()"
+                [class.dropzone-content--additional-margin]="naturalH() > naturalW() && rotated()"
+                [style]="'--i: ' + computeQuadraticMargin(naturalH() - naturalW()) + 'px'"
+                [style.aspectRatio]="
+                    rotated() ? '1 / 1' : null
+                " >
                 @if (!previewUrl()) {
                     <p>📁 Click to choose a file or drag here</p>
                     <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
@@ -59,7 +66,8 @@
                         class="preview-img"
                         [style.transform]="'rotate(' + rotationDeg() + 'deg)'"
                         [src]="previewUrl()"
-                        alt="preview" />
+                        alt="preview" 
+                        (load)="onImgLoad($event)"/>
                 }
               </div>
   
@@ -203,7 +211,7 @@
                       name="location"/>
                     <label [class.focused]="form.get('location')?.value">City *</label>
                     <span class="counter">{{ getLen('location') }}/{{ maxMap.location }}</span>
-                    <button class="loc-btn" type="button" (click)="pickLocation?.()">📍</button>
+                    <button class="loc-btn" type="button" (click)="null">📍</button> <!-- pickLocation?.() -->
                   </div>
                 </div>
           
@@ -235,14 +243,14 @@
                 <div class="form-group">
                   <div class="input-wrapper with-counter">
                     <input
-                      formControlName="firstName"
+                      formControlName="name"
                       placeholder=" "
-                      [attr.maxlength]="maxMap.firstName"
+                      [attr.maxlength]="maxMap.name"
                       autocomplete="name"
                       autocapitalize="words"
                       name="name"/>
-                    <label [class.focused]="form.get('firstName')?.value">Name</label>
-                    <span class="counter">{{ getLen('firstName') }}/{{ maxMap.name }}</span>
+                    <label [class.focused]="form.get('name')?.value">Name</label>
+                    <span class="counter">{{ getLen('name') }}/{{ maxMap.name }}</span>
                   </div>
                 </div>
           

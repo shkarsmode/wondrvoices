@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
@@ -111,7 +111,7 @@ export class FormComponent {
 
     constructor() {
         this.form = this.fb.group({
-            firstName: ['', [Validators.maxLength(this.maxMap.name)]],
+            name: ['', [Validators.maxLength(this.maxMap.name)]],
             email: ['', [Validators.email, Validators.maxLength(this.maxMap.email)]],
             location: ['', [Validators.required, Validators.maxLength(this.maxMap.location)]],
             creditTo: ['', [Validators.maxLength(this.maxMap.creditTo)]],
@@ -253,7 +253,7 @@ export class FormComponent {
     private uploadVoice(response: ImageUrlResponseDto): void {
         const img: string = response.imageUrl.url;
         const body: CreateVoiceRequest = {
-            firstName: this.form.get('firstName')?.value,
+            firstName: this.form.get('name')?.value,
             email: this.form.get('email')?.value,
             location: this.form.get('location')?.value,
             creditTo: this.form.get('creditTo')?.value,
@@ -359,5 +359,24 @@ export class FormComponent {
         if (this.step() === 1) return;
         this.step.update(s => (s - 1) as Step);
         this.scrollToService.scrollToTop();
+    }
+
+    naturalW = signal(1);
+    naturalH = signal(1);
+    rotated = computed(() => Math.abs(this.rotationDeg()) % 180 === 90);
+
+    onImgLoad(e: Event) {
+        const img = e.target as HTMLImageElement;
+        this.naturalW.set(img.naturalWidth);
+        this.naturalH.set(img.naturalHeight);
+        console.log(img.naturalWidth, img.naturalHeight);
+    }
+
+    public computeQuadraticMargin(delta: number): number {
+        const a = -0.00006391;
+        const b = 0.11447;
+        const c = 4.44;
+        const margin = (a * delta * delta) + (b * delta) + c;
+        return Math.min(55, Math.max(10, margin));
     }
 }

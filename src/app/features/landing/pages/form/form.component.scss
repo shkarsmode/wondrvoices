@@ -184,6 +184,18 @@ h3 {
         }
     }
 
+    &-content {
+        &--rotated {
+            display: flex;
+            justify-content: center;
+        }
+
+        &--additional-margin {
+            margin-left: var(--i);   
+            margin-right: var(--i);   
+        }
+    }
+
     &.preview .dropzone-content {
         display: flex;
         flex-direction: column;
