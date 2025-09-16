@@ -39,10 +39,16 @@ export class GalleryComponent implements OnInit {
         const tab = this.activeTab();
         if (tab === 'All') return this.cards();
 
-        const includedTags = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)].map(tag => tag.toLowerCase());
+        const tags = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)]
+        let helperFn = (tag: string) => 
+            tags.map(tag => tag.toLowerCase()).includes(tag.toLowerCase());
+
+        if (!tags) {
+            helperFn = (tag: string) => tag.toLowerCase() === tab.toLowerCase();
+        }
+        
         return this.cards().filter(
-            card => card.what?.some(tag => includedTags.includes(tag.toLowerCase())) ||
-                card.express?.some(tag => includedTags.includes(tag.toLowerCase()))
+            card => card.what?.some(helperFn) || card.express?.some(helperFn)
         );
     });
 
@@ -153,6 +159,11 @@ export class GalleryComponent implements OnInit {
     }
 
     public selectTab(tab: string) {
+        tab = this.deslugify(tab);
+        if (!this.tabs.includes(tab)) {
+            this.tabs = this.tabs.slice(0, 6);
+            this.tabs.push(tab);
+        }
         this.activeTab.set(tab);
     }
 

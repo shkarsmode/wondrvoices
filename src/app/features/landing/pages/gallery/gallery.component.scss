@@ -144,6 +144,13 @@
                 display: inline-block;
                 margin-bottom: 8px;
                 text-transform: uppercase;
+
+                &:hover {
+                    background: #FAAF71;
+                    // border: none;
+                    color: white;
+                    // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                }
             }
 
             .wrap-category {

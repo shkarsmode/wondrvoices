@@ -19,9 +19,8 @@
             @for (card of filteredCards(); track card; let i = $index) {
                 <div
                     class="card"
-                    [style]="'--i: ' + ((i - (pageSize * (page() - 1))) * 0.10) + 's'"
-                    (click)="openVoicePage(card.id)">
-                    <div class="card-image-wrap">
+                    [style]="'--i: ' + ((i - (pageSize * (page() - 1))) * 0.10) + 's'">
+                    <div class="card-image-wrap" (click)="openVoicePage(card.id)">
                         <img
                             class="card-image"
                             [src]="card.img"
@@ -30,16 +29,28 @@
                     <div class="card-content">
                         <div class="wrap-category">
                             @if (card.category) {
-                                <span class="category">{{ card.category }}</span>
+                                <span
+                                    class="category"
+                                    (click)="selectTab(card.category)">
+                                    {{ card.category }}
+                                </span>
                             }
                             @for (tag of card.what; track tag) {
-                                <span class="category">{{ tag }}</span>
+                                <span 
+                                    class="category"
+                                    (click)="selectTab(tag)">
+                                    {{ tag }}
+                                </span>
                             }
                             @for (tag of card.express; track tag) {
-                                <span class="category">{{ tag }}</span>
+                                <span 
+                                    class="category"
+                                    (click)="selectTab(tag)">
+                                    {{ tag }}
+                                </span>
                             }
                         </div>
-                        <h2 class="card-title">{{ card.location }}</h2>
+                        <h2 class="card-title" (click)="openVoicePage(card.id)">{{ card.location }}</h2>
                         <!-- <p class="card-description">{{ card.author }}</p> -->
                         <!-- <div class="card-author">
                             <img class="avatar" [src]="card.avatar" alt="avatar" />
