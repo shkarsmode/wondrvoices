@@ -175,10 +175,13 @@
               <small class="hint">Choose up to 3. You can add your own.</small>
             </section>
   
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 15px">
+                <div class="section-title">
+                    <h3>Add Note (optional)</h3>
+                </div>
               <div class="input-wrapper textarea">
                 <textarea formControlName="note" placeholder=" " rows="1" (input)="autoResize($event)"></textarea>
-                <label [class.focused]="form.get('note')?.value">Add a Note (Optional)</label>
+                <label [class.focused]="form.get('note')?.value">Describe in more detail</label>
               </div>
             </div>
   
