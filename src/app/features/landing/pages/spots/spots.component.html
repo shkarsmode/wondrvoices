@@ -170,7 +170,11 @@
                 class="button primary wondrspot-btn"
                 type="submit"
                 [disabled]="(form.invalid && form.touched && form.dirty) || isLoading()">
-                Join
+                @if (!isLoading()) {
+                    Join
+                } @else {
+                    <span class="loader"></span>
+                }
             </button>
         </form>
     } @else {

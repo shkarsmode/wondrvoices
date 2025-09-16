@@ -716,3 +716,14 @@ a.wondrspot-link {
         z-index: 1;
     }
 }
+
+
+.loader {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    display: inline-block;
+    animation: spin .8s linear infinite;
+}
