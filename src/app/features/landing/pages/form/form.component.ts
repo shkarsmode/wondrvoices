@@ -356,13 +356,17 @@ export class FormComponent {
         if (this.step() === 1 && !this.form.get('img')?.value) return;
         if (this.step() === 3) return;
         this.step.update(s => (s + 1) as Step);
-        this.scrollToService.scrollToTop();
+        setTimeout(() => 
+            this.scrollToService.scrollToTop()
+        , 200);
         
     }
     goBack() {
         if (this.step() === 1) return;
         this.step.update(s => (s - 1) as Step);
-        this.scrollToService.scrollToTop();
+        setTimeout(() => 
+            this.scrollToService.scrollToTop()
+        , 200);
     }
 
     naturalW = signal(1);
