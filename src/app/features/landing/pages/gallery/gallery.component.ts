@@ -40,13 +40,13 @@ export class GalleryComponent implements OnInit {
         if (tab === 'All') return this.cards();
 
         const tags = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)]
-        let helperFn = (tag: string) => 
+        let helperFn = (tag: string) =>
             tags.map(tag => tag.toLowerCase()).includes(tag.toLowerCase());
 
         if (!tags) {
             helperFn = (tag: string) => tag.toLowerCase() === tab.toLowerCase();
         }
-        
+
         return this.cards().filter(
             card => card.what?.some(helperFn) || card.express?.some(helperFn)
         );
@@ -197,7 +197,7 @@ const HIGH_LEVEL_TAGS_MAP: { [key: string]: string[] } = {
     words: ["letter", "poem", "quote", "memory"],
     kids: ["kids", "kids_art", "love", "peace", "joy"],
     photo: ["photo"],
-    
+
     // spirit: ["prayer", "wish", "faith", "gratitude"],
     // heart_positivity: ["love", "peace", "hope", "joy", "friendship", "connection", "encouragement", "compassion"],
     // recovery: ["strength", "resilience", "healing", "support"],
