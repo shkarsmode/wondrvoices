@@ -104,7 +104,7 @@
           <form class="form" [formGroup]="form">
             <section class="tags-section">
               <div class="section-title">
-                <h3>What is this?</h3>
+                <h3>Categorize</h3>
                 <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
               </div>
   
@@ -141,12 +141,12 @@
                   </div>
               } -->
   
-              <small class="hint">Choose up to 3. You can add your own.</small>
+              <!-- <small class="hint">Choose up to 3. You can add your own.</small> -->
             </section>
   
             <section class="tags-section">
               <div class="section-title">
-                <h3>What does it express?</h3>
+                <h3>Describe <span class="optional">(optional)</span></h3>
                 <span class="counter">{{ form.get('express')?.value?.length || 0 }}/3</span>
               </div>
   
@@ -172,12 +172,12 @@
                 </div>
               }
   
-              <small class="hint">Choose up to 3. You can add your own.</small>
+              <!-- <small class="hint">Choose up to 3. You can add your own.</small> -->
             </section>
   
             <div class="form-group" style="margin-top: 15px">
                 <div class="section-title">
-                    <h3>Add Note (optional)</h3>
+                    <h3>Add Note <span class="optional">(optional)</span></h3>
                 </div>
               <div class="input-wrapper textarea">
                 <textarea formControlName="note" placeholder=" " rows="1" (input)="autoResize($event)"></textarea>
