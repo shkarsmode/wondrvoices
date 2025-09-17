@@ -193,11 +193,14 @@ export class GalleryComponent implements OnInit {
 
 const HIGH_LEVEL_TAGS_MAP: { [key: string]: string[] } = {
     all: [],
-    visual: ["drawing", "painting", "photo", "kids_art"],
-    writing: ["letter", "poem", "quote"],
-    spirit: ["prayer", "wish", "faith", "gratitude"],
-    heart_positivity: ["love", "peace", "hope", "joy", "friendship", "connection", "encouragement", "compassion"],
-    recovery: ["strength", "resilience", "healing", "support"],
-    comfort_memory: ["comfort", "grief", "memory", "thought"],
-    nature_other: ["nature", "pet", "other"],
+    art: ["drawing", "painting", "kids_art", "art"],
+    words: ["letter", "poem", "quote", "memory"],
+    kids: ["kids", "kids_art", "love", "peace", "joy"],
+    photo: ["photo"],
+    
+    // spirit: ["prayer", "wish", "faith", "gratitude"],
+    // heart_positivity: ["love", "peace", "hope", "joy", "friendship", "connection", "encouragement", "compassion"],
+    // recovery: ["strength", "resilience", "healing", "support"],
+    // comfort_memory: ["comfort", "grief", "memory", "thought"],
+    // nature_other: ["nature", "pet", "other"],
 };
