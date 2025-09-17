@@ -4,9 +4,9 @@ import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 
 if (typeof window !== undefined) {
-  registerSwiperElements();
+    registerSwiperElements();
 }
 
 bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+    .catch((err) => console.error(err));
 
