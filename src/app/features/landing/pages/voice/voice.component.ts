@@ -1,11 +1,12 @@
 import { JsonPipe, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit, PLATFORM_ID, WritableSignal, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
 
 type SharePlatform = 'twitter' | 'facebook' | 'linkedin';
+type FilterKey = 'tab' | 'title' | 'description' | 'creditTo';
 
 const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
     twitter: 'https://x.com/intent/tweet',
@@ -26,6 +27,7 @@ export class VoiceComponent implements OnInit {
     private title = inject(Title);
     private meta = inject(Meta);
     private voicesService = inject(VoicesService);
+    private router = inject(Router);
 
     public card: WritableSignal<IVoice | null> = signal<IVoice | null>(null);
     public history: typeof history | any = typeof history !== 'undefined' ? history : { back: () => {} };
@@ -42,10 +44,29 @@ export class VoiceComponent implements OnInit {
         this.updateMetaTags();
     }
 
+    /** Клик по полю → собираем query-параметры и уходим на /gallery */
+    public goToGalleryWithFilter(key: FilterKey, rawValue?: string | null, ev?: Event): void {
+        ev?.stopPropagation();
+        const value = (rawValue ?? '').trim();
+        const queryParams: Record<string, string> = { tab: 'All' };
+
+        if (value) {
+            if (key === 'tab') queryParams['tab'] = value;
+            if (key === 'title') queryParams['title'] = value;
+            if (key === 'description') queryParams['description'] = value;
+            if (key === 'creditTo') queryParams['creditTo'] = value;
+        }
+
+        void this.router.navigate(['/gallery'], {
+            queryParams,
+            // если нужно накапливать фильтры при повторных переходах — можно включить:
+            // queryParamsHandling: 'merge',
+        });
+    }
+
     private buildCanonicalVoiceUrl(id: number): string {
         const path = `voices/${id}`;
         if (isPlatformBrowser(this.platformId) && typeof window !== 'undefined') {
-            // const origin = window.location.origin.replace(/\/+$/, '');
             const origin = 'https://www.wondrvoices.com';
             return `${origin}/${path}`;
         }
@@ -83,14 +104,12 @@ export class VoiceComponent implements OnInit {
     }
 
     private async tryCopy(text: string): Promise<boolean> {
-        // Try modern API first
         if (isPlatformBrowser(this.platformId) && navigator?.clipboard?.writeText) {
             try {
                 await navigator.clipboard.writeText(text);
                 return true;
             } catch { /* fallback below */ }
         }
-        // Fallback: hidden textarea + execCommand
         try {
             const textarea = document.createElement('textarea');
             textarea.value = text;
@@ -114,12 +133,10 @@ export class VoiceComponent implements OnInit {
         if ('share' in navigator) {
             navigator.share({
                 title: this.card()?.location ?? 'WondrVoices',
-                // text: this.card()?.description ?? this.card()?.location,
                 url
             }).catch(() => {});
         }
     }
-    // ---------- /Share helpers ----------
 
     private updateMetaTags(): void {
         if (!this.card()) return;

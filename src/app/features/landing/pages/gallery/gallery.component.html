@@ -14,6 +14,41 @@
             </button>
         }
     </div>
+
+    @if (hasAnyFilter()) {
+        <div class="filters-bar">
+            <div class="chips">
+                @if (filters().title) {
+                    <button class="chip" (click)="removeFilter('title')">
+                        Title: {{ filters().title }}
+                        <span class="x">×</span>
+                    </button>
+                }
+                @if (filters().description) {
+                    <button class="chip" (click)="removeFilter('description')">
+                        Description: {{ filters().description }}
+                        <span class="x">×</span>
+                    </button>
+                }
+                @if (filters().creditTo) {
+                    <button class="chip" (click)="removeFilter('creditTo')">
+                        Credit: {{ filters().creditTo }}
+                        <span class="x">×</span>
+                    </button>
+                }
+                @if (filters().tags?.length) {
+                    @for (t of filters().tags; track t) {
+                        <button class="chip" (click)="removeTag(t)">
+                            #{{ t }}
+                            <span class="x">×</span>
+                        </button>
+                    }
+                }
+            </div>
+            <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear filters</button>
+        </div>
+    }
+
     @if (!isLoading()) {
         <div class="card-grid">
             @for (card of filteredCards(); track card; let i = $index) {
@@ -51,14 +86,6 @@
                             }
                         </div>
                         <h2 class="card-title" (click)="openVoicePage(card.id)">{{ card.location }}</h2>
-                        <!-- <p class="card-description">{{ card.author }}</p> -->
-                        <!-- <div class="card-author">
-                            <img class="avatar" [src]="card.avatar" alt="avatar" />
-                            <div>
-                                <div class="name">{{ card.author }}</div>
-                                <div class="date">{{ card.date }}</div>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
             }

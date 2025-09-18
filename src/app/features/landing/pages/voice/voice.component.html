@@ -9,29 +9,45 @@
         <div class="content">
             <div class="wrap-category">
                 @if (card()!.category) {
-                    <span class="category">{{ card()!.category }}</span>
+                    <span class="category"
+                          (click)="goToGalleryWithFilter('tab', card()!.category, $event)">
+                        {{ card()!.category }}
+                    </span>
                 }
                 @for (tag of card()!.what; track tag) {
-                    <span class="category">{{ tag }}</span>
+                    <span class="category"
+                          (click)="goToGalleryWithFilter('tab', tag, $event)">
+                        {{ tag }}
+                    </span>
                 }
                 @for (tag of card()!.express; track tag) {
-                    <span class="category">{{ tag }}</span>
+                    <span class="category"
+                          (click)="goToGalleryWithFilter('tab', tag, $event)">
+                        {{ tag }}
+                    </span>
                 }
             </div>
 
-            <h1 class="title">{{ card()!.location }}</h1>
-            <!-- <p class="description">{{ card()!.description }}</p> -->
-            <p class="description">{{ card()!.note }}</p>
+            <h1 class="title clickable"
+                (click)="goToGalleryWithFilter('title', card()!.location)">
+                {{ card()!.location }}
+            </h1>
+
+            <p class="description clickable"
+               (click)="goToGalleryWithFilter('description', card()!.note)">
+                {{ card()!.note }}
+            </p>
 
             @if (card()!.creditTo) {
-                <p class="description">
+                <p class="description clickable"
+                   (click)="goToGalleryWithFilter('creditTo', card()!.creditTo)">
                     <span>Credit To:</span>
                     <strong>{{ card()!.creditTo }}</strong>
                 </p>
             }
         </div>
 
-        <!-- Share bar -->
+        <!-- Share bar (без изменений) -->
         <div class="share-bar">
             <button
                 class="share-chip"

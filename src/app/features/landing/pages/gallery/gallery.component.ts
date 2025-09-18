@@ -1,12 +1,17 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, first, of } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
 
-
+type Filters = {
+    title?: string;
+    description?: string;
+    creditTo?: string;
+    tags?: string[]; // CSV → array
+};
 
 @Component({
     selector: 'app-gallery',
@@ -17,17 +22,16 @@ import { IVoice } from 'src/app/shared/types/voices';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GalleryComponent implements OnInit {
-    // public tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).map(this.deslugify);
     public tabs: string[] = [];
     public activeTab = signal<string>('All');
 
     private title = inject(Title);
     private voicesService = inject(VoicesService);
     private meta = inject(Meta);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
 
     public cards = signal<IVoice[]>([]);
-
-    private router: Router = inject(Router);
 
     public pageSize = 24;
     public page = signal(1);
@@ -35,42 +39,97 @@ export class GalleryComponent implements OnInit {
     public hasMore = signal(true);
     private observer?: IntersectionObserver;
 
-    public filteredCards = computed(() => {
-        const tab = this.activeTab();
-        if (tab === 'All') return this.cards();
-
-        const tags = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)]
-        let helperFn = (tag: string) =>
-            tags.map(tag => tag.toLowerCase()).includes(tag.toLowerCase());
-
-        if (!tags) {
-            helperFn = (tag: string) => tag.toLowerCase() === tab.toLowerCase();
-        }
-
-        return this.cards().filter(
-            card => card.what?.some(helperFn) || card.express?.some(helperFn)
-        );
-    });
-
     public isLoading: WritableSignal<boolean> = signal(true);
 
     @ViewChild('sentinel', { static: true }) sentinelRef?: ElementRef<HTMLElement>;
 
+    // ---- Query params → Filters + tab ----
+    private queryParams = signal(this.route.snapshot.queryParamMap);
+    constructor() {
+        // Подпишемся один раз на изменения query params
+        this.route.queryParamMap.subscribe((m) => this.queryParams.set(m));
+    }
+
+    public filters = computed<Filters>(() => {
+        const m = this.queryParams();
+        const title = m.get('title') ?? undefined;
+        const description = m.get('description') ?? undefined;
+        const creditTo = m.get('creditTo') ?? undefined;
+        // const tabs = m.get('tab') ?? '';
+        // const tags = tabs
+        //     ? tabs.split(',').map(s => s.trim()).filter(Boolean)
+        //     : undefined;
+
+        const tab = this.deslugify(m.get('tab') ?? '');
+        if (tab) {
+            if (!this.tabs.includes(tab)) {
+                setTimeout(() => {
+                    this.tabs.push(tab);
+                });
+            }
+            setTimeout(() => {
+                this.activeTab.set(tab);
+            });
+        }
+
+        return { title, description, creditTo };
+    });
+
+    public hasAnyFilter = computed(() => {
+        const f = this.filters();
+        return Boolean(f.title || f.description || f.creditTo || (f.tags && f.tags.length));
+    });
+
+    public filteredCards = computed(() => {
+        const tab = this.activeTab();
+        const f = this.filters();
+        const all = this.cards();
+
+        // 1) фильтр по табу
+        const tagsFromTab = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)];
+        let matchByTab = (t: string) => true;
+        if (tab !== 'All') {
+            if (tagsFromTab && tagsFromTab.length) {
+                const set = new Set(tagsFromTab.map(x => x.toLowerCase()));
+                matchByTab = (t: string) => set.has(String(t).toLowerCase());
+            } else {
+                matchByTab = (t: string) => String(t).toLowerCase() === tab.toLowerCase();
+            }
+        }
+
+        const byTab = tab === 'All'
+            ? all
+            : all.filter(c =>
+                (c.what?.some(matchByTab) || c.express?.some(matchByTab) || (c.category && matchByTab(c.category)))
+            );
+
+        return byTab.filter(c => {
+            if (f.title) {
+                const needle = f.title.toLowerCase();
+                if (!String(c.location ?? '').toLowerCase().includes(needle)) return false;
+            }
+            if (f.description) {
+                const needle = f.description.toLowerCase();
+                if (!String(c.note ?? '').toLowerCase().includes(needle)) return false;
+            }
+            if (f.creditTo) {
+                const needle = f.creditTo.toLowerCase();
+                if (!String(c.creditTo ?? '').toLowerCase().includes(needle)) return false;
+            }
+            return true;
+        });
+    });
 
     public ngOnInit(): void {
         const description = 'Explore heartfelt cards, creative art, and inspiring words from people who care. Every message is a reminder that you’re never alone on your journey.'
-
         const title = 'Messages and moments that lift us up';
 
         this.title.setTitle('Gallery | Wondrvoices');
         this.meta.updateTag({ name: 'description', content: description });
         this.meta.updateTag({ property: 'og:title', content: title });
         this.meta.updateTag({ property: 'og:description', content: description });
-        // this.meta.updateTag({ property: 'og:image', content: this.card.image });
-        // this.meta.updateTag({ property: 'og:image:alt', content: this.card.image });
         this.meta.updateTag({ property: 'twitter:title', content: title });
         this.meta.updateTag({ property: 'twitter:description', content: description });
-        // this.meta.updateTag({ property: 'twitter:image', content: this.card.image });
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
 
         if (typeof window !== 'undefined') {
@@ -84,7 +143,6 @@ export class GalleryComponent implements OnInit {
         this.observer = new IntersectionObserver(
             entries => {
                 const entry = entries[0];
-
                 if (!entry?.isIntersecting) return;
 
                 if (this.hasMore() && !this.isFetchingMore() && !this.isLoading()) {
@@ -138,12 +196,15 @@ export class GalleryComponent implements OnInit {
                         if (el) this.observer?.observe(el);
                     }, 1000);
 
-
                     const cardsTags = Array.from(
                         new Set(
-                            this.cards().flatMap(({ what, express }) => [...(what || []), ...(express || [])]),
+                            this.cards().flatMap(({ category, what, express }) => [
+                                ...(category ? [category] : []),
+                                ...(what || []),
+                                ...(express || []),
+                            ]),
                         ),
-                    ).map(tag => this.deslugify(tag.toLowerCase()));
+                    ).map(tag => this.deslugify(String(tag).toLowerCase()));
 
                     this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP)
                         .filter(highLevelTag => {
@@ -154,6 +215,19 @@ export class GalleryComponent implements OnInit {
                             );
                         })
                         .map(this.deslugify);
+
+                    const tabFromUrl = this.route.snapshot.queryParamMap.get('tab');
+                    if (tabFromUrl) {
+                        this.activeTab.set(this.deslugify(tabFromUrl));
+                        if (!this.tabs.includes(tabFromUrl)) {
+                            setTimeout(() => {
+                                this.tabs.push(this.activeTab());
+                                console.log(this.tabs)
+                            });
+                        }
+                    } else {
+                        this.activeTab.set('All');
+                    }
                 }
             });
     }
@@ -165,6 +239,14 @@ export class GalleryComponent implements OnInit {
             this.tabs.push(tab);
         }
         this.activeTab.set(tab);
+
+        // синхронизируем в URL
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { tab },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        });
     }
 
     public openVoicePage(id: number): void {
@@ -186,6 +268,37 @@ export class GalleryComponent implements OnInit {
             .replace(/^_+|_+$/g, "");
     }
 
+    // ---- chips actions ----
+    public removeFilter(key: keyof Filters): void {
+        const qp = { ...this.route.snapshot.queryParams };
+        delete qp[key as string];
+        this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
+    }
+
+    public removeTag(tag: string): void {
+        const qp = new URLSearchParams(this.route.snapshot.queryParamMap as any);
+        const csv = qp.get('tags') ?? '';
+        const list = csv ? csv.split(',').map(s => s.trim()).filter(Boolean) : [];
+        const next = list.filter(t => t !== tag);
+        if (next.length) qp.set('tags', next.join(','));
+        else qp.delete('tags');
+
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: Object.fromEntries(qp.entries()),
+            replaceUrl: true,
+        });
+    }
+
+    public clearAllFilters(): void {
+        const qp = { ...this.route.snapshot.queryParams };
+        delete qp['title'];
+        delete qp['description'];
+        delete qp['creditTo'];
+        delete qp['tags'];
+        this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
+    }
+
     public ngOnDestroy(): void {
         this.observer?.disconnect();
     }
@@ -197,10 +310,4 @@ const HIGH_LEVEL_TAGS_MAP: { [key: string]: string[] } = {
     words: ["letter", "poem", "quote", "memory"],
     kids: ["kids", "kids_art", "love", "peace", "joy"],
     photo: ["photo"],
-
-    // spirit: ["prayer", "wish", "faith", "gratitude"],
-    // heart_positivity: ["love", "peace", "hope", "joy", "friendship", "connection", "encouragement", "compassion"],
-    // recovery: ["strength", "resilience", "healing", "support"],
-    // comfort_memory: ["comfort", "grief", "memory", "thought"],
-    // nature_other: ["nature", "pet", "other"],
 };
