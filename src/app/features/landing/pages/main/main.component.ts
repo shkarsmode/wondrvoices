@@ -58,7 +58,6 @@ export class MainComponent implements OnInit {
     ];
 
     public ngOnInit(): void {
-        console.log('[MainComponent]: init');
         this.images1 = [...this.images1, ...this.images1, ...this.images1];
         this.images2 = [...this.images2, ...this.images2, ...this.images2];
         this.title.setTitle('Wondrvoices');
@@ -76,7 +75,7 @@ export class MainComponent implements OnInit {
         // if (window.innerWidth < 1430) return;
         setTimeout(() => {
             this.startAnimation();
-        }, 100);
+        }, 550);
     }
 
     private updateMetaTags(): void {

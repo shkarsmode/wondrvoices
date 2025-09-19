@@ -21,8 +21,8 @@
                 (mouseenter)="mouseEnterBlock1=true"
                 (mouseleave)="mouseEnterBlock1=false"
                 #heroImages1>
-                @for (img of images1; track $index) {
-                    <img [src]="img" alt="">
+                @for (img of images1; track $index; let i = $index) {
+                    <img [src]="img" [alt]="'test' + i" fetchpriority=high>
                 }
             </div>
             <div
@@ -30,8 +30,8 @@
                 (mouseenter)="mouseEnterBlock2=true"
                 (mouseleave)="mouseEnterBlock2=false"
                 #heroImages2>
-                @for (img of images2; track $index) {
-                    <img [src]="img" alt="">
+                @for (img of images2; track $index; let i = $index) {
+                    <img [src]="img" [alt]="'test2' + i" fetchpriority=high>
                 }
             </div>
         </div>
@@ -39,7 +39,7 @@
 </section>
 
 <section class="why-we-started uplifting">
-    <img src="assets/img/uplifting.png" alt="">
+    <img src="assets/img/uplifting.webp" alt="">
     <div class="content">
         <h2>Uplifting Cancer Journeys, One Voice at a Time</h2>
         <p>
@@ -100,7 +100,7 @@
 </section>
 
 <section class="why-we-started">
-    <img src="assets/img/why-we.png" alt="">
+    <img src="assets/img/why-we.webp" alt="">
     <div class="content">
         <h2>Why We Started WondrVoices</h2>
         <p>
@@ -138,11 +138,11 @@
             <div class="logos-row scroll-left">
                 <div class="logos-track">
                     @for (i of [1, 2, 3, 4]; track $index) {
-                        <img src="assets/img/gang.png" alt="Woof gang">
-                        <img src="assets/img/brook.png" alt="Brook">
-                        <img src="assets/img/foul.png" alt="Foulkeways" />
-                        <img src="assets/img/farm.png" alt="Farm">
-                        <img src="assets/img/hill.png" alt="hill">
+                        <img src="assets/img/gang.webp" alt="Woof gang">
+                        <img src="assets/img/brook.webp" alt="Brook">
+                        <img src="assets/img/foul.webp" alt="Foulkeways" />
+                        <img src="assets/img/farm.webp" alt="Farm">
+                        <img src="assets/img/hill.webp" alt="hill">
                     }
                 </div>
             </div>
@@ -150,11 +150,11 @@
             <div class="logos-row scroll-right">
                 <div class="logos-track">
                     @for (i of [1, 2, 3, 4]; track $index) {
-                        <img src="assets/img/artv.png" alt="artv">
-                        <img src="assets/img/w.png" alt="Logo pink" />
-                        <img src="assets/img/aegis.png" alt="aegis">
-                        <img src="assets/img/salty.png" alt="aegis">
-                        <img src="https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium"
+                        <img src="assets/img/artv.webp" alt="artv">
+                        <img src="assets/img/w.webp" alt="Logo pink" />
+                        <img src="assets/img/aegis.webp" alt="aegis">
+                        <img src="assets/img/salty.webp" alt="aegis">
+                        <img src="https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.webp?width=2400&optimize=medium"
                             alt="Clay Center" />
                     }
                 </div>
@@ -185,7 +185,7 @@
     <div class="donate-wrapper">
         <div class="donate-image">
             <h3>Help Us Print & Deliver More Cards</h3>
-            <img src="assets/img/help-more.png" alt="Handmade cards" />
+            <img src="assets/img/help-more.webp" alt="Handmade cards" />
         </div>
         <givebutter-widget id="pzvG5p"></givebutter-widget>
 

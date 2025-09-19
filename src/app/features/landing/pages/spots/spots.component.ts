@@ -187,8 +187,8 @@ export class SpotsComponent implements OnInit, OnDestroy {
                     partnerLogoFile: this.uploadedLogoFile ?? null,
                 
                     // assets from your /assets (adjust paths as needed)
-                    sampleCardImageUrl: 'assets/img/about/5.png',
-                    qrImageUrl: 'assets/img/qr.png', // QR код внизу слева
+                    sampleCardImageUrl: 'assets/img/about/5.webp',
+                    qrImageUrl: 'assets/img/qr.webp', // QR код внизу слева
                 
                     // text content (you can translate later)
                     headline: 'Spread kindness with us!',
@@ -631,12 +631,12 @@ export class SpotsComponent implements OnInit, OnDestroy {
         this.meta.updateTag({ name: 'description', content: 'Become a WondrSpot and help spread hope and kindness.' });
         this.meta.updateTag({ property: 'og:title', content: 'Become a WondrSpot | WondrVoices' });
         this.meta.updateTag({ property: 'og:description', content: 'Become a WondrSpot and help spread hope and kindness.' });
-        this.meta.updateTag({ property: 'og:image', content: 'https://www.wondrvoices.com/assets/img/spots/banner-1.png' });
+        this.meta.updateTag({ property: 'og:image', content: 'https://www.wondrvoices.com/assets/img/spots/banner-1.webp' });
         this.meta.updateTag({ property: 'og:image:alt', content: 'WondrSpots' });
         this.meta.updateTag({ property: 'og:url', content: 'https://www.wondrvoices.com/spots' });
         this.meta.updateTag({ property: 'twitter:title', content: 'Become a WondrSpot | WondrVoices' });
         this.meta.updateTag({ property: 'twitter:description', content: 'Become a WondrSpot and help spread hope and kindness.' });
-        this.meta.updateTag({ property: 'twitter:image', content: 'https://www.wondrvoices.com/assets/img/spots/banner-1.png' });
+        this.meta.updateTag({ property: 'twitter:image', content: 'https://www.wondrvoices.com/assets/img/spots/banner-1.webp' });
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     }
 }

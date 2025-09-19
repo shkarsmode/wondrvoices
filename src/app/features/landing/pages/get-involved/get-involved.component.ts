@@ -64,7 +64,7 @@ export class GetInvolvedComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'og:image',
-            content: '	https://www.wondrvoices.com/assets/img/spots/banner-1.png',
+            content: '	https://www.wondrvoices.com/assets/img/spots/banner-1.webp',
         });
         this.meta.updateTag({
             property: 'og:image:alt',
@@ -84,7 +84,7 @@ export class GetInvolvedComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'twitter:image',
-            content: '	https://www.wondrvoices.com/assets/img/spots/banner-1.png',
+            content: '	https://www.wondrvoices.com/assets/img/spots/banner-1.webp',
         });
         this.meta.updateTag({
             name: 'twitter:card',
@@ -116,7 +116,7 @@ export class GetInvolvedComponent implements OnInit {
         const page = pdfDoc.addPage([600, 600]);
         const { width, height } = page.getSize();
 
-        const gradientUrl = 'assets/img/gradient-bg.png';
+        const gradientUrl = 'assets/img/gradient-bg.webp';
         const gradientBytes = await fetch(gradientUrl).then(res => res.arrayBuffer());
         const gradientImage = await pdfDoc.embedPng(gradientBytes);
         page.drawImage(gradientImage, {
@@ -127,7 +127,7 @@ export class GetInvolvedComponent implements OnInit {
         });
 
         // Logo
-        const logoUrl = 'assets/img/full-logo.png';
+        const logoUrl = 'assets/img/full-logo.webp';
         const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
         const logoImage = await pdfDoc.embedPng(logoBytes);
         const logoDims = logoImage.scale(0.2);
@@ -139,7 +139,7 @@ export class GetInvolvedComponent implements OnInit {
         });
 
         // Line in the corner of a table
-        const decoUrl = 'assets/img/lines.png';
+        const decoUrl = 'assets/img/lines.webp';
         const decoBytes = await fetch(decoUrl).then(res => res.arrayBuffer());
         const decoImage = await pdfDoc.embedPng(decoBytes);
         const decoDims = decoImage.scale(0.3);

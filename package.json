@@ -10,7 +10,8 @@
     "serve:ssr": "node dist/wondrvoices/server/main.js",
     "prerender": "ng run wondrvoices:prerender",
     "build:ssr": "ng build && ng run wondrvoices:server",
-    "vercel-build": "npm run build:ssr"
+    "vercel-build": "npm run build:ssr",
+    "sharp": "node src/scripts/sharp.js"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +45,7 @@
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
+    "sharp": "^0.33.3",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.5.2"
   }
