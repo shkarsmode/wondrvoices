@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LandingPageComponent } from './features/landing/landing-page/landing-page.component';
-import { PostComponent } from './features/landing/pages/post/post.component';
 
 export const routes: Routes = [
     {
@@ -47,7 +46,8 @@ export const routes: Routes = [
             },
             {
                 path: 'blogs/:id', 
-                component: PostComponent,
+                loadComponent: () => import('./features/landing/pages/post/post.component')
+                .then(m => m.PostComponent)
             },
             {
                 path: 'terms',
