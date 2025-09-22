@@ -46,35 +46,38 @@
           <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear</button>
         </div>
       
-        <div class="chips" *ngIf="hasAnyFilter()">
-          @if (filters().title) {
-            <button class="chip" (click)="applyTextFilter('title','')">
-              Title: {{ filters().title }} <span class="x">×</span>
-            </button>
-          }
-          @if (filters().description) {
-            <button class="chip" (click)="applyTextFilter('description','')">
-              Description: {{ filters().description }} <span class="x">×</span>
-            </button>
-          }
-          @if (filters().creditTo) {
-            <button class="chip" (click)="applyTextFilter('creditTo','')">
-              Credit: {{ filters().creditTo }} <span class="x">×</span>
-            </button>
-          }
-          @if (filters().tags?.length) {
-            @for (t of filters().tags; track t) {
-              <button class="chip" (click)="removeTag(t)">
-                #{{ t }} <span class="x">×</span>
-              </button>
-            }
-          }
-          @if (filters().tagsMode) {
-            <button class="chip" (click)="toggleTagsMode()">
-              Mode: {{ (filters().tagsMode||'any').toUpperCase() }} <span class="x">⇆</span>
-            </button>
-          }
-        </div>
+        @if (hasAnyFilter()) {
+            <div class="chips">
+              @if (filters().title) {
+                <button class="chip" (click)="applyTextFilter('title','')">
+                  Title: {{ filters().title }} <span class="x">×</span>
+                </button>
+              }
+              @if (filters().description) {
+                <button class="chip" (click)="applyTextFilter('description','')">
+                  Description: {{ filters().description }} <span class="x">×</span>
+                </button>
+              }
+              @if (filters().creditTo) {
+                <button class="chip" (click)="applyTextFilter('creditTo','')">
+                  Credit: {{ filters().creditTo }} <span class="x">×</span>
+                </button>
+              }
+              @if (activeTab() !== 'All') {
+                <!-- @for (t of filters().tags; track t) { -->
+                  <button class="chip" (click)="applyTextFilter('tab', 'All')">
+                    #{{ activeTab() }} <span class="x">×</span>
+                  </button>
+                <!-- } -->
+              }
+              <!-- @if (filters().tagsMode) {
+                <button class="chip" (click)="toggleTagsMode()">
+                  Mode: {{ (filters().tagsMode||'any').toUpperCase() }} <span class="x">⇆</span>
+                </button>
+              } -->
+            </div>
+        }
+
     </div>
 
     @if (!isLoading()) {

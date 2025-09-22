@@ -241,7 +241,7 @@ export class GalleryComponent implements OnInit {
         this.setQueryPatch({ tags: list.size ? Array.from(list).join(',') : undefined });
     }
 
-    public applyTextFilter(key: 'title' | 'description' | 'creditTo', value: string) {
+    public applyTextFilter(key: 'title' | 'description' | 'creditTo' | 'tab', value: string) {
         const v = value?.trim() || undefined;
         this.setQueryPatch({ [key]: v } as any);
     }
