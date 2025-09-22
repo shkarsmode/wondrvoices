@@ -20,24 +20,34 @@ export class VoicesService {
     public getVoices(
         limit: number,
         page: number,
-        status?: VoiceStatus
-    ): Observable<VoicesListResponse> {
-        let params = new HttpParams()
-            .set('limit', String(limit))
-            .set('page', String(page));
+        status?: VoiceStatus,
+        extra?: {
+            title?: string; description?: string; creditTo?: string;
+            tags?: string[]; tab?: string;
+            tagsMode?: 'any' | 'all';
+            orderBy?: 'createdAt' | 'id'; orderDir?: 'ASC' | 'DESC';
+        }
+    ) {
+        let params = new HttpParams().set('limit', String(limit)).set('page', String(page));
         if (status) params = params.set('status', status);
+        if (extra?.title) params = params.set('title', extra.title);
+        if (extra?.description) params = params.set('description', extra.description);
+        if (extra?.creditTo) params = params.set('creditTo', extra.creditTo);
+        if (extra?.tab) params = params.set('tab', extra.tab);
+        if (extra?.tags?.length) params = params.set('tags', extra.tags.join(','));
+        if (extra?.tagsMode) params = params.set('tagsMode', extra.tagsMode);
+        if (extra?.orderBy) params = params.set('orderBy', extra.orderBy);
+        if (extra?.orderDir) params = params.set('orderDir', extra.orderDir);
 
-        const approvedUrl = status ===  VoiceStatus.Approved ? '/approved' : '';
+        const approvedUrl = status === VoiceStatus.Approved ? '/approved' : '';
         return this.http.get<VoicesListResponse>(
             `${this.basePathApi}/${this.path}${approvedUrl}?timestamp=${Date.now()}`,
             { params }
         );
     }
-    
 
-    /** Convenience: fetch only approved voices (public feed use-case) */
-    public getApprovedVoices(limit: number, page: number): Observable<VoicesListResponse> {
-        return this.getVoices(limit, page, VoiceStatus.Approved);
+    public getApprovedVoices(limit: number, page: number, extra?: Parameters<typeof this.getVoices>[3]) {
+        return this.getVoices(limit, page, VoiceStatus.Approved, extra);
     }
 
     public getApprovedVoiceById(id: number): Observable<IVoice> {
@@ -45,7 +55,7 @@ export class VoicesService {
     }
 
     public getVoiceById(id: number, status?: VoiceStatus): Observable<IVoice> {
-        const approvedUrl = status ===  VoiceStatus.Approved ? '/approved' : '';
+        const approvedUrl = status === VoiceStatus.Approved ? '/approved' : '';
         return this.http.get<IVoice>(
             `${this.basePathApi}/${this.path}${approvedUrl}/${id}`
         );

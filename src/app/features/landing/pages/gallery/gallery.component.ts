@@ -10,7 +10,9 @@ type Filters = {
     title?: string;
     description?: string;
     creditTo?: string;
-    tags?: string[]; // CSV → array
+    tags?: string[];
+    tab?: string;
+    tagsMode?: 'any' | 'all';
 };
 
 @Component({
@@ -55,72 +57,25 @@ export class GalleryComponent implements OnInit {
         const title = m.get('title') ?? undefined;
         const description = m.get('description') ?? undefined;
         const creditTo = m.get('creditTo') ?? undefined;
-        // const tabs = m.get('tab') ?? '';
-        // const tags = tabs
-        //     ? tabs.split(',').map(s => s.trim()).filter(Boolean)
-        //     : undefined;
+        const tagsCsv = m.get('tags') ?? '';
+        const tags = tagsCsv ? tagsCsv.split(',').map(s => s.trim()).filter(Boolean) : undefined;
+        const tab = this.deslugify(m.get('tab') ?? '') || undefined;
+        const tagsMode = (m.get('tagsMode') as 'any' | 'all') || 'any';
 
-        const tab = this.deslugify(m.get('tab') ?? '');
-        if (tab) {
-            if (!this.tabs.includes(tab)) {
-                setTimeout(() => {
-                    this.tabs.push(tab);
-                });
-            }
-            setTimeout(() => {
-                this.activeTab.set(tab);
-            });
-        }
+        // активный таб обновим визуально как раньше
+        if (tab) setTimeout(() => this.activeTab.set(tab));
 
-        return { title, description, creditTo };
+        return { title, description, creditTo, tags, tab, tagsMode };
     });
 
     public hasAnyFilter = computed(() => {
         const f = this.filters();
-        return Boolean(f.title || f.description || f.creditTo || (f.tags && f.tags.length));
-    });
-
-    public filteredCards = computed(() => {
-        const tab = this.activeTab();
-        const f = this.filters();
-        const all = this.cards();
-
-        // 1) фильтр по табу
-        const tagsFromTab = HIGH_LEVEL_TAGS_MAP[this.slugify(tab)];
-        let matchByTab = (t: string) => true;
-        if (tab !== 'All') {
-            if (tagsFromTab && tagsFromTab.length) {
-                const set = new Set(tagsFromTab.map(x => x.toLowerCase()));
-                matchByTab = (t: string) => set.has(String(t).toLowerCase());
-            } else {
-                matchByTab = (t: string) => String(t).toLowerCase() === tab.toLowerCase();
-            }
-        }
-
-        const byTab = tab === 'All'
-            ? all
-            : all.filter(c =>
-                (c.what?.some(matchByTab) || c.express?.some(matchByTab) || (c.category && matchByTab(c.category)))
-            );
-
-        return byTab.filter(c => {
-            if (f.title) {
-                const needle = f.title.toLowerCase();
-                if (!String(c.location ?? '').toLowerCase().includes(needle)) return false;
-            }
-            if (f.description) {
-                const needle = f.description.toLowerCase();
-                if (!String(c.note ?? '').toLowerCase().includes(needle)) return false;
-            }
-            if (f.creditTo) {
-                const needle = f.creditTo.toLowerCase();
-                if (!String(c.creditTo ?? '').toLowerCase().includes(needle)) return false;
-            }
-            return true;
-        });
+        return Boolean(f.title || f.description || f.creditTo || (f.tags && f.tags.length) || f.tab);
     });
 
     public ngOnInit(): void {
+        this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).map(this.deslugify);
+
         const description = 'Explore heartfelt cards, creative art, and inspiring words from people who care. Every message is a reminder that you’re never alone on your journey.'
         const title = 'Messages and moments that lift us up';
 
@@ -135,6 +90,15 @@ export class GalleryComponent implements OnInit {
         if (typeof window !== 'undefined') {
             this.loadPage(1, true);
         }
+
+        this.route.queryParamMap.subscribe(() => {
+            if (!this.isLoading()) {
+                this.page.set(1);
+                this.hasMore.set(true);
+                this.cards.set([]);
+                this.loadPage(1, true);
+            }
+        });
     }
 
     public ngAfterViewInit(): void {
@@ -157,21 +121,31 @@ export class GalleryComponent implements OnInit {
         );
     }
 
+
     private loadPage(nextPage: number, initial: boolean): void {
+        const f = this.filters();
+
         if (initial) this.isLoading.set(true);
         else this.isFetchingMore.set(true);
 
         this.voicesService
-            .getApprovedVoices(this.pageSize, nextPage)
+            .getApprovedVoices(this.pageSize, nextPage, {
+                title: f.title,
+                description: f.description,
+                creditTo: f.creditTo,
+                tags: f.tags,
+                tab: f.tab ? this.slugify(f.tab) : undefined, // серверу — slug
+                tagsMode: f.tagsMode ?? 'any',
+                orderBy: 'createdAt',
+                orderDir: 'DESC',
+            })
             .pipe(
                 first(),
                 catchError((err) => {
                     console.error('getApprovedVoices error', err);
-                    if (err?.status === 404 || err?.status === 204) {
-                        this.hasMore.set(false);
-                    }
+                    if (err?.status === 404 || err?.status === 204) this.hasMore.set(false);
                     return of({ items: [] as IVoice[] });
-                }),
+                })
             )
             .subscribe(({ items }) => {
                 const newItems = Array.isArray(items) ? items : [];
@@ -192,42 +166,9 @@ export class GalleryComponent implements OnInit {
 
                 if (initial) {
                     setTimeout(() => {
-                        const el = document.querySelector('.sentinel')
+                        const el = document.querySelector('.sentinel');
                         if (el) this.observer?.observe(el);
-                    }, 1000);
-
-                    const cardsTags = Array.from(
-                        new Set(
-                            this.cards().flatMap(({ category, what, express }) => [
-                                ...(category ? [category] : []),
-                                ...(what || []),
-                                ...(express || []),
-                            ]),
-                        ),
-                    ).map(tag => this.deslugify(String(tag).toLowerCase()));
-
-                    this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP)
-                        .filter(highLevelTag => {
-                            const tags = HIGH_LEVEL_TAGS_MAP[highLevelTag];
-                            return (
-                                tags.some(tag => cardsTags.includes(this.deslugify(tag.toLowerCase()))) ||
-                                tags.length === 0
-                            );
-                        })
-                        .map(this.deslugify);
-
-                    const tabFromUrl = this.route.snapshot.queryParamMap.get('tab');
-                    if (tabFromUrl) {
-                        this.activeTab.set(this.deslugify(tabFromUrl));
-                        if (!this.tabs.includes(tabFromUrl)) {
-                            setTimeout(() => {
-                                this.tabs.push(this.activeTab());
-                                console.log(this.tabs)
-                            });
-                        }
-                    } else {
-                        this.activeTab.set('All');
-                    }
+                    }, 200);
                 }
             });
     }
@@ -240,10 +181,9 @@ export class GalleryComponent implements OnInit {
         }
         this.activeTab.set(tab);
 
-        // синхронизируем в URL
         this.router.navigate([], {
             relativeTo: this.route,
-            queryParams: { tab },
+            queryParams: { tab: this.slugify(tab) },
             queryParamsHandling: 'merge',
             replaceUrl: true,
         });
@@ -275,27 +215,41 @@ export class GalleryComponent implements OnInit {
         this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
     }
 
-    public removeTag(tag: string): void {
-        const qp = new URLSearchParams(this.route.snapshot.queryParamMap as any);
-        const csv = qp.get('tags') ?? '';
-        const list = csv ? csv.split(',').map(s => s.trim()).filter(Boolean) : [];
-        const next = list.filter(t => t !== tag);
-        if (next.length) qp.set('tags', next.join(','));
-        else qp.delete('tags');
+    public setQueryPatch(patch: Record<string, string | undefined>) {
+        const qp = { ...this.route.snapshot.queryParams, ...patch };
+        Object.keys(qp).forEach(k => qp[k] === undefined && delete qp[k]);
+        this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
+    }
 
-        this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: Object.fromEntries(qp.entries()),
-            replaceUrl: true,
-        });
+    public toggleTagsMode() {
+        const current = this.filters().tagsMode ?? 'any';
+        const next: 'any' | 'all' = current === 'any' ? 'all' : 'any';
+        this.setQueryPatch({ tagsMode: next });
+    }
+
+    public addTag(tag: string) {
+        tag = this.slugify(tag);
+        const list = new Set(this.filters().tags ?? []);
+        list.add(tag);
+        this.setQueryPatch({ tags: Array.from(list).join(',') });
+    }
+
+    public removeTag(tag: string) {
+        tag = this.slugify(tag);
+        const list = new Set(this.filters().tags ?? []);
+        list.delete(tag);
+        this.setQueryPatch({ tags: list.size ? Array.from(list).join(',') : undefined });
+    }
+
+    public applyTextFilter(key: 'title' | 'description' | 'creditTo', value: string) {
+        const v = value?.trim() || undefined;
+        this.setQueryPatch({ [key]: v } as any);
     }
 
     public clearAllFilters(): void {
         const qp = { ...this.route.snapshot.queryParams };
-        delete qp['title'];
-        delete qp['description'];
-        delete qp['creditTo'];
-        delete qp['tags'];
+        delete qp['title']; delete qp['description']; delete qp['creditTo'];
+        delete qp['tags']; delete qp['tagsMode']; delete qp['tab'];
         this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
     }
 

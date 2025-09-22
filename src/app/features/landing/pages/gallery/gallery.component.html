@@ -15,43 +15,71 @@
         }
     </div>
 
-    @if (hasAnyFilter()) {
-        <div class="filters-bar">
-            <div class="chips">
-                @if (filters().title) {
-                    <button class="chip" (click)="removeFilter('title')">
-                        Title: {{ filters().title }}
-                        <span class="x">×</span>
-                    </button>
-                }
-                @if (filters().description) {
-                    <button class="chip" (click)="removeFilter('description')">
-                        Description: {{ filters().description }}
-                        <span class="x">×</span>
-                    </button>
-                }
-                @if (filters().creditTo) {
-                    <button class="chip" (click)="removeFilter('creditTo')">
-                        Credit: {{ filters().creditTo }}
-                        <span class="x">×</span>
-                    </button>
-                }
-                @if (filters().tags?.length) {
-                    @for (t of filters().tags; track t) {
-                        <button class="chip" (click)="removeTag(t)">
-                            #{{ t }}
-                            <span class="x">×</span>
-                        </button>
-                    }
-                }
-            </div>
-            <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear filters</button>
+    <div class="filters-panel">
+        <div class="row">
+          <input type="search" placeholder="Title (location)…"
+                 [value]="filters().title || ''"
+                 (change)="applyTextFilter('title', ($any($event.target).value))" />
+      
+          <input type="search" placeholder="Description (note)…"
+                 [value]="filters().description || ''"
+                 (change)="applyTextFilter('description', ($any($event.target).value))" />
+      
+          <input type="search" placeholder="Credit to…"
+                 [value]="filters().creditTo || ''"
+                 (change)="applyTextFilter('creditTo', ($any($event.target).value))" />
+      
+          <!-- <div class="tags-input">
+            <input type="text" placeholder="Add tag and press Enter"
+                   (keydown.enter)="addTag(($any($event.target).value)); $any($event.target).value='';" />
+          </div> -->
+      
+          <!-- <div class="mode-toggle" role="group" aria-label="Tags matching mode">
+            <button type="button"
+                    [class.active]="(filters().tagsMode||'any')==='any'"
+                    (click)="setQueryPatch({ tagsMode: 'any' })">OR (any)</button>
+            <button type="button"
+                    [class.active]="(filters().tagsMode||'any')==='all'"
+                    (click)="setQueryPatch({ tagsMode: 'all' })">AND (all)</button>
+          </div> -->
+      
+          <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear</button>
         </div>
-    }
+      
+        <div class="chips" *ngIf="hasAnyFilter()">
+          @if (filters().title) {
+            <button class="chip" (click)="applyTextFilter('title','')">
+              Title: {{ filters().title }} <span class="x">×</span>
+            </button>
+          }
+          @if (filters().description) {
+            <button class="chip" (click)="applyTextFilter('description','')">
+              Description: {{ filters().description }} <span class="x">×</span>
+            </button>
+          }
+          @if (filters().creditTo) {
+            <button class="chip" (click)="applyTextFilter('creditTo','')">
+              Credit: {{ filters().creditTo }} <span class="x">×</span>
+            </button>
+          }
+          @if (filters().tags?.length) {
+            @for (t of filters().tags; track t) {
+              <button class="chip" (click)="removeTag(t)">
+                #{{ t }} <span class="x">×</span>
+              </button>
+            }
+          }
+          @if (filters().tagsMode) {
+            <button class="chip" (click)="toggleTagsMode()">
+              Mode: {{ (filters().tagsMode||'any').toUpperCase() }} <span class="x">⇆</span>
+            </button>
+          }
+        </div>
+    </div>
 
     @if (!isLoading()) {
         <div class="card-grid">
-            @for (card of filteredCards(); track card; let i = $index) {
+            @for (card of cards(); track card; let i = $index) {
                 <div
                     class="card"
                     [style]="'--i: ' + ((i - (pageSize * (page() - 1))) * 0.10) + 's'">
