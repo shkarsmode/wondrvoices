@@ -22,20 +22,21 @@
                 placeholder="Location…"
                 [initial]="filters().title || ''"
                 emptyHint="Type to search location"
-                (select)="applyTextFilter('title', $event)" />
+                (select)="applyTextFilter('title', $event)"
+                (inputChange)="applyTextFilter('title', $event)" />
         
 
             <input 
                 type="search" placeholder="Note..."
                 [value]="filters().description || ''"
-                (change)="applyTextFilter('description', ($any($event.target).value))" />
+                (input)="applyTextFilter('description', ($any($event.target).value))" />
       
             <w-autocomplete
                 field="creditTo"
                 placeholder="Credit to…"
                 [initial]="filters().creditTo || ''"
                 emptyHint="Type to search credits"
-                (select)="applyTextFilter('creditTo', $event)" />
+                (input)="applyTextFilter('creditTo', ($any($event.target).value))" />
                 
           <!-- <input type="search" placeholder="Credit to…"
                  [value]="filters().creditTo || ''"
