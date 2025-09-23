@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, first, of } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
+import { AutocompleteInputComponent } from '../../components/autocomplete-input/autocomplete-input.component';
 
 type Filters = {
     title?: string;
@@ -18,7 +19,7 @@ type Filters = {
 @Component({
     selector: 'app-gallery',
     standalone: true,
-    imports: [RouterModule, JsonPipe],
+    imports: [RouterModule, JsonPipe, AutocompleteInputComponent],
     templateUrl: './gallery.component.html',
     styleUrl: './gallery.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

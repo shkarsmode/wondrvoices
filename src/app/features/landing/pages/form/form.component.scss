@@ -33,46 +33,49 @@ $form-accent: #ffbfae;
         .input-wrapper {
             position: relative;
 
-            input {
-                width: 100%;
-                padding: 1rem;
-                border: 1px solid #ccc;
-                border-radius: $form-radius;
-                font-size: 1rem;
-                transition: border 0.3s;
-
-                &:focus {
-                    outline: none;
-                    border-color: $form-accent;
+            ::ng-deep {
+                input {
+                    width: 100%;
+                    padding: 1rem;
+                    border: 1px solid #ccc;
+                    border-radius: $form-radius;
+                    font-size: 1rem;
+                    transition: border 0.3s;
+    
+                    &:focus {
+                        outline: none;
+                        border-color: $form-accent;
+                    }
+    
+                    @media screen and (max-width: 500px) {
+                        font-size: 14px;
+                    }
                 }
-
-                @media screen and (max-width: 500px) {
-                    font-size: 14px;
+    
+                label {
+                    position: absolute;
+                    top: 50%;
+                    left: 1rem;
+                    transform: translateY(-50%);
+                    color: #888;
+                    transition: all 0.2s ease;
+                    pointer-events: none;
+    
+                    @media screen and (max-width: 500px) {
+                        font-size: 14px;
+                    }
+                }
+    
+                input:focus+label,
+                input:active+label,
+                .focused {
+                    top: 11px;
+                    left: 0.9rem;
+                    font-size: 0.75rem;
+                    color: $form-accent;
                 }
             }
 
-            label {
-                position: absolute;
-                top: 50%;
-                left: 1rem;
-                transform: translateY(-50%);
-                color: #888;
-                transition: all 0.2s ease;
-                pointer-events: none;
-
-                @media screen and (max-width: 500px) {
-                    font-size: 14px;
-                }
-            }
-
-            input:focus+label,
-            input:active+label,
-            .focused {
-                top: 11px;
-                left: 0.9rem;
-                font-size: 0.75rem;
-                color: $form-accent;
-            }
         }
 
         &.checkbox {
