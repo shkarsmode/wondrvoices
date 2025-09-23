@@ -1,5 +1,5 @@
 <div class="message-board">
-    <h1 class="title">Messages and moments <br /> that lift us up</h1>
+    <h1 class="title" [style.viewTransitionName]="'title'">Messages and moments <br /> that lift us up</h1>
     <p class="subtitle">
         Explore heartfelt cards, creative art, and inspiring words from people who care.
         Every message is a reminder that you’re never alone on your journey.
@@ -140,15 +140,23 @@
             @for (card of cards(); track card; let i = $index) {
                 <div
                     class="card"
-                    [style]="'--i: ' + ((i - (pageSize * (page() - 1))) * 0.10) + 's'">
-                    <div class="card-image-wrap" (click)="openVoicePage(card.id)">
+                    [style]="'--i: ' + ((i - (pageSize * (page() - 1))) * 0.10) + 's'"
+                    (mouseenter)="mouseEnterCard(card.id)">
+                    <div class="card-image-wrap" (click)="openVoicePage(card.id)" >
                         <img
                             class="card-image"
                             [src]="card.img"
-                            alt="card image" />
+                            alt="card image" 
+                            [style.viewTransitionName]="
+                                activeImageId() === card.id ? computedViewImg(card.id) : 'none'
+                            "/>
                     </div>
                     <div class="card-content">
-                        <div class="wrap-category">
+                        <div 
+                            class="wrap-category" 
+                            [style.viewTransitionName]="
+                                activeImageId() === card.id ? computedViewTag(card.id) : 'none'
+                            ">
                             @if (card.category) {
                                 <span
                                     class="category"
@@ -171,7 +179,11 @@
                                 </span>
                             }
                         </div>
-                        <h2 class="card-title" (click)="openVoicePage(card.id)">{{ card.location }}</h2>
+                        <h2
+                            (click)="openVoicePage(card.id)"
+                            class="card-title">
+                            {{ card.location }}
+                        </h2>
                     </div>
                 </div>
             }

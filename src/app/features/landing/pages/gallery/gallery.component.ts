@@ -1,5 +1,6 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, first, of } from 'rxjs';
@@ -28,6 +29,11 @@ export class GalleryComponent implements OnInit {
     public tabs: string[] = [];
     public activeTab = signal<string>('All');
 
+    readonly activeImageId = signal<number | null>(null);
+    readonly computedViewImg = (id: number) => `img-voice-${id}`;
+    readonly computedViewTitle = (id: number) => `img-title-${id}`;
+    readonly computedViewTag = (id: number) => `img-tag-${id}`;
+
     private title = inject(Title);
     private voicesService = inject(VoicesService);
     private meta = inject(Meta);
@@ -49,8 +55,7 @@ export class GalleryComponent implements OnInit {
     // ---- Query params → Filters + tab ----
     private queryParams = signal(this.route.snapshot.queryParamMap);
     constructor() {
-        // Подпишемся один раз на изменения query params
-        this.route.queryParamMap.subscribe((m) => this.queryParams.set(m));
+        this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((m) => this.queryParams.set(m) );
     }
 
     public filters = computed<Filters>(() => {
@@ -76,6 +81,12 @@ export class GalleryComponent implements OnInit {
 
     public ngOnInit(): void {
         this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).map(this.deslugify);
+
+        const nav = this.router.getCurrentNavigation();
+        // Сработает только в инициаторе навигации и синхронно при переходе
+        const fromUrl = nav?.previousNavigation?.finalUrl?.toString() 
+            ?? nav?.previousNavigation?.extractedUrl?.toString() 
+            ?? null;
 
         const description = 'Explore heartfelt cards, creative art, and inspiring words from people who care. Every message is a reminder that you’re never alone on your journey.'
         const title = 'Messages and moments that lift us up';
@@ -190,6 +201,10 @@ export class GalleryComponent implements OnInit {
         });
     }
 
+    public mouseEnterCard(id: number): void {
+        this.activeImageId.set(id);
+    }
+
     public openVoicePage(id: number): void {
         this.router.navigateByUrl('voices/' + id);
     }
@@ -217,7 +232,6 @@ export class GalleryComponent implements OnInit {
     }
 
     public setQueryPatch(patch: Record<string, string | undefined>) {
-        console.log('patch', patch);
         const qp = { ...this.route.snapshot.queryParams, ...patch };
         Object.keys(qp).forEach(k => qp[k] === undefined && delete qp[k]);
         this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });

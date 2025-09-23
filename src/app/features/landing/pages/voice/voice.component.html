@@ -3,11 +3,14 @@
         <button class="back-btn" (click)="history.back()">← Back</button>
 
         <div class="image">
-            <img [src]="card()!.img" alt="Card image">
+            <img
+                [style.viewTransitionName]="'img-voice-' + card()!.id"
+                [src]="card()!.img"
+                alt="Card image">
         </div>
 
         <div class="content">
-            <div class="wrap-category">
+            <div class="wrap-category" [style.viewTransitionName]="'img-tag-' + card()!.id">
                 @if (card()!.category) {
                     <span class="category"
                           (click)="goToGalleryWithFilter('tab', card()!.category, $event)">
@@ -28,8 +31,10 @@
                 }
             </div>
 
-            <h1 class="title clickable"
-                (click)="goToGalleryWithFilter('title', card()!.location)">
+            <h1 
+                class="title clickable"
+                (click)="goToGalleryWithFilter('title', card()!.location)"
+                [style.viewTransitionName]="'img-title-' + card()!.id">
                 {{ card()!.location }}
             </h1>
 

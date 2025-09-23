@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { CreateVoiceRequest, IVoice, UpdateVoiceRequest, VoicesListResponse, VoiceStatus } from '../types/voices';
 import { BASE_PATH_API } from './variables';
 
@@ -10,6 +10,8 @@ import { BASE_PATH_API } from './variables';
 export class VoicesService {
 
     private readonly path = 'voices';
+
+    public cachedCards: { [key: number]: IVoice } = {};
 
     constructor(
         private http: HttpClient,
@@ -60,7 +62,11 @@ export class VoicesService {
     }
 
     public getApprovedVoices(limit: number, page: number, extra?: Parameters<typeof this.getVoices>[3]) {
-        return this.getVoices(limit, page, VoiceStatus.Approved, extra);
+        return this.getVoices(limit, page, VoiceStatus.Approved, extra)
+            .pipe(tap(cards => {
+                this.cachedCards = 
+                    cards.items.reduce((acc, card) => ({ ...acc, [card.id]: card }), {});
+            }))
     }
 
     public getApprovedVoiceById(id: number): Observable<IVoice> {

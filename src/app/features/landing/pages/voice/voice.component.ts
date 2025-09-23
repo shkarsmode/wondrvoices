@@ -38,9 +38,12 @@ export class VoiceComponent implements OnInit {
     public async ngOnInit(): Promise<void> {
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) return;
-
-        const card = await this.voicesService.getApprovedVoiceById(+id).toPromise();
-        this.card.set(card ?? null);
+        this.card.set(this.voicesService.cachedCards[+id]);
+        console.log(this.card());
+        if (!this.card()) {
+            const card = await this.voicesService.getApprovedVoiceById(+id).toPromise();
+            this.card.set(card ?? null);
+        }
         this.updateMetaTags();
     }
 
