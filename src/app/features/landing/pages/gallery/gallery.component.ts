@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, first, of } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
+import { AutocompleteInputComponent } from '../../components/autocomplete-input/autocomplete-input.component';
 
 type Filters = {
     title?: string;
@@ -18,7 +19,7 @@ type Filters = {
 @Component({
     selector: 'app-gallery',
     standalone: true,
-    imports: [RouterModule, JsonPipe],
+    imports: [RouterModule, JsonPipe, AutocompleteInputComponent],
     templateUrl: './gallery.component.html',
     styleUrl: './gallery.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -216,6 +217,7 @@ export class GalleryComponent implements OnInit {
     }
 
     public setQueryPatch(patch: Record<string, string | undefined>) {
+        console.log('patch', patch);
         const qp = { ...this.route.snapshot.queryParams, ...patch };
         Object.keys(qp).forEach(k => qp[k] === undefined && delete qp[k]);
         this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
@@ -241,9 +243,23 @@ export class GalleryComponent implements OnInit {
         this.setQueryPatch({ tags: list.size ? Array.from(list).join(',') : undefined });
     }
 
+    private timeoutId?: NodeJS.Timeout;
+
     public applyTextFilter(key: 'title' | 'description' | 'creditTo' | 'tab', value: string) {
         const v = value?.trim() || undefined;
-        this.setQueryPatch({ [key]: v } as any);
+
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+        } else {
+            // Leading call
+            this.setQueryPatch({ [key]: v } as any);
+        }
+
+        this.timeoutId = setTimeout(() => {
+            // Trailing call
+            this.setQueryPatch({ [key]: v } as any);
+            this.timeoutId = undefined;
+        }, 500); // Adjust the delay as needed
     }
 
     public clearAllFilters(): void {

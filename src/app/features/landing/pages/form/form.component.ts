@@ -5,6 +5,7 @@ import { CloudinaryService } from '../../../../shared/services/cloudinary.servic
 import { VoicesService } from '../../../../shared/services/voices.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
 import { CreateVoiceRequest } from '../../../../shared/types/voices';
+import { AutocompleteInputComponent } from '../../components/autocomplete-input/autocomplete-input.component';
 
 type TagGroup = 'what' | 'express' | 'from';
 
@@ -20,7 +21,7 @@ type Step = 1 | 2 | 3;
 @Component({
     selector: 'app-form',
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, AutocompleteInputComponent],
     templateUrl: './form.component.html',
     styleUrl: './form.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -123,7 +124,7 @@ export class FormComponent {
             express: this.fb.control<string[]>([], []),
             note: [''],
             img: [null, Validators.required],
-            consent: [false, Validators.requiredTrue]
+            // consent: [false, Validators.requiredTrue]
           });
     }
 
@@ -265,7 +266,7 @@ export class FormComponent {
             express: this.form.get('express')?.value,
             note: this.form.get('note')?.value,
             img,
-            consent: this.form.get('consent')?.value
+            consent: true
         };
         this.voicesService.createVoice(body).subscribe({
             next: () => {

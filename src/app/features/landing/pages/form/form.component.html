@@ -206,13 +206,21 @@
                 <!-- City -->
                 <div class="form-group">
                   <div class="input-wrapper with-counter">
-                    <input
-                      formControlName="location"
-                      placeholder=" "
-                      [attr.maxlength]="maxMap.location"
-                      autocomplete="address-level2"
-                      name="location"/>
-                    <label [class.focused]="form.get('location')?.value">City *</label>
+                    <w-autocomplete
+                        field="location"
+                        placeholder=""
+                        formControlName="location"
+                        autocomplete="address-level2"
+                        name="location"
+                        status="all"
+                        [maxLength]="maxMap.location"
+                        [initial]=""
+                        emptyHint="Type to search location"
+                        #refLocation/>
+                    <label
+                        [class.focused]="form.get('location')?.value || refLocation.isFocused">
+                        City *
+                    </label>
                     <span class="counter">{{ getLen('location') }}/{{ maxMap.location }}</span>
                     <button class="loc-btn" type="button" (click)="null">📍</button> <!-- pickLocation?.() -->
                   </div>
@@ -221,13 +229,20 @@
                 <!-- Credit to -->
                 <div class="form-group">
                   <div class="input-wrapper with-counter">
-                    <input
-                      formControlName="creditTo"
-                      placeholder=" "
-                      [attr.maxlength]="maxMap.creditTo"
-                      autocomplete="organization"
-                      name="creditTo"/>
-                    <label [class.focused]="form.get('creditTo')?.value">Credit to</label>
+                    <w-autocomplete
+                        field="creditTo"
+                        placeholder=""
+                        formControlName="creditTo"
+                        name="creditTo"
+                        status="all"
+                        [maxLength]="maxMap.creditTo"
+                        [initial]=""
+                        emptyHint="Type to search creditTo"
+                        #refCreditTo/>
+                    <label
+                        [class.focused]="form.get('creditTo')?.value || refCreditTo.isFocused">
+                        Credit to
+                    </label>
                     <span class="counter">{{ getLen('creditTo') }}/{{ maxMap.creditTo }}</span>
                   </div>
                 </div>
@@ -275,12 +290,12 @@
                 </div>
               </section>
           
-              <div class="form-group checkbox">
+              <!-- <div class="form-group checkbox">
                 <input type="checkbox" formControlName="consent" id="consent" />
                 <label for="consent">
                   I agree to let WondrVoices use my submission in printed or digital form to bring hope to patients. I understand that not all submissions may be printed or shared.
                 </label>
-              </div>
+              </div> -->
           
               <div class="nav">
                 <button type="button" class="button submit-btn ghost" (click)="goBack()">← Back</button>

@@ -46,6 +46,19 @@ export class VoicesService {
         );
     }
 
+    getSuggestions(
+        field: 'creditTo'|'location'|'what'|'express',
+        q: string,
+        opts?: { limit?: number; status?: 'approved'|'pending'|'rejected'|'all' }
+    ) {
+        let params = new HttpParams()
+            .set('field', field)
+            .set('limit', String(opts?.limit ?? 10));
+        if (q?.trim()) params = params.set('q', q.trim());
+        if (opts?.status) params = params.set('status', opts.status);
+        return this.http.get<string[]>(`${this.basePathApi}/voices/suggest`, { params });
+    }
+
     public getApprovedVoices(limit: number, page: number, extra?: Parameters<typeof this.getVoices>[3]) {
         return this.getVoices(limit, page, VoiceStatus.Approved, extra);
     }

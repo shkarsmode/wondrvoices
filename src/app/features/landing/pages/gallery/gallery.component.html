@@ -17,17 +17,30 @@
 
     <div class="filters-panel">
         <div class="row">
-          <input type="search" placeholder="Title (location)…"
-                 [value]="filters().title || ''"
-                 (change)="applyTextFilter('title', ($any($event.target).value))" />
+            <w-autocomplete
+                field="location"
+                placeholder="Location…"
+                [initial]="filters().title || ''"
+                emptyHint="Type to search location"
+                (select)="applyTextFilter('title', $event)"
+                (inputChange)="applyTextFilter('title', $event)" />
+        
+
+            <input 
+                type="search" placeholder="Note..."
+                [value]="filters().description || ''"
+                (input)="applyTextFilter('description', ($any($event.target).value))" />
       
-          <input type="search" placeholder="Description (note)…"
-                 [value]="filters().description || ''"
-                 (change)="applyTextFilter('description', ($any($event.target).value))" />
-      
-          <input type="search" placeholder="Credit to…"
+            <w-autocomplete
+                field="creditTo"
+                placeholder="Credit to…"
+                [initial]="filters().creditTo || ''"
+                emptyHint="Type to search credits"
+                (input)="applyTextFilter('creditTo', ($any($event.target).value))" />
+                
+          <!-- <input type="search" placeholder="Credit to…"
                  [value]="filters().creditTo || ''"
-                 (change)="applyTextFilter('creditTo', ($any($event.target).value))" />
+                 (change)="applyTextFilter('creditTo', ($any($event.target).value))" /> -->
       
           <!-- <div class="tags-input">
             <input type="text" placeholder="Add tag and press Enter"
@@ -79,6 +92,48 @@
         }
 
     </div>
+
+    @if (!isLoading() && cards().length === 0) {
+        <div class="empty-state" aria-live="polite">
+            <div class="illus" aria-hidden="true">
+                <svg viewBox="0 0 64 64" width="68" height="68">
+                    <defs>
+                        <linearGradient id="glow" x1="0" x2="1">
+                            <stop offset="0" stop-color="#cfd4da" />
+                            <stop offset="1" stop-color="#e9ecef" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="28" cy="28" r="14" fill="url(#glow)" />
+                    <circle cx="28" cy="28" r="12" fill="none" stroke="#adb5bd" stroke-width="2" />
+                    <rect x="38" y="38" width="18" height="6" rx="3" fill="#ced4da" transform="rotate(48 40 40)"></rect>
+                </svg>
+            </div>
+    
+            <h3>No matches yet</h3>
+            <p>Try adjusting filters or change the tag logic.</p>
+    
+            <div class="actions">
+                <button class="btn primary" type="button" (click)="clearAllFilters()">Reset filters</button>
+            </div>
+    
+            @if (hasAnyFilter()) {
+                <div class="tips">
+                    @if (filters().title) {
+                        <span class="tip" (click)="applyTextFilter('title','')">Remove title</span>
+                    }
+                    @if (filters().description) {
+                        <span class="tip" (click)="applyTextFilter('description','')">Remove description</span>
+                    }
+                    @if (filters().creditTo) {
+                        <span class="tip" (click)="applyTextFilter('creditTo','')">Remove credit</span>
+                    }
+                    @for (t of (filters().tags || []); track t) {
+                        <span class="tip" (click)="removeTag(t)">Remove #{{ t }}</span>
+                    }
+                </div>
+            }
+        </div>
+    }
 
     @if (!isLoading()) {
         <div class="card-grid">
