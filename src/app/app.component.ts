@@ -25,8 +25,8 @@ export class AppComponent implements OnInit {
             if (event instanceof NavigationEnd) {
                 const url = event.urlAfterRedirects;
                 if (
-                    url.match("#") || 
-                    url.match('/gallery?.*=.*=') || 
+                    url.match("#") ||
+                    url.match('/gallery?.*=.*=') ||
                     (this.lastUrl.match('/gallery') && url.match('/gallery'))
                 ) return;
 
