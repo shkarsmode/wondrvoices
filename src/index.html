@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>Wondrvoices</title>
     <base href="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta name="robots" content="all" />
     <meta
@@ -58,6 +58,48 @@
 
 <body>
     <app-root></app-root>
+
+    <script>
+        // IMPORTANT: listeners must be non-passive to allow preventDefault()
+        (function () {
+            // Block pinch-zoom on iOS Safari (gesture events)
+            window.addEventListener("gesturestart", function (e) { e.preventDefault(); }, { passive: false });
+            window.addEventListener("gesturechange", function (e) { e.preventDefault(); }, { passive: false });
+            window.addEventListener("gestureend", function (e) { e.preventDefault(); }, { passive: false });
+    
+            // Block multi-touch pinch on browsers that don’t fire gesture* (e.g., Chrome Android)
+            window.addEventListener("touchmove", function (e) {
+                if (e.touches && e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+    
+            // Block Ctrl/Cmd + wheel zoom (desktop)
+            window.addEventListener("wheel", function (e) {
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+    
+            // Block common zoom hotkeys (desktop): Ctrl/Cmd + (+/-/0)
+            window.addEventListener("keydown", function (e) {
+                const isModifier = e.ctrlKey || e.metaKey;
+                const key = e.key;
+                if (!isModifier) return;
+    
+                const zoomKeys = ["+", "=", "-", "_", "0"];
+                if (zoomKeys.includes(key)) {
+                    e.preventDefault();
+                }
+    
+                // Some keyboards send 'Add', 'Subtract' on numpad
+                const code = e.code;
+                if (["NumpadAdd", "NumpadSubtract", "Numpad0"].includes(code)) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        })();
+    </script>
 </body>
 
 </html>

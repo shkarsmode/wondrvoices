@@ -18,10 +18,19 @@ export class AppComponent implements OnInit {
         this.listenRoutesTransition();
     }
 
+    public lastUrl: string = '';
     private async listenRoutesTransition(): Promise<void> {
+        if (typeof document === 'undefined') return;
         this.router.events.subscribe(async (event: any) => {
             if (event instanceof NavigationEnd) {
-                if (event.urlAfterRedirects.match("#")) return;
+                const url = event.urlAfterRedirects;
+                if (
+                    url.match("#") || 
+                    url.match('/gallery?.*=.*=') || 
+                    (this.lastUrl.match('/gallery') && url.match('/gallery'))
+                ) return;
+
+                this.lastUrl = url;
                 // await new Promise(resolve => setTimeout(resolve, 50));
                 this.scrollToService.scrollToTop();
             }
