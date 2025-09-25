@@ -3,7 +3,9 @@
 </div>
 
 <section class="hero">
-    <header class="top-bar" [class.sticky-visible]="showStickyHeader()">
+    <header
+        class="top-bar is-sticky"
+        [class.is-hidden]="hideHeader()">
         <div class="logo" [routerLink]="''" (click)="scrollToTop()">
             <img src="assets/svg/full-logo.svg" alt="Logo" />
         </div>
@@ -18,21 +20,22 @@
             <span></span>
         </button>
 
-        <nav [class.open]="menuOpened()" (click)="toggleMenu()">
+        <nav
+            [class.open]="menuOpened()"
+            (click)="toggleMenu()">
             <a [routerLink]="'/'" (click)="scrollToTop()">Home</a>
             <a [routerLink]="['/gallery']" routerLinkActive="link-active">Gallery</a>
             <a [routerLink]="['/spots']" routerLinkActive="link-active">Spots</a>
             <a [routerLink]="['/get-involved']" routerLinkActive="link-active">Get Involved</a>
             <a [routerLink]="['/about-us']" routerLinkActive="link-active">About</a>
             <a [routerLink]="['/blog']" routerLinkActive="link-active">Blog</a>
+
             <button class="button submit primary" [routerLink]="'/submit'">Submit</button>
-            
+
             <button class="button submit primary give-butter">
                 <div>
                     <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M2 8L1.21875 7.25C0.4375 6.46875 0 5.375 0 4.25C0 1.90625 1.875 0 4.21875 0C5.34375 0 6.4375 0.46875 7.21875 1.25L8 2L8.75 1.25C9.53125 0.46875 10.625 0 11.75 0C14.0938 0 16 1.90625 16 4.25C16 5.375 15.5312 6.46875 14.75 7.25L14 8L8 14L2 8Z"
-                            fill="#FFFFFF"></path>
+                        <path d="M2 8L1.21875 7.25C0.4375 6.46875 0 5.375 0 4.25C0 1.90625 1.875 0 4.21875 0C5.34375 0 6.4375 0.46875 7.21875 1.25L8 2L8.75 1.25C9.53125 0.46875 10.625 0 11.75 0C14.0938 0 16 1.90625 16 4.25C16 5.375 15.5312 6.46875 14.75 7.25L14 8L8 14L2 8Z" fill="#FFFFFF"></path>
                     </svg>
                     Donate
                 </div>
@@ -42,50 +45,43 @@
     </header>
 </section>
 
-<router-outlet></router-outlet>
+<!-- ВАЖНО: этот контейнер даёт постоянный отступ под фикс-шапку -->
+<main class="page-offset">
+    <router-outlet></router-outlet>
 
-<footer class="footer">
-    <div class="footer__content content">
-        <div class="content__left">
-            <h2>Contact Us</h2>
-            <span class="content__underline"></span>
-        </div>
-        <div class="content__right">
-            <a href="mailto:hello@wondrvoices.com" class="content__email">
-                <img src="assets/svg/email.svg" alt="Email"> hello&#64;wondrvoices.com
-            </a>
-            <div class="content__socials">
-                <a
-                    href="https://www.instagram.com/wondrvoices"
-                    target="_blank"
-                    src="assets/svg/inst.svg"
-                    alt="Instagram"
-                    aria-label="Instagram">
-                    <img src="assets/svg/inst.svg" alt="Instagram" />
+    <footer class="footer">
+        <div class="footer__content content">
+            <div class="content__left">
+                <h2>Contact Us</h2>
+                <span class="content__underline"></span>
+            </div>
+            <div class="content__right">
+                <a href="mailto:hello@wondrvoices.com" class="content__email">
+                    <img src="assets/svg/email.svg" alt="Email"> hello&#64;wondrvoices.com
                 </a>
-                <a
-                    href="https://x.com/wondrvoices"
-                    aria-label="X"
-                    target="_blank">
-                    <img src="assets/svg/x.svg" alt="X" />
-                </a>
-                <a
-                    href="https://www.facebook.com/WondrVoices"
-                    target="_blank"
-                    aria-label="Facebook">
-                    <img src="assets/svg/fb.svg" alt="Fb" />
-                </a>
+                <div class="content__socials">
+                    <a href="https://www.instagram.com/wondrvoices" target="_blank" src="assets/svg/inst.svg" alt="Instagram" aria-label="Instagram">
+                        <img src="assets/svg/inst.svg" alt="Instagram" />
+                    </a>
+                    <a href="https://x.com/wondrvoices" aria-label="X" target="_blank">
+                        <img src="assets/svg/x.svg" alt="X" />
+                    </a>
+                    <a href="https://www.facebook.com/WondrVoices" target="_blank" aria-label="Facebook">
+                        <img src="assets/svg/fb.svg" alt="Fb" />
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</footer>
-<footer class="sub-footer">
-    <div class="sub-footer__content">
-        <img src="assets/svg/full-logo.svg" alt="Logo">
-        <div class="terms">
-            <a href="/terms">Terms of Use</a>
-            <a href="/privacy">Privacy Policy</a>
-            <span>&#64;2025 WondrVoices</span>
+    </footer>
+
+    <footer class="sub-footer">
+        <div class="sub-footer__content">
+            <img src="assets/svg/full-logo.svg" alt="Logo">
+            <div class="terms">
+                <a href="/terms">Terms of Use</a>
+                <a href="/privacy">Privacy Policy</a>
+                <span>&#64;2025 WondrVoices</span>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
+</main>
