@@ -96,11 +96,11 @@
         transition: all 0.4s ease;
         cursor: pointer;
 
-        opacity: 0.5;
-        transform: translateY(15px);
+        // opacity: 0.5;
+        // transform: translateY(15px);
 
-        animation: card-show-anim .6s forwards;
-        animation-delay: var(--i);
+        // animation: card-show-anim .6s forwards;
+        // animation-delay: var(--i);
 
         &:hover {
             .card-image {
@@ -203,12 +203,12 @@
 @keyframes card-show-anim {
     from {
         opacity: 0.5;
-        transform: translateY(15px);
+        // transform: translateY(15px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        // transform: translateY(0);
     }
 }
 

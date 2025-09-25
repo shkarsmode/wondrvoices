@@ -170,7 +170,7 @@ export class GalleryComponent implements OnInit {
                 this.isLoading.set(false);
                 this.isFetchingMore.set(false);
 
-                if (initial) {
+                if (initial && typeof window !== 'undefined') {
                     setTimeout(() => {
                         const el = document.querySelector('.sentinel');
                         if (el) this.observer?.observe(el);

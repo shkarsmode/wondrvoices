@@ -78,7 +78,7 @@
               @if (activeTab() !== 'All') {
                 <!-- @for (t of filters().tags; track t) { -->
                   <button class="chip" (click)="applyTextFilter({ key: 'tab', value: 'All'})">
-                    #{{ activeTab() }} <span class="x">×</span>
+                    #{{ filters().tab }} <span class="x">×</span>
                   </button>
                 <!-- } -->
               }
@@ -127,7 +127,7 @@
                         <span class="tip" (click)="applyTextFilter({ key: 'creditTo', value: ''})">Remove credit</span>
                     }
                     @if (filters().tab) {
-                        <span class="tip" (click)="applyTextFilter({ key: 'tab', value: ''})">
+                        <span class="tip" (click)="applyTextFilter({ key: 'tab', value: 'All'})">
                             Remove #{{ filters().tab }}
                         </span>
                     }
