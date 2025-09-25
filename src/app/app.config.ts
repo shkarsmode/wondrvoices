@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withEnabledBlockingInitialNavigation, withViewTransitions } from '@angular/router';
+import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 
 import { provideHttpClient } from '@angular/common/http';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -11,7 +11,11 @@ import { AUTH_PATH_API, BASE_PATH_API } from './shared/services/variables';
 export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
-        provideRouter(routes, withEnabledBlockingInitialNavigation(), withViewTransitions()),
+        provideRouter(routes, withEnabledBlockingInitialNavigation(), withViewTransitions(), withInMemoryScrolling({
+            scrollPositionRestoration: 'enabled',
+            anchorScrolling: 'enabled',
+            // scrollOffset: [0, 0],
+        }),),
         provideClientHydration(),
         provideHttpClient(),
         { provide: AUTH_PATH_API, useValue: environment.authPathApi },

@@ -6,7 +6,7 @@ import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
 
 type SharePlatform = 'twitter' | 'facebook' | 'linkedin';
-type FilterKey = 'tab' | 'title' | 'description' | 'creditTo';
+type FilterKey = 'tab' | 'location' | 'description' | 'creditTo';
 
 const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
     twitter: 'https://x.com/intent/tweet',
@@ -39,7 +39,7 @@ export class VoiceComponent implements OnInit {
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) return;
         this.card.set(this.voicesService.cachedCards[+id]);
-        console.log(this.card());
+
         if (!this.card()) {
             const card = await this.voicesService.getApprovedVoiceById(+id).toPromise();
             this.card.set(card ?? null);
@@ -55,7 +55,7 @@ export class VoiceComponent implements OnInit {
 
         if (value) {
             if (key === 'tab') queryParams['tab'] = value;
-            if (key === 'title') queryParams['title'] = value;
+            if (key === 'location') queryParams['location'] = value;
             if (key === 'description') queryParams['description'] = value;
             if (key === 'creditTo') queryParams['creditTo'] = value;
         }

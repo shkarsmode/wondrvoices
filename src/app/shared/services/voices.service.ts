@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { CreateVoiceRequest, IVoice, UpdateVoiceRequest, VoicesListResponse, VoiceStatus } from '../types/voices';
 import { BASE_PATH_API } from './variables';
 
@@ -12,6 +12,7 @@ export class VoicesService {
     private readonly path = 'voices';
 
     public cachedCards: { [key: number]: IVoice } = {};
+    public cache: { [key: string]: IVoice[] } = {};
 
     constructor(
         private http: HttpClient,
@@ -21,18 +22,20 @@ export class VoicesService {
     /** Admin list with optional status filter */
     public getVoices(
         limit: number,
-        page: number,
         status?: VoiceStatus,
         extra?: {
-            title?: string; description?: string; creditTo?: string;
+            location?: string; description?: string; creditTo?: string;
             tags?: string[]; tab?: string;
             tagsMode?: 'any' | 'all';
             orderBy?: 'createdAt' | 'id'; orderDir?: 'ASC' | 'DESC';
+            page?: number
         }
     ) {
-        let params = new HttpParams().set('limit', String(limit)).set('page', String(page));
+        const stringifiedExtra = JSON.stringify(extra);
+
+        let params = new HttpParams().set('limit', String(limit)).set('page', String(extra?.page));
         if (status) params = params.set('status', status);
-        if (extra?.title) params = params.set('title', extra.title);
+        if (extra?.location) params = params.set('location', extra.location);
         if (extra?.description) params = params.set('description', extra.description);
         if (extra?.creditTo) params = params.set('creditTo', extra.creditTo);
         if (extra?.tab) params = params.set('tab', extra.tab);
@@ -42,10 +45,22 @@ export class VoicesService {
         if (extra?.orderDir) params = params.set('orderDir', extra.orderDir);
 
         const approvedUrl = status === VoiceStatus.Approved ? '/approved' : '';
+
+        if (this.cache[stringifiedExtra]) {
+            return of({ items: this.cache[stringifiedExtra] });
+        }
         return this.http.get<VoicesListResponse>(
             `${this.basePathApi}/${this.path}${approvedUrl}?timestamp=${Date.now()}`,
             { params }
-        );
+        )
+            .pipe(
+                tap(({ items }) => {
+                    this.cache = {
+                        ...this.cache,
+                        [stringifiedExtra]: items
+                    };
+                })
+            )
     }
 
     getSuggestions(
@@ -61,8 +76,8 @@ export class VoicesService {
         return this.http.get<string[]>(`${this.basePathApi}/voices/suggest`, { params });
     }
 
-    public getApprovedVoices(limit: number, page: number, extra?: Parameters<typeof this.getVoices>[3]) {
-        return this.getVoices(limit, page, VoiceStatus.Approved, extra)
+    public getApprovedVoices(limit: number, extra?: Parameters<typeof this.getVoices>[2]) {
+        return this.getVoices(limit, VoiceStatus.Approved, extra)
             .pipe(tap(cards => {
                 this.cachedCards = 
                     cards.items.reduce((acc, card) => ({ ...acc, [card.id]: card }), {});

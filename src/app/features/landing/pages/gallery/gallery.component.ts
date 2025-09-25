@@ -9,7 +9,7 @@ import { IVoice } from 'src/app/shared/types/voices';
 import { AutocompleteInputComponent } from '../../components/autocomplete-input/autocomplete-input.component';
 
 type Filters = {
-    title?: string;
+    location?: string;
     description?: string;
     creditTo?: string;
     tags?: string[];
@@ -42,13 +42,13 @@ export class GalleryComponent implements OnInit {
 
     public cards = signal<IVoice[]>([]);
 
-    public pageSize = 24;
+    public pageSize = 50;
     public page = signal(1);
     public isFetchingMore = signal(false);
     public hasMore = signal(true);
     private observer?: IntersectionObserver;
 
-    public isLoading: WritableSignal<boolean> = signal(true);
+    public isLoading: WritableSignal<boolean> = signal(false);
 
     @ViewChild('sentinel', { static: true }) sentinelRef?: ElementRef<HTMLElement>;
 
@@ -60,7 +60,7 @@ export class GalleryComponent implements OnInit {
 
     public filters = computed<Filters>(() => {
         const m = this.queryParams();
-        const title = m.get('title') ?? undefined;
+        const location = m.get('location') ?? undefined;
         const description = m.get('description') ?? undefined;
         const creditTo = m.get('creditTo') ?? undefined;
         const tagsCsv = m.get('tags') ?? '';
@@ -68,25 +68,18 @@ export class GalleryComponent implements OnInit {
         const tab = this.deslugify(m.get('tab') ?? '') || undefined;
         const tagsMode = (m.get('tagsMode') as 'any' | 'all') || 'any';
 
-        // активный таб обновим визуально как раньше
         if (tab) setTimeout(() => this.activeTab.set(tab));
 
-        return { title, description, creditTo, tags, tab, tagsMode };
+        return { location, description, creditTo, tags, tab, tagsMode };
     });
 
     public hasAnyFilter = computed(() => {
         const f = this.filters();
-        return Boolean(f.title || f.description || f.creditTo || (f.tags && f.tags.length) || f.tab);
+        return Boolean(f.location || f.description || f.creditTo || (f.tags && f.tags.length) || f.tab);
     });
 
     public ngOnInit(): void {
         this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).map(this.deslugify);
-
-        const nav = this.router.getCurrentNavigation();
-        // Сработает только в инициаторе навигации и синхронно при переходе
-        const fromUrl = nav?.previousNavigation?.finalUrl?.toString() 
-            ?? nav?.previousNavigation?.extractedUrl?.toString() 
-            ?? null;
 
         const description = 'Explore heartfelt cards, creative art, and inspiring words from people who care. Every message is a reminder that you’re never alone on your journey.'
         const title = 'Messages and moments that lift us up';
@@ -141,15 +134,16 @@ export class GalleryComponent implements OnInit {
         else this.isFetchingMore.set(true);
 
         this.voicesService
-            .getApprovedVoices(this.pageSize, nextPage, {
-                title: f.title,
+            .getApprovedVoices(this.pageSize, {
+                location: f.location,
                 description: f.description,
                 creditTo: f.creditTo,
                 tags: f.tags,
-                tab: f.tab ? this.slugify(f.tab) : undefined, // серверу — slug
+                tab: f.tab ? this.slugify(f.tab) : undefined,
                 tagsMode: f.tagsMode ?? 'any',
                 orderBy: 'createdAt',
                 orderDir: 'DESC',
+                page: nextPage
             })
             .pipe(
                 first(),
@@ -250,36 +244,31 @@ export class GalleryComponent implements OnInit {
         this.setQueryPatch({ tags: Array.from(list).join(',') });
     }
 
-    public removeTag(tag: string) {
-        tag = this.slugify(tag);
-        const list = new Set(this.filters().tags ?? []);
-        list.delete(tag);
-        this.setQueryPatch({ tags: list.size ? Array.from(list).join(',') : undefined });
-    }
-
     private timeoutId?: NodeJS.Timeout;
 
-    public applyTextFilter(key: 'title' | 'description' | 'creditTo' | 'tab', value: string) {
-        const v = value?.trim() || undefined;
+    public applyTextFilter(
+        filter: { key: 'location' | 'creditTo' | 'tab', value: string }
+    ) {
+        const qp = { [filter.key]: filter.value };
 
         if (this.timeoutId) {
             clearTimeout(this.timeoutId);
         } else {
             // Leading call
-            this.setQueryPatch({ [key]: v } as any);
+            this.setQueryPatch(qp);
         }
 
         this.timeoutId = setTimeout(() => {
             // Trailing call
-            this.setQueryPatch({ [key]: v } as any);
+            this.setQueryPatch(qp);
             this.timeoutId = undefined;
         }, 500); // Adjust the delay as needed
     }
 
     public clearAllFilters(): void {
         const qp = { ...this.route.snapshot.queryParams };
-        delete qp['title']; delete qp['description']; delete qp['creditTo'];
-        delete qp['tags']; delete qp['tagsMode']; delete qp['tab'];
+        delete qp['location']; delete qp['description']; delete qp['creditTo'];
+        delete qp['tabs']; delete qp['tagsMode']; delete qp['tab'];
         this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
     }
 

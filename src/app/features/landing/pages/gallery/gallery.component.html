@@ -18,15 +18,16 @@
     <div class="filters-panel">
         <div class="row">
             <w-autocomplete
-                field="location"
-                placeholder="Location…"
-                [initial]="filters().title || ''"
-                emptyHint="Type to search location"
-                (select)="applyTextFilter('title', $event)"
-                (inputChange)="applyTextFilter('title', $event)" />
+                [isAllInfo]="true"
+                placeholder="Search by location, credit to, or tag"
+                emptyHint="Type to search"
+                (select)="applyTextFilter($event)"
+                (inputChange)="null" />
+
+            <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear</button>
         
 
-            <input 
+            <!-- <input 
                 type="search" placeholder="Note..."
                 [value]="filters().description || ''"
                 (input)="applyTextFilter('description', ($any($event.target).value))" />
@@ -36,7 +37,7 @@
                 placeholder="Credit to…"
                 [initial]="filters().creditTo || ''"
                 emptyHint="Type to search credits"
-                (input)="applyTextFilter('creditTo', ($any($event.target).value))" />
+                (input)="applyTextFilter('creditTo', ($any($event.target).value))" /> -->
                 
           <!-- <input type="search" placeholder="Credit to…"
                  [value]="filters().creditTo || ''"
@@ -55,30 +56,28 @@
                     [class.active]="(filters().tagsMode||'any')==='all'"
                     (click)="setQueryPatch({ tagsMode: 'all' })">AND (all)</button>
           </div> -->
-      
-          <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear</button>
         </div>
       
         @if (hasAnyFilter()) {
             <div class="chips">
-              @if (filters().title) {
-                <button class="chip" (click)="applyTextFilter('title','')">
-                  Title: {{ filters().title }} <span class="x">×</span>
+              @if (filters().location) {
+                <button class="chip" (click)="applyTextFilter({ key: 'location', value: ''})">
+                  Location: {{ filters().location }} <span class="x">×</span>
                 </button>
               }
-              @if (filters().description) {
+              <!-- @if (filters().description) {
                 <button class="chip" (click)="applyTextFilter('description','')">
                   Description: {{ filters().description }} <span class="x">×</span>
                 </button>
-              }
+              } -->
               @if (filters().creditTo) {
-                <button class="chip" (click)="applyTextFilter('creditTo','')">
+                <button class="chip" (click)="applyTextFilter({ key: 'creditTo', value: '' })">
                   Credit: {{ filters().creditTo }} <span class="x">×</span>
                 </button>
               }
               @if (activeTab() !== 'All') {
                 <!-- @for (t of filters().tags; track t) { -->
-                  <button class="chip" (click)="applyTextFilter('tab', 'All')">
+                  <button class="chip" (click)="applyTextFilter({ key: 'tab', value: 'All'})">
                     #{{ activeTab() }} <span class="x">×</span>
                   </button>
                 <!-- } -->
@@ -118,17 +117,19 @@
     
             @if (hasAnyFilter()) {
                 <div class="tips">
-                    @if (filters().title) {
-                        <span class="tip" (click)="applyTextFilter('title','')">Remove title</span>
+                    @if (filters().location) {
+                        <span class="tip" (click)="applyTextFilter({ key: 'location', value: ''})">Remove location</span>
                     }
-                    @if (filters().description) {
-                        <span class="tip" (click)="applyTextFilter('description','')">Remove description</span>
-                    }
+                    <!-- @if (filters().description) {
+                        <span class="tip" (click)="applyTextFilter({ key: 'description', value: ''})">Remove description</span>
+                    } -->
                     @if (filters().creditTo) {
-                        <span class="tip" (click)="applyTextFilter('creditTo','')">Remove credit</span>
+                        <span class="tip" (click)="applyTextFilter({ key: 'creditTo', value: ''})">Remove credit</span>
                     }
-                    @for (t of (filters().tags || []); track t) {
-                        <span class="tip" (click)="removeTag(t)">Remove #{{ t }}</span>
+                    @if (filters().tab) {
+                        <span class="tip" (click)="applyTextFilter({ key: 'tab', value: ''})">
+                            Remove #{{ filters().tab }}
+                        </span>
                     }
                 </div>
             }
@@ -140,7 +141,7 @@
             @for (card of cards(); track card; let i = $index) {
                 <div
                     class="card"
-                    [style]="'--i: ' + ((i - (pageSize * (page() - 1))) * 0.10) + 's'"
+                    [style]="'--i: 0.02s'"
                     (mouseenter)="mouseEnterCard(card.id)">
                     <div class="card-image-wrap" (click)="openVoicePage(card.id)" >
                         <img

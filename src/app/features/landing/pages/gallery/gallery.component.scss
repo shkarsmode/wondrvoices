@@ -351,25 +351,30 @@
 }
 
 .filters-panel {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     margin: 1.5rem 0;
     padding: 1rem;
-    background: #f8f9fa78;
+    // background: #f8f9fa78;
     border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    max-width: 1137px;
+    // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    width: 100%;
     margin: 0 auto;
 
     .row {
         display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
+        justify-content: center;
+        // flex-wrap: wrap;
         gap: 0.75rem;
         align-items: center;
+        max-width: 400px;
         width: 100%;
 
         input[type="search"],
         input[type="text"] {
-            flex: 1 1 200px;
+            justify-content: center;
             padding: 0.5rem 0.75rem;
             border: 1px solid #d0d7de;
             border-radius: 8px;
