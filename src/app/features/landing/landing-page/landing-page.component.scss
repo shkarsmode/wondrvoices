@@ -30,7 +30,7 @@
     /* анимация только через transform — без смены position */
     transition: transform 250ms ease, box-shadow 250ms ease;
     will-change: transform;
-    contain: layout paint;
+    // contain: layout paint;
     /* изоляция для стабильности */
 
     &.is-sticky {
