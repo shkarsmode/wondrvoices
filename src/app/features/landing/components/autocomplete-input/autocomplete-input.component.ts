@@ -133,8 +133,8 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
                         <li
                             role="option"
                             (mousedown)="pick(s, 'location')"
-                            [attr.data-index]="i">
-                            {{ s }}
+                            [attr.data-index]="i"
+                            [innerHTML]="highlightPrefix(s, value())">
                         </li>
                     }
                     @if (suggestionsAll().location.length === 0) {
@@ -150,8 +150,8 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
                         <li
                             role="option"
                             (mousedown)="pick(s, 'creditTo')"
-                            [attr.data-index]="i">
-                            {{ s }}
+                            [attr.data-index]="i"
+                            [innerHTML]="highlightPrefix(s, value())">
                         </li>
                     }
                     @if (suggestionsAll().creditTo.length === 0) {
@@ -167,8 +167,7 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
                         <li
                             role="option"
                             (mousedown)="pick(s, 'tab')"
-                            [attr.data-index]="i">
-                            {{ s }}
+                            [attr.data-index]="i" [innerHTML]="highlightPrefix(s, value())">
                         </li>
                     }
                     @if (suggestionsAll().tabs.length === 0) {
@@ -184,8 +183,8 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
                             <li
                                 role="option"
                                 (mousedown)="pick(s, this.field)"
-                                [attr.data-index]="i">
-                                {{ s }}
+                                [attr.data-index]="i" 
+                                [innerHTML]="highlightPrefix(s, value())">
                             </li>
                         }
                     </ul>
@@ -312,7 +311,8 @@ input::placeholder { opacity: 0.72; }
     color: #212529;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    white-space: pre;
+    // gap: 0.5rem;
     transition: background-color 0.12s ease, transform 0.04s ease;
 }
 .menu li:hover { background: #f8f9fa; }
@@ -322,6 +322,7 @@ input::placeholder { opacity: 0.72; }
     opacity: 0.32;
     transform: translateY(-1px);
     font-size: 12px;
+    margin-right: 5px;
 }
 
 /* Skeleton rows */
@@ -356,6 +357,7 @@ input::placeholder { opacity: 0.72; }
     padding: 0.55rem 0.75rem;
     color: #868e96;
     font-style: italic;
+    font-size: 14px;
 }
 
 /* Outside empty hint panel */
@@ -526,6 +528,32 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
     }
 
     // ---- UI handlers ----
+
+    public highlightPrefix(text: string, query: string): string {
+        const q = (query ?? '').trim();
+        if (!q) return this.escapeHtml(text ?? '');
+    
+        const rx = this.getWordStartRegex(q);
+    
+        let out = '';
+        let last = 0;
+    
+        // Use original text for correct \b behavior, escape while building HTML
+        text.replace(rx, (match: string, group: string, offset: number) => {
+            // normal chunk before match
+            out += this.escapeHtml(text.slice(last, offset));
+            // matched prefix in bold
+            out += `<b>${this.escapeHtml(group)}</b>`;
+            last = offset + group.length;
+            return match;
+        });
+    
+        // tail
+        out += this.escapeHtml(text.slice(last));
+    
+        return out;
+    }
+
     onInput(nextValue: string): void {
         this.setValue(nextValue, true);
         this.open.set(true);
@@ -582,5 +610,33 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
         if (this.value() === v) return;
         this.value.set(v);
         if (propagate) this.onChange(v);
+    }
+
+    private prefixRegexCache = new Map<string, RegExp>();
+
+    // Escape HTML to prevent XSS
+    private escapeHtml(raw: string): string {
+        return raw
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Escape regex special symbols
+    private escapeRegex(raw: string): string {
+        return raw.replace(/[\\.^$|?*+()[\]{}]/g, '\\$&');
+    }
+
+    // Build or reuse case-insensitive word-start regex: \b(query)
+    private getWordStartRegex(query: string): RegExp {
+        const key = query.toLowerCase();
+        const cached = this.prefixRegexCache.get(key);
+        if (cached) return cached;
+
+        const rx = new RegExp(`\\b(${this.escapeRegex(query)})`, 'gi');
+        this.prefixRegexCache.set(key, rx);
+        return rx;
     }
 }
