@@ -46,11 +46,12 @@
             @if (card()!.creditTo) {
                 <p class="description clickable"
                    (click)="goToGalleryWithFilter('creditTo', card()!.creditTo)">
-                    <span>Credit To:</span>
                     <strong>{{ card()!.creditTo }}</strong>
                 </p>
             }
         </div>
+
+        <hr />
 
         <!-- Share bar (без изменений) -->
         <div class="share-bar">
