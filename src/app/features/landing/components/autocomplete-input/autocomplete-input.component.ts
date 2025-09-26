@@ -38,10 +38,7 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
     (keydown)="onKeydown($event)">
 
     @if (isAllInfo) {
-        <span
-            class="search material-symbols-outlined">
-            search
-        </span>
+        <img src="assets/svg/search.svg" class="search" />
     }
 
     <input
@@ -226,6 +223,7 @@ input:disabled { background: #f1f3f5; cursor: not-allowed; }
     top: 6px;
     color: #472a2f;
     font-size: 21px;
+    height: 20px;
 }
 
 /* Placeholder opacity based on isAllInfo */

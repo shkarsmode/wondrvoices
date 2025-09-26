@@ -15,10 +15,6 @@
     <meta name="keywords"
         content="wondrvoices, kindness, art, community, cancer, support, mental health, self-care, creativity, hope, inspiration, blog, stories, podcast, resources, mental wellness, coping, resilience, gratitude, positivity, mindfulness, self-love, cancer support, cancer awareness, mental health awareness, art therapy, therapy, healing, hope, inspiration, motivation, uplifting, life, love, share, care, giveback, giving, donate, charity, non-profit, 501c3, wondrlink, wondrlink foundation, wondrlink.org, wondervoices, wondervoices.com">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" 
-        rel="stylesheet"/>
-
     <meta content="summary_large_image" property="twitter:card">
     <meta content="Wondrvoices" property="twitter:title">
     <meta content="Wondrvoices" property="twitter:site">
@@ -44,6 +40,22 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- 2. Preload CSS, а затем включаем как обычный stylesheet без блокировок -->
+    <link
+        rel="preload"
+        as="style"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+    <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+        media="print"
+        onload="this.media='all'">
+    <noscript>
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+    </noscript>
 
         
 
