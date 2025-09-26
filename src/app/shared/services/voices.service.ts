@@ -8,7 +8,6 @@ import { BASE_PATH_API } from './variables';
     providedIn: 'root'
 })
 export class VoicesService {
-
     private readonly path = 'voices';
 
     public cachedCards: { [key: number]: IVoice } = {};
@@ -19,7 +18,6 @@ export class VoicesService {
         @Inject(BASE_PATH_API) private basePathApi: string
     ) { }
 
-    /** Admin list with optional status filter */
     public getVoices(
         limit: number,
         status?: VoiceStatus,
@@ -64,9 +62,9 @@ export class VoicesService {
     }
 
     getSuggestions(
-        field: 'creditTo'|'location'|'what'|'express',
+        field: 'creditTo' | 'location' | 'what' | 'express',
         q: string,
-        opts?: { limit?: number; status?: 'approved'|'pending'|'rejected'|'all' }
+        opts?: { limit?: number; status?: 'approved' | 'pending' | 'rejected' | 'all' }
     ) {
         let params = new HttpParams()
             .set('field', field)
@@ -79,7 +77,7 @@ export class VoicesService {
     public getApprovedVoices(limit: number, extra?: Parameters<typeof this.getVoices>[2]) {
         return this.getVoices(limit, VoiceStatus.Approved, extra)
             .pipe(tap(cards => {
-                this.cachedCards = 
+                this.cachedCards =
                     cards.items.reduce((acc, card) => ({ ...acc, [card.id]: card }), {});
             }))
     }
@@ -95,7 +93,6 @@ export class VoicesService {
         );
     }
 
-    /** Public create: now expects JSON body with `img` URL (not multipart) */
     public createVoice(payload: CreateVoiceRequest): Observable<IVoice> {
         return this.http.post<IVoice>(
             `${this.basePathApi}/${this.path}`,
@@ -103,7 +100,6 @@ export class VoicesService {
         );
     }
 
-    /** Admin update (partial fields; not for status) */
     public updateVoiceById(id: number, payload: UpdateVoiceRequest): Observable<{ affected: number }> {
         return this.http.patch<{ affected: number }>(
             `${this.basePathApi}/${this.path}/${id}`,
@@ -119,7 +115,6 @@ export class VoicesService {
         );
     }
 
-    /** Admin: delete voice */
     public deleteVoiceById(id: number): Observable<{ affected: number }> {
         return this.http.delete<{ affected: number }>(
             `${this.basePathApi}/${this.path}/${id}`

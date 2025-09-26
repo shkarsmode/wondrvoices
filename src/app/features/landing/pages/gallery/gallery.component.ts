@@ -55,7 +55,7 @@ export class GalleryComponent implements OnInit {
     // ---- Query params → Filters + tab ----
     private queryParams = signal(this.route.snapshot.queryParamMap);
     constructor() {
-        this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((m) => this.queryParams.set(m) );
+        this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((m) => this.queryParams.set(m));
     }
 
     public filters = computed<Filters>(() => {

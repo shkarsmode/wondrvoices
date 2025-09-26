@@ -118,16 +118,26 @@
             @if (hasAnyFilter()) {
                 <div class="tips">
                     @if (filters().location) {
-                        <span class="tip" (click)="applyTextFilter({ key: 'location', value: ''})">Remove location</span>
+                        <span
+                            class="tip"
+                            (click)="applyTextFilter({ key: 'location', value: ''})">
+                            Remove location
+                        </span>
                     }
                     <!-- @if (filters().description) {
                         <span class="tip" (click)="applyTextFilter({ key: 'description', value: ''})">Remove description</span>
                     } -->
                     @if (filters().creditTo) {
-                        <span class="tip" (click)="applyTextFilter({ key: 'creditTo', value: ''})">Remove credit</span>
+                        <span
+                            class="tip"
+                            (click)="applyTextFilter({ key: 'creditTo', value: ''})">
+                            Remove credit
+                        </span>
                     }
                     @if (filters().tab) {
-                        <span class="tip" (click)="applyTextFilter({ key: 'tab', value: 'All'})">
+                        <span
+                            class="tip"
+                            (click)="applyTextFilter({ key: 'tab', value: 'All'})">
                             Remove #{{ filters().tab }}
                         </span>
                     }
@@ -192,16 +202,15 @@
 
         @if (isFetchingMore()) {
             <div class="infinite-loader">
-              <div class="loader-wave">
-                <div class="wave-dot"></div>
-                <div class="wave-dot"></div>
-                <div class="wave-dot"></div>
-                <div class="wave-dot"></div>
-                <div class="wave-dot"></div>
-              </div>
+                <div class="loader-wave">
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                    <div class="wave-dot"></div>
+                </div>
             </div>
         }
-      
         @if (hasMore()) {
             <div #sentinel class="sentinel" aria-hidden="true"></div>
         }
