@@ -121,55 +121,63 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
                     class="menu"
                     role="listbox">
 
-                    <div class="section-label">
-                        <span class="section-emoji" aria-hidden="true">📍</span>
-                        <span class="section-title">Location</span>
-                        <span class="count-badge">{{ suggestionsAll().location.length }}</span>
-                    </div>
-                    @for (s of suggestionsAll().location; track s; let i = $index) {
-                        <li
-                            role="option"
-                            (mousedown)="pick(s, 'location')"
-                            [attr.data-index]="i"
-                            [innerHTML]="highlightPrefix(s, value())">
-                        </li>
-                    }
-                    @if (suggestionsAll().location.length === 0) {
-                        <div class="empty-row">– Not found</div>
-                    }
-
-                    <div class="section-label">
-                        <span class="section-emoji" aria-hidden="true">👤</span>
-                        <span class="section-title">CreditTo</span>
-                        <span class="count-badge">{{ suggestionsAll().creditTo.length }}</span>
-                    </div>
-                    @for (s of suggestionsAll().creditTo; track s; let i = $index) {
-                        <li
-                            role="option"
-                            (mousedown)="pick(s, 'creditTo')"
-                            [attr.data-index]="i"
-                            [innerHTML]="highlightPrefix(s, value())">
-                        </li>
-                    }
-                    @if (suggestionsAll().creditTo.length === 0) {
-                        <div class="empty-row">– Not found</div>
+                    @if (suggestionsAll().location.length !== 0) {
+                        <div class="section-label">
+                            <span class="section-emoji" aria-hidden="true">📍</span>
+                            <span class="section-title">Location</span>
+                            <span class="count-badge">{{ suggestionsAll().location.length }}</span>
+                        </div>
+                        @for (s of suggestionsAll().location; track s; let i = $index) {
+                            <li
+                                role="option"
+                                (mousedown)="pick(s, 'location')"
+                                [attr.data-index]="i"
+                                [innerHTML]="highlightPrefix(s, value())">
+                            </li>
+                        }
                     }
 
-                    <div class="section-label">
-                        <span class="section-emoji" aria-hidden="true">🏷️</span>
-                        <span class="section-title">Tags</span>
-                        <span class="count-badge">{{ suggestionsAll().tabs.length }}</span>
-                    </div>
-                    @for (s of suggestionsAll().tabs; track s; let i = $index) {
-                        <li
-                            role="option"
-                            (mousedown)="pick(s, 'tab')"
-                            [attr.data-index]="i" [innerHTML]="highlightPrefix(s, value())">
-                        </li>
-                    }
-                    @if (suggestionsAll().tabs.length === 0) {
+                    <!-- @if (suggestionsAll().location.length === 0) {
                         <div class="empty-row">– Not found</div>
+                    } -->
+
+                    @if (suggestionsAll().creditTo.length !== 0) {
+                        <div class="section-label">
+                            <span class="section-emoji" aria-hidden="true">👤</span>
+                            <span class="section-title">CreditTo</span>
+                            <span class="count-badge">{{ suggestionsAll().creditTo.length }}</span>
+                        </div>
+                        @for (s of suggestionsAll().creditTo; track s; let i = $index) {
+                            <li
+                                role="option"
+                                (mousedown)="pick(s, 'creditTo')"
+                                [attr.data-index]="i"
+                                [innerHTML]="highlightPrefix(s, value())">
+                            </li>
+                        }
                     }
+
+                    <!-- @if (suggestionsAll().creditTo.length === 0) {
+                        <div class="empty-row">– Not found</div>
+                    } -->
+
+                    @if (suggestionsAll().tabs.length !== 0) {
+                        <div class="section-label">
+                            <span class="section-emoji" aria-hidden="true">🏷️</span>
+                            <span class="section-title">Tags</span>
+                            <span class="count-badge">{{ suggestionsAll().tabs.length }}</span>
+                        </div>
+                        @for (s of suggestionsAll().tabs; track s; let i = $index) {
+                            <li
+                                role="option"
+                                (mousedown)="pick(s, 'tab')"
+                                [attr.data-index]="i" [innerHTML]="highlightPrefix(s, value())">
+                            </li>
+                        }
+                    }
+                    <!-- @if (suggestionsAll().tabs.length === 0) {
+                        <div class="empty-row">– Not found</div>
+                    } -->
                 </ul>
             } @else {
                 @if (suggestionsSpecific().length) {
