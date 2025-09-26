@@ -120,7 +120,6 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
                 <ul
                     class="menu"
                     role="listbox">
-
                     @if (suggestionsAll().location.length !== 0) {
                         <div class="section-label">
                             <span class="section-emoji" aria-hidden="true">📍</span>
