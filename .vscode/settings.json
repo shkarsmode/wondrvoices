@@ -2,5 +2,15 @@
     "cSpell.words": [
         "deslugify",
         "wondrvoices"
-    ]
+    ],
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#ff5f2a4d",
+        "activityBar.background": "#ff5f2a4d",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#ff5f2abc",
+        "activityBarBadge.foreground": "#fff",
+        "sideBar.border": "#ff5f2a4d"
+    },
+    "peacock.color": "#f63d00"
 }
