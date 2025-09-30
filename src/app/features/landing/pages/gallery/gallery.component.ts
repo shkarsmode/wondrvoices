@@ -28,6 +28,7 @@ type Filters = {
 export class GalleryComponent implements OnInit {
     public tabs: string[] = [];
     public activeTab = signal<string>('All');
+    public tabCounts = signal<Record<string, number>>({});
 
     readonly activeImageId = signal<number | null>(null);
     readonly computedViewImg = (id: number) => `img-voice-${id}`;
@@ -75,6 +76,7 @@ export class GalleryComponent implements OnInit {
 
     public hasAnyFilter = computed(() => {
         const f = this.filters();
+        f.tab = f.tab === 'All' ? undefined : f.tab;
         return Boolean(f.location || f.description || f.creditTo || (f.tags && f.tags.length) || f.tab);
     });
 

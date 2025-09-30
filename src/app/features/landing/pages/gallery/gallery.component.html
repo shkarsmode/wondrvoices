@@ -1,22 +1,26 @@
 <div class="message-board">
-    <h1 class="title" [style.viewTransitionName]="'title'">Messages and moments <br /> that lift us up</h1>
-    <p class="subtitle">
-        Explore heartfelt cards, creative art, and inspiring words from people who care.
-        Every message is a reminder that you’re never alone on your journey.
-    </p>
-
-    <div class="tabs">
-        @for (tab of tabs; track tab) {
-            <button
-                [class.active]="tab === activeTab()"
-                (click)="selectTab(tab)">
-                {{ tab }}
-            </button>
-        }
-    </div>
-
-    <div class="filters-panel">
-        <div class="row">
+    <!-- HERO / HEADER -->
+    <section class="gallery-hero" aria-labelledby="galleryTitle">
+        <h1 id="galleryTitle" class="hero-title" [style.viewTransitionName]="'title'">
+            Messages and moments that lift us up
+        </h1>
+        <p class="hero-subtitle">
+            Explore heartfelt cards, art, and words from people who care.
+        </p>
+    
+        <div class="hero-tabs" role="tablist" aria-label="Categories">
+            @for (tab of tabs; track tab) {
+                <button role="tab" type="button" [attr.aria-selected]="tab === activeTab()" [class.active]="tab === activeTab()"
+                    (click)="selectTab(tab)">
+                    {{ tab }}
+                    <!-- <span class="count" aria-hidden="true">{{ tabCounts()[slugify(tab)] ?? 0 }}</span> -->
+                </button>
+            }
+        </div>
+    </section>
+    
+    <section class="filters-block" aria-label="Search and filters">
+        <div class="filters-row">
             <w-autocomplete
                 [isAllInfo]="true"
                 placeholder="Search by location, credit to, or tag"
@@ -24,73 +28,43 @@
                 (select)="applyTextFilter($event)"
                 (inputChange)="null" />
 
-            <button class="clear-btn" type="button" (click)="clearAllFilters()">Clear</button>
-        
-
-            <!-- <input 
-                type="search" placeholder="Note..."
-                [value]="filters().description || ''"
-                (input)="applyTextFilter('description', ($any($event.target).value))" />
-      
-            <w-autocomplete
-                field="creditTo"
-                placeholder="Credit to…"
-                [initial]="filters().creditTo || ''"
-                emptyHint="Type to search credits"
-                (input)="applyTextFilter('creditTo', ($any($event.target).value))" /> -->
-                
-          <!-- <input type="search" placeholder="Credit to…"
-                 [value]="filters().creditTo || ''"
-                 (change)="applyTextFilter('creditTo', ($any($event.target).value))" /> -->
-      
-          <!-- <div class="tags-input">
-            <input type="text" placeholder="Add tag and press Enter"
-                   (keydown.enter)="addTag(($any($event.target).value)); $any($event.target).value='';" />
-          </div> -->
-      
-          <!-- <div class="mode-toggle" role="group" aria-label="Tags matching mode">
-            <button type="button"
-                    [class.active]="(filters().tagsMode||'any')==='any'"
-                    (click)="setQueryPatch({ tagsMode: 'any' })">OR (any)</button>
-            <button type="button"
-                    [class.active]="(filters().tagsMode||'any')==='all'"
-                    (click)="setQueryPatch({ tagsMode: 'all' })">AND (all)</button>
-          </div> -->
+            @if (hasAnyFilter()) {
+                <button
+                    class="btn-clear"
+                    type="button"
+                    (click)="clearAllFilters()">
+                    <span class="material-symbols-outlined sm" aria-hidden="true">close</span>
+                    Clear
+                </button>
+            }
         </div>
-      
+
         @if (hasAnyFilter()) {
-            <div class="chips">
-              @if (filters().location) {
-                <button class="chip" (click)="applyTextFilter({ key: 'location', value: ''})">
-                  Location: {{ filters().location }} <span class="x">×</span>
-                </button>
-              }
-              <!-- @if (filters().description) {
-                <button class="chip" (click)="applyTextFilter('description','')">
-                  Description: {{ filters().description }} <span class="x">×</span>
-                </button>
-              } -->
-              @if (filters().creditTo) {
-                <button class="chip" (click)="applyTextFilter({ key: 'creditTo', value: '' })">
-                  Credit: {{ filters().creditTo }} <span class="x">×</span>
-                </button>
-              }
-              @if (activeTab() !== 'All') {
-                <!-- @for (t of filters().tags; track t) { -->
-                  <button class="chip" (click)="applyTextFilter({ key: 'tab', value: 'All'})">
-                    #{{ filters().tab }} <span class="x">×</span>
-                  </button>
-                <!-- } -->
-              }
-              <!-- @if (filters().tagsMode) {
-                <button class="chip" (click)="toggleTagsMode()">
-                  Mode: {{ (filters().tagsMode||'any').toUpperCase() }} <span class="x">⇆</span>
-                </button>
-              } -->
+            <div class="chips-row" aria-live="polite">
+                @if (filters().location) {
+                    <button class="chip" type="button" (click)="applyTextFilter({ key: 'location', value: '' })">
+                        <span class="material-symbols-outlined sm" aria-hidden="true">location_on</span>
+                        <span class="label">Location: {{ filters().location }}</span>
+                        <span class="x" aria-label="Remove location">×</span>
+                    </button>
+                }
+                @if (filters().creditTo) {
+                    <button class="chip" type="button" (click)="applyTextFilter({ key: 'creditTo', value: '' })">
+                        <span class="material-symbols-outlined sm" aria-hidden="true">favorite</span>
+                        <span class="label">Credit: {{ filters().creditTo }}</span>
+                        <span class="x" aria-label="Remove credit">×</span>
+                    </button>
+                }
+                @if (activeTab() !== 'All') {
+                    <button class="chip" type="button" (click)="applyTextFilter({ key: 'tab', value: 'All' })">
+                        <span class="material-symbols-outlined sm" aria-hidden="true">label</span>
+                        <span class="label">#{{ filters().tab }}</span>
+                        <span class="x" aria-label="Remove tag">×</span>
+                    </button>
+                }
             </div>
         }
-
-    </div>
+    </section>
 
     @if (!isLoading() && cards().length === 0) {
         <div class="empty-state" aria-live="polite">
