@@ -43,8 +43,8 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
 
     <input
         #inp
-        [type]="loading() ? 'text' : (placeholder.length ? 'search' : 'text')"
-        [attr.placeholder]="placeholder"
+        [type]="'search'"
+        [attr.placeholder]="loading() ? (value().trim().length ? 'Searching “' + value().trim() + '”…' : 'Searching…') : placeholder"
         [attr.autocomplete]="autocomplete"
         [attr.name]="name"
         [maxLength]="maxLength"
@@ -53,15 +53,13 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
         (input)="onInput(($any($event.target).value))"
         (focus)="onFocus()"
         (blur)="onBlur()"
-        [style.padding-left]="isAllInfo ? '30px' : '0.75rem'"
+        [style.padding-left]="isAllInfo ? '34px' : '0.75rem'"
         [attr.aria-expanded]="open()"
         [attr.aria-autocomplete]="'list'"
         [attr.aria-haspopup]="'listbox'" />
 
     @if (loading()) {
-        <div
-            class="input-indicator"
-            aria-hidden="true">
+        <div class="input-indicator" aria-hidden="true">
             <span class="spinner"></span>
         </div>
     }
@@ -77,118 +75,108 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
         )
     ) {
         @if (loading()) {
-            <ul
-                class="menu"
-                role="listbox"
-                aria-busy="true">
-
+            <ul class="menu" role="listbox" aria-busy="true">
                 @if (isAllInfo) {
-                    <div class="section-label">
-                        <span class="section-emoji" aria-hidden="true">📍</span>
-                        <span class="section-title">Location</span>
+                    <!-- <div class="section-label">
+                        <span class="material-symbols-outlined md" aria-hidden="true">location_on</span>
+                        <span class="section-title">Places</span>
                         <span class="count-badge pulse">…</span>
-                    </div>
-                    @for (s of [0,1,2]; track s) {
-                        <li class="skeleton-line"></li>
-                    }
+                    </div> -->
+                    @for (s of [0,1,2]; track s) { <li class="skeleton-line"></li> }
 
-                    <div class="section-label">
-                        <span class="section-emoji" aria-hidden="true">👤</span>
-                        <span class="section-title">CreditTo</span>
+                    <!-- <div class="section-label">
+                        <span class="material-symbols-outlined md" aria-hidden="true">favorite</span>
+                        <span class="section-title">People & Orgs</span>
                         <span class="count-badge pulse">…</span>
-                    </div>
-                    @for (s of [0,1,2]; track s) {
-                        <li class="skeleton-line"></li>
-                    }
+                    </div> -->
+                    @for (s of [0,1,2]; track s) { <li class="skeleton-line"></li> }
 
-                    <div class="section-label">
-                        <span class="section-emoji" aria-hidden="true">🏷️</span>
+                    <!-- <div class="section-label">
+                        <span class="material-symbols-outlined md" aria-hidden="true">label</span>
                         <span class="section-title">Tags</span>
                         <span class="count-badge pulse">…</span>
-                    </div>
-                    @for (s of [0,1,2]; track s) {
-                        <li class="skeleton-line"></li>
-                    }
+                    </div> -->
+                    @for (s of [0,1,2]; track s) { <li class="skeleton-line"></li> }
                 } @else {
-                    @for (s of [0,1,2,3,4,5]; track s) {
-                        <li class="skeleton-line"></li>
-                    }
+                    @for (s of [0,1,2,3,4,5]; track s) { <li class="skeleton-line"></li> }
                 }
             </ul>
         } @else {
             @if (isAllInfo) {
-                <ul
-                    class="menu"
-                    role="listbox">
-                    @if (suggestionsAll().location.length !== 0) {
-                        <div class="section-label">
-                            <span class="section-emoji" aria-hidden="true">📍</span>
-                            <span class="section-title">Location</span>
+                <ul class="menu" role="listbox">
+                    @if (suggestionsAll().location.length) {
+                        <!-- <div class="section-label">
+                            <span class="material-symbols-outlined md" aria-hidden="true">location_on</span>
+                            <span class="section-title">Places</span>
                             <span class="count-badge">{{ suggestionsAll().location.length }}</span>
-                        </div>
+                        </div> -->
                         @for (s of suggestionsAll().location; track s; let i = $index) {
                             <li
                                 role="option"
                                 (mousedown)="pick(s, 'location')"
-                                [attr.data-index]="i"
-                                [innerHTML]="highlightPrefix(s, value())">
+                                [attr.data-index]="i">
+                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">location_on</span>
+                                <span [innerHTML]="highlightPrefix(s, value())"></span>
                             </li>
                         }
                     }
 
-                    <!-- @if (suggestionsAll().location.length === 0) {
-                        <div class="empty-row">– Not found</div>
-                    } -->
-
-                    @if (suggestionsAll().creditTo.length !== 0) {
-                        <div class="section-label">
-                            <span class="section-emoji" aria-hidden="true">👤</span>
-                            <span class="section-title">CreditTo</span>
+                    @if (suggestionsAll().creditTo.length) {
+                        <!-- <div class="section-label">
+                            <span class="material-symbols-outlined md" aria-hidden="true">favorite</span>
+                            <span class="section-title">People & Orgs</span>
                             <span class="count-badge">{{ suggestionsAll().creditTo.length }}</span>
-                        </div>
+                        </div> -->
                         @for (s of suggestionsAll().creditTo; track s; let i = $index) {
                             <li
                                 role="option"
                                 (mousedown)="pick(s, 'creditTo')"
-                                [attr.data-index]="i"
-                                [innerHTML]="highlightPrefix(s, value())">
+                                [attr.data-index]="i">
+                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">favorite</span>
+                                <span [innerHTML]="highlightPrefix(s, value())"></span>
                             </li>
                         }
                     }
 
-                    <!-- @if (suggestionsAll().creditTo.length === 0) {
-                        <div class="empty-row">– Not found</div>
-                    } -->
-
-                    @if (suggestionsAll().tabs.length !== 0) {
-                        <div class="section-label">
-                            <span class="section-emoji" aria-hidden="true">🏷️</span>
+                    @if (suggestionsAll().tabs.length) {
+                        <!-- <div class="section-label">
+                            <span class="material-symbols-outlined md" aria-hidden="true">label</span>
                             <span class="section-title">Tags</span>
                             <span class="count-badge">{{ suggestionsAll().tabs.length }}</span>
-                        </div>
+                        </div> -->
                         @for (s of suggestionsAll().tabs; track s; let i = $index) {
                             <li
                                 role="option"
                                 (mousedown)="pick(s, 'tab')"
-                                [attr.data-index]="i" [innerHTML]="highlightPrefix(s, value())">
+                                [attr.data-index]="i">
+                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">label</span>
+                                <span [innerHTML]="highlightPrefix(s, value())"></span>
                             </li>
                         }
                     }
-                    <!-- @if (suggestionsAll().tabs.length === 0) {
-                        <div class="empty-row">– Not found</div>
-                    } -->
                 </ul>
             } @else {
                 @if (suggestionsSpecific().length) {
-                    <ul
-                        class="menu"
-                        role="listbox">
+                    <ul class="menu" role="listbox">
+                        <!-- <div class="section-label">
+                            <span class="material-symbols-outlined md" aria-hidden="true">
+                                {{ field === 'location' ? 'location_on' : (field === 'creditTo' ? 'favorite' : 'label') }}
+                            </span>
+                            <span class="section-title">
+                                {{ field === 'location' ? 'Places' : (field === 'creditTo' ? 'People & Orgs' : 'Tags') }}
+                            </span>
+                            <span class="count-badge">{{ suggestionsSpecific().length }}</span>
+                        </div> -->
+
                         @for (s of suggestionsSpecific(); track s; let i = $index) {
                             <li
                                 role="option"
-                                (mousedown)="pick(s, this.field)"
-                                [attr.data-index]="i" 
-                                [innerHTML]="highlightPrefix(s, value())">
+                                (mousedown)="pick(s, field)"
+                                [attr.data-index]="i">
+                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">
+                                    {{ field === 'location' ? 'location_on' : (field === 'creditTo' ? 'favorite' : 'label') }}
+                                </span>
+                                <span [innerHTML]="highlightPrefix(s, value())"></span>
                             </li>
                         }
                     </ul>
@@ -197,16 +185,45 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
         }
     }
 
-    @if (open() && !loading() && (!suggestionsSpecific().length)) {
+    @if (open() && !loading() && !isAllInfo && !suggestionsSpecific().length) {
         <div class="empty">
             @if (!value().length) { {{ emptyHint }} } @else { Not found }
         </div>
     }
 </div>
+
+<div class="preload" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;">
+    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">label</span>
+    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">favorite</span>
+    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">location_on</span>
+</div>
     `,
     styles: [`
 :host { display: flex; width: 100%; }
 .auto { position: relative; width: 100%; max-width: 100%; }
+
+/* ===== Material Symbols (Outlined) base ===== */
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 18px;
+    line-height: 1;
+    display: inline-block;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+    user-select: none;
+}
+.material-symbols-outlined.sm { font-size: 16px; }
+.material-symbols-outlined.md { font-size: 18px; }
+.material-symbols-outlined.lg { font-size: 20px; }
 
 /* Input */
 input {
@@ -224,13 +241,15 @@ input:focus {
 }
 input:disabled { background: #f1f3f5; cursor: not-allowed; }
 
+/* Search icon inside input */
 .search {
     position: absolute;
     left: 8px;
     top: 6px;
-    color: #472a2f;
-    font-size: 21px;
     height: 20px;
+    width: 20px;
+    opacity: 0.9;
+    color: #3b3b3b;
 }
 
 /* Placeholder opacity based on isAllInfo */
@@ -277,10 +296,10 @@ input::placeholder { opacity: 0.72; }
 
 /* Section headers */
 .section-label {
-    top: 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: 22px auto auto;
     align-items: center;
-    gap: 0.5rem;
+    column-gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background: linear-gradient(#ffffff, #ffffff);
     border-top: 1px solid #f1f3f5;
@@ -289,7 +308,6 @@ input::placeholder { opacity: 0.72; }
     color: #495057;
 }
 .section-label:first-child { border-top: 0; }
-.section-emoji { width: 1.25rem; text-align: center; }
 .section-title { letter-spacing: 0.2px; }
 .count-badge {
     margin-left: auto;
@@ -303,10 +321,7 @@ input::placeholder { opacity: 0.72; }
     border: 1px solid #c5f6fa;
 }
 .pulse { animation: badgePulse 1.2s ease-in-out infinite; }
-@keyframes badgePulse {
-    0%, 100% { opacity: 0.35; }
-    50% { opacity: 0.9; }
-}
+@keyframes badgePulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.9; } }
 
 /* Options */
 .menu li {
@@ -314,21 +329,20 @@ input::placeholder { opacity: 0.72; }
     cursor: pointer;
     font-size: 14px;
     color: #212529;
-    display: flex;
+    display: grid;
+    grid-template-columns: 22px 1fr;
     align-items: center;
+    column-gap: 0.5rem;
     white-space: pre;
-    // gap: 0.5rem;
     transition: background-color 0.12s ease, transform 0.04s ease;
+    text-align: left;
 }
+/* remove default bullet */
+.menu li::before { content: none; }
+
 .menu li:hover { background: #f8f9fa; }
 .menu li:active { transform: translateY(0.5px); }
-.menu li::before {
-    content: "•";
-    opacity: 0.32;
-    transform: translateY(-1px);
-    font-size: 12px;
-    margin-right: 5px;
-}
+.opt-ico { opacity: 0.85; }
 
 /* Skeleton rows */
 .skeleton-line {
@@ -352,20 +366,9 @@ input::placeholder { opacity: 0.72; }
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.06);
 }
-@keyframes shimmer {
-    0% { background-position: 100% 0; }
-    100% { background-position: 0 0; }
-}
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 
-/* Empty rows inside the menu */
-.empty-row {
-    padding: 0.55rem 0.75rem;
-    color: #868e96;
-    font-style: italic;
-    font-size: 14px;
-}
-
-/* Outside empty hint panel */
+/* Empty rows outside the menu */
 .empty {
     position: absolute;
     left: 0;
@@ -427,13 +430,13 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
     private cache = new Map<string, string[] | { location: string[]; creditTo: string[]; tabs: string[] }>();
 
     // CVA callbacks
-    private onChange: (v: string) => void = () => {};
-    private onTouched: () => void = () => {};
+    private onChange: (v: string) => void = () => { };
+    private onTouched: () => void = () => { };
 
     @HostBinding('class.disabled') get isDisabled(): boolean { return this.disabled; }
 
     constructor(private api: VoicesService) {
-        // React to input with debounce and proper cleanup.
+        // React to input with debounce and cleanup.
         effect(onCleanup => {
             const query = this.value().trim();
             let subscription: Subscription | null = null;
@@ -510,7 +513,7 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
                 }
             }, 250);
 
-            // Cleanup: cancel previous debounce and unsubscribe previous request.
+            // Cleanup previous debounce and unsubscribe previous request.
             onCleanup(() => {
                 clearTimeout(timerId);
                 if (subscription) subscription.unsubscribe();
@@ -522,40 +525,30 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
     writeValue(v: string | null): void {
         this.setValue(v ?? '', false);
     }
-    registerOnChange(fn: (v: string) => void): void {
-        this.onChange = fn;
-    }
-    registerOnTouched(fn: () => void): void {
-        this.onTouched = fn;
-    }
-    setDisabledState(isDisabled: boolean): void {
-        this.disabled = isDisabled;
-    }
+    registerOnChange(fn: (v: string) => void): void { this.onChange = fn; }
+    registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+    setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
 
     // ---- UI handlers ----
 
     public highlightPrefix(text: string, query: string): string {
         const q = (query ?? '').trim();
         if (!q) return this.escapeHtml(text ?? '');
-    
+
         const rx = this.getWordStartRegex(q);
-    
+
         let out = '';
         let last = 0;
-    
+
         // Use original text for correct \b behavior, escape while building HTML
         text.replace(rx, (match: string, group: string, offset: number) => {
-            // normal chunk before match
             out += this.escapeHtml(text.slice(last, offset));
-            // matched prefix in bold
             out += `<b>${this.escapeHtml(group)}</b>`;
             last = offset + group.length;
             return match;
         });
-    
-        // tail
+
         out += this.escapeHtml(text.slice(last));
-    
         return out;
     }
 
@@ -592,8 +585,8 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
             const first =
                 this.isAllInfo
                     ? (this.suggestionsAll().location[0] ||
-                       this.suggestionsAll().creditTo[0] ||
-                       this.suggestionsAll().tabs[0])
+                        this.suggestionsAll().creditTo[0] ||
+                        this.suggestionsAll().tabs[0])
                     : this.suggestionsSpecific()[0];
 
             if (first) {
