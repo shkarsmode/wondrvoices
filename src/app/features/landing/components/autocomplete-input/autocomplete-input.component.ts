@@ -43,7 +43,7 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
 
     <input
         #inp
-        [type]="'search'"
+        [type]="loading() ? 'text' : 'search'"
         [attr.placeholder]="loading() ? (value().trim().length ? 'Searching “' + value().trim() + '”…' : 'Searching…') : placeholder"
         [attr.autocomplete]="autocomplete"
         [attr.name]="name"
