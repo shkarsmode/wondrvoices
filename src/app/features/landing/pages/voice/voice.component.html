@@ -11,47 +11,58 @@
 
         <div class="content">
             <div class="wrap-category" [style.viewTransitionName]="'img-tag-' + card()!.id">
+                <span
+                    class="category"
+                    (click)="goToGalleryWithFilter('location', card()!.location)">
+                    {{ card()!.location }}
+                </span>
+                @if (card()!.creditTo) {
+                    <span 
+                        class="category"
+                        (click)="goToGalleryWithFilter('creditTo', card()!.creditTo)">
+                        {{ card()!.creditTo }}
+                    </span>
+                }
                 @if (card()!.category) {
-                    <span class="category"
-                          (click)="goToGalleryWithFilter('tab', card()!.category, $event)">
+                    <span 
+                        class="category"
+                        (click)="goToGalleryWithFilter('tab', card()!.category, $event)">
                         {{ card()!.category }}
                     </span>
                 }
                 @for (tag of card()!.what; track tag) {
-                    <span class="category"
-                          (click)="goToGalleryWithFilter('tab', tag, $event)">
+                    <span 
+                        class="category"
+                        (click)="goToGalleryWithFilter('tab', tag, $event)">
                         {{ tag }}
                     </span>
                 }
                 @for (tag of card()!.express; track tag) {
-                    <span class="category"
-                          (click)="goToGalleryWithFilter('tab', tag, $event)">
+                    <span 
+                        class="category"
+                        (click)="goToGalleryWithFilter('tab', tag, $event)">
                         {{ tag }}
                     </span>
                 }
             </div>
 
-            <h1 
+            <!-- <h1 
                 class="title clickable"
                 (click)="goToGalleryWithFilter('location', card()!.location)"
                 [style.viewTransitionName]="'img-title-' + card()!.id">
                 {{ card()!.location }}
-            </h1>
+            </h1> -->
 
-            <p class="description clickable"
-               (click)="goToGalleryWithFilter('description', card()!.note)">
-                {{ card()!.note }}
-            </p>
-
-            @if (card()!.creditTo) {
-                <p class="description clickable"
-                   (click)="goToGalleryWithFilter('creditTo', card()!.creditTo)">
-                    <strong>{{ card()!.creditTo }}</strong>
+            @if (card()!.note) {
+                <p 
+                    class="description clickable"
+                    (click)="goToGalleryWithFilter('description', card()!.note)">
+                    {{ card()!.note }}
                 </p>
             }
         </div>
 
-        <hr />
+        <!-- <hr /> -->
 
         <!-- Share bar (без изменений) -->
         <div class="share-bar">
