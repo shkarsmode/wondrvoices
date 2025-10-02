@@ -44,21 +44,21 @@
                 @if (filters().location) {
                     <button class="chip" type="button" (click)="applyTextFilter({ key: 'location', value: '' })">
                         <span class="material-symbols-outlined sm" aria-hidden="true">location_on</span>
-                        <span class="label">Location: {{ filters().location }}</span>
+                        <span class="label">{{ filters().location }}</span>
                         <span class="x" aria-label="Remove location">×</span>
                     </button>
                 }
                 @if (filters().creditTo) {
                     <button class="chip" type="button" (click)="applyTextFilter({ key: 'creditTo', value: '' })">
                         <span class="material-symbols-outlined sm" aria-hidden="true">favorite</span>
-                        <span class="label">Credit: {{ filters().creditTo }}</span>
+                        <span class="label">{{ filters().creditTo }}</span>
                         <span class="x" aria-label="Remove credit">×</span>
                     </button>
                 }
                 @if (activeTab() !== 'All') {
                     <button class="chip" type="button" (click)="applyTextFilter({ key: 'tab', value: 'All' })">
                         <span class="material-symbols-outlined sm" aria-hidden="true">label</span>
-                        <span class="label">#{{ filters().tab }}</span>
+                        <span class="label">{{ filters().tab }}</span>
                         <span class="x" aria-label="Remove tag">×</span>
                     </button>
                 }
