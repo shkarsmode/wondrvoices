@@ -404,3 +404,64 @@
         }
     }
 }
+
+/* FAB only on small screens */
+@media (max-width: 1000px) {
+    .donate-fab {
+        position: fixed;
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        z-index: 100000;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 48px;
+        padding: 0 16px;
+        border: none;
+        border-radius: 999px;
+        background-color: #A9D957 !important;
+        color: #ffffff;
+        font-weight: 600;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+        transform: translateY(0);
+        transition: transform 220ms ease, box-shadow 220ms ease, opacity 180ms ease;
+        -webkit-tap-highlight-color: transparent;
+
+        /* reuse your .fundraise inner layout */
+        div {
+            position: static !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: auto;
+            width: auto;
+            color: #ffffff;
+        }
+
+        a {
+            position: absolute !important;
+            inset: 0;
+            z-index: 2;
+            opacity: 0;
+        }
+
+        &:active {
+            transform: translateY(1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+        }
+
+        &.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px);
+        }
+    }
+}
+
+/* Desktop keeps header button; hide FAB */
+@media (min-width: 1001px) {
+    .donate-fab {
+        display: none;
+    }
+}
