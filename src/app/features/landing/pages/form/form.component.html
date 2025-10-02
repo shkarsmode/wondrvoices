@@ -1,29 +1,29 @@
 @if (!submitted()) {
 
-    @switch (step()) {
-        @case (1) {
-            <h1>Submit a voice</h1>
-        }
-        @case (2) {
-            <h1>Choose Tags</h1>
-        }
-        @case (3) {
-            <h1>Personal Info</h1>
-        }
-    }
+@switch (step()) {
+@case (1) {
+<h1>Submit a voice</h1>
+}
+@case (2) {
+<h1>Choose Tags</h1>
+}
+@case (3) {
+<h1>Personal Info</h1>
+}
+}
 
-    <div class="wizard">
-      <div class="steps">
+<div class="wizard">
+    <div class="steps">
         <div class="dot" [class.active]="step()===1">1</div>
         <div class="line" [class.active]="step()>=2"></div>
         <div class="dot" [class.active]="step()===2">2</div>
         <div class="line" [class.active]="step()===3"></div>
         <div class="dot" [class.active]="step()===3">3</div>
-      </div>
-  
-      @switch (step()) {
-        @case (1) {
-          <!-- <p>
+    </div>
+
+    @switch (step()) {
+    @case (1) {
+    <!-- <p>
             WondrVoices invites anyone to create artwork or handwritten messages that are printed on personalized cards and
             delivered to patients facing cancer and other serious illnesses.
             Your kind words or drawings can bring comfort and connection when someone needs it most.
@@ -31,106 +31,95 @@
           <p>
             No names or personal information will appear on the cards — only your art or words of kindness will be shared.
           </p> -->
-  
-          <form class="form" [formGroup]="form" autocomplete="on">
-            <div 
-                class="form-group dropzone"
-                [class.dragover]="isDragOver()"
-                [class.preview]="!!previewUrl()"
-                (click)="fileInput.click()"
-                (dragleave)="onDragLeave()"
-                (dragover)="onDragOver($event)"
-                (drop)="onFileDrop($event)">
-                @if (!previewUrl()) {
-                    <label class="upload-label">
-                        Upload a photo of your drawing, artwork, or handwritten message
-                    </label>
 
-                    <button class="button submit-btn primary" type="button">Choose a file</button>
-                }
-  
-              <div 
-                class="dropzone-content"
-                [class.dropzone-content--rotated]="rotated()"
-                [class.dropzone-content--additional-margin]="naturalH() > naturalW() && rotated()"
-                [style]="'--i: ' + computeQuadraticMargin(naturalH() - naturalW()) + 'px'"
-                [style.aspectRatio]="
-                    rotated() ? '1 / 1' : null
-                " >
-                @if (!previewUrl()) {
-                    <p>📁 Click to choose a file or drag here</p>
-                    <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
-                } @else {
-                    <div class="clear-file" (click)="clearFile($event)">✖</div>
-                    <img 
-                        class="preview-img"
-                        [style.transform]="'rotate(' + rotationDeg() + 'deg)'"
-                        [src]="previewUrl()"
-                        alt="preview" 
-                        (load)="onImgLoad($event)"/>
-                }
-              </div>
-  
-              <input hidden (change)="onFileChange($event)" #fileInput type="file" />
-            </div>
-  
-            @if (previewUrl()) {
-                <div class="rotate-tools">
-                  <button type="button" class="btn" (click)="rotateLeft()">⟲ Rotate</button>
-                  <button type="button" class="btn" (click)="rotateRight()">⟳ Rotate</button>
-                </div>
+    <form class="form" [formGroup]="form" autocomplete="on">
+        <div class="form-group dropzone" [class.dragover]="isDragOver()" [class.preview]="!!previewUrl()"
+            (click)="fileInput.click()" (dragleave)="onDragLeave()" (dragover)="onDragOver($event)"
+            (drop)="onFileDrop($event)">
+            @if (!previewUrl()) {
+            <label class="upload-label">
+                Upload a photo of your drawing, artwork, or handwritten message
+            </label>
+
+            <button class="button submit-btn primary" type="button">Choose a file</button>
             }
-  
-            <div class="nav">
-              <span></span>
-              <button type="button" class="button submit-btn primary" [disabled]="!form.get('img')?.value" (click)="goNext()">Next →</button>
-            </div>
-          </form>
 
-          <h4>Other ways to upload:</h4>
-          <div class="wrap-buttons">
-            <a
-                href="https://play.google.com/store/apps/details?id=com.fwollo.wondrdrop"
-                target="_blank">
-                <img src="assets/img/google.webp" alt="Google">
-            </a>
-            <a href="https://apps.apple.com/us/app/wondrvoices-share-kindness/id6748359471 ">
-                <img src="assets/img/app-store.webp" alt="App Store">
-            </a>
-          </div>
+            <div class="dropzone-content" [class.dropzone-content--rotated]="rotated()"
+                [class.dropzone-content--additional-margin]="naturalH() > naturalW() && rotated()"
+                [style]="'--i: ' + computeQuadraticMargin(naturalH() - naturalW()) + 'px'" [style.aspectRatio]="
+                    rotated() ? '1 / 1' : null
+                ">
+                @if (!previewUrl()) {
+                <p>📁 Click to choose a file or drag here</p>
+                <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
+                } @else {
+                <div class="clear-file" (click)="clearFile($event)">✖</div>
+                <img class="preview-img" [style.transform]="'rotate(' + rotationDeg() + 'deg)'" [src]="previewUrl()"
+                    alt="preview" (load)="onImgLoad($event)" />
+                }
+            </div>
+
+            <input hidden (change)="onFileChange($event)" #fileInput type="file" />
+        </div>
+
+        @if (previewUrl()) {
+        <div class="rotate-tools">
+            <button type="button" class="btn" (click)="rotateLeft()">⟲ Rotate</button>
+            <button type="button" class="btn" (click)="rotateRight()">⟳ Rotate</button>
+        </div>
         }
-  
-        @case (2) {
-          <form class="form" [formGroup]="form">
-            <section class="tags-section">
-              <div class="section-title">
+
+        <div class="nav">
+            <span></span>
+            <button type="button" class="button submit-btn primary" [disabled]="!form.get('img')?.value"
+                (click)="goNext()">Next →</button>
+        </div>
+    </form>
+
+    <h4>Other ways to upload:</h4>
+    <div class="wrap-buttons">
+        <a href="https://play.google.com/store/apps/details?id=com.fwollo.wondrdrop" target="_blank">
+            <img src="assets/img/google.webp" alt="Google">
+        </a>
+        <a href="https://apps.apple.com/us/app/wondrvoices-share-kindness/id6748359471 ">
+            <img src="assets/img/app-store.webp" alt="App Store">
+        </a>
+    </div>
+    }
+
+    @case (2) {
+    <form class="form" [formGroup]="form">
+        <section class="tags-section">
+            <div class="section-title">
                 <h3>Categorize</h3>
                 <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
-              </div>
-  
-              <div class="chips">
+            </div>
+
+            <div class="chips">
                 @for (opt of whatOptions; track opt.key) {
-                  <button class="chip"
-                          [class.active]="isSelected('what', opt.key)"
-                          [disabled]="disableChip('what', opt.key)"
-                          (click)="toggle('what', opt.key)"
-                          type="button">
-                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
-                  </button>
-                }
-                <button class="chip" style="border:1px solid orangered" #refCustom1 (click)="refCustom1.style.display='none'" type="button">
-                  <span class="emoji">➕</span>
+                <button class="chip" [class.active]="isSelected('what', opt.key)"
+                    [disabled]="disableChip('what', opt.key)" (click)="toggle('what', opt.key)" type="button">
+                    <!-- <span class="emoji">{{ opt.emoji }}</span> -->
+                    {{ opt.label }}
                 </button>
-              </div>
-  
-              @if (refCustom1.style.display === 'none') {
-                <div class="add-own" [style.opacity]="disableChip('what', '') ? 0.3 : 1">
-                  <input class="own-input" type="text" [value]="draftWhat" (input)="draftWhat = ($any($event.target).value || '').slice(0, 24)" (keydown.enter)="addCustomTag('what')" placeholder="Add your own" />
-                  <button class="btn add" type="button" (click)="addCustomTag('what')" [disabled]="!canAddDraft('what')">Add</button>
-                </div>
-              }
-  
-              <!-- @if ((form.get('what')?.value?.length || 0) > 0) {
+                }
+                <button class="chip" style="border:1px solid orangered" #refCustom1
+                    (click)="refCustom1.style.display='none'" type="button">
+                    <span class="emoji">➕</span>
+                </button>
+            </div>
+
+            @if (refCustom1.style.display === 'none') {
+            <div class="add-own" [style.opacity]="disableChip('what', '') ? 0.3 : 1">
+                <input class="own-input" type="text" [value]="draftWhat"
+                    (input)="draftWhat = ($any($event.target).value || '').slice(0, 24)"
+                    (keydown.enter)="addCustomTag('what')" placeholder="Add your own" />
+                <button class="btn add" type="button" (click)="addCustomTag('what')"
+                    [disabled]="!canAddDraft('what')">Add</button>
+            </div>
+            }
+
+            <!-- @if ((form.get('what')?.value?.length || 0) > 0) {
                   <div class="selected-list">
                     @for (key of form.get('what')?.value; track key) {
                       <span class="token">
@@ -140,182 +129,156 @@
                     }
                   </div>
               } -->
-  
-              <!-- <small class="hint">Choose up to 3. You can add your own.</small> -->
-            </section>
-  
-            <section class="tags-section">
-              <div class="section-title">
+
+            <!-- <small class="hint">Choose up to 3. You can add your own.</small> -->
+        </section>
+
+        <section class="tags-section">
+            <div class="section-title">
                 <h3>Describe <span class="optional">(optional)</span></h3>
                 <span class="counter">{{ form.get('express')?.value?.length || 0 }}/3</span>
-              </div>
-  
-              <div class="chips">
+            </div>
+
+            <div class="chips">
                 @for (opt of expressOptions; track opt.key) {
-                  <button class="chip"
-                          [class.active]="isSelected('express', opt.key)"
-                          [disabled]="disableChip('express', opt.key)"
-                          (click)="toggle('express', opt.key)"
-                          type="button">
-                    <span class="emoji">{{ opt.emoji }}</span>{{ opt.label }}
-                  </button>
-                }
-                <button class="chip" style="border:1px solid orangered" #refCustom2 (click)="refCustom2.style.display='none'" type="button">
-                  <span class="emoji">➕</span>
+                <button class="chip" [class.active]="isSelected('express', opt.key)"
+                    [disabled]="disableChip('express', opt.key)" (click)="toggle('express', opt.key)" type="button">
+                    <!-- <span class="emoji">{{ opt.emoji }}</span> -->
+                    {{ opt.label }}
                 </button>
-              </div>
-  
-              @if (refCustom2.style.display === 'none') {
-                <div class="add-own" [style.opacity]="disableChip('express', '') ? 0.3 : 1">
-                  <input class="own-input" type="text" [value]="draftExpress" (input)="draftExpress = ($any($event.target).value || '').slice(0, 24)" (keydown.enter)="addCustomTag('express')" placeholder="Add your own" />
-                  <button class="btn add" type="button" (click)="addCustomTag('express')" [disabled]="!canAddDraft('express')">Add</button>
-                </div>
-              }
-  
-              <!-- <small class="hint">Choose up to 3. You can add your own.</small> -->
-            </section>
-  
-            <div class="form-group" style="margin-top: 15px">
-                <div class="section-title">
-                    <h3>Add Note <span class="optional">(optional)</span></h3>
-                </div>
-              <div class="input-wrapper textarea">
+                }
+                <button class="chip" style="border:1px solid orangered" #refCustom2
+                    (click)="refCustom2.style.display='none'" type="button">
+                    <span class="emoji">➕</span>
+                </button>
+            </div>
+
+            @if (refCustom2.style.display === 'none') {
+            <div class="add-own" [style.opacity]="disableChip('express', '') ? 0.3 : 1">
+                <input class="own-input" type="text" [value]="draftExpress"
+                    (input)="draftExpress = ($any($event.target).value || '').slice(0, 24)"
+                    (keydown.enter)="addCustomTag('express')" placeholder="Add your own" />
+                <button class="btn add" type="button" (click)="addCustomTag('express')"
+                    [disabled]="!canAddDraft('express')">Add</button>
+            </div>
+            }
+
+            <!-- <small class="hint">Choose up to 3. You can add your own.</small> -->
+        </section>
+
+        <div class="form-group" style="margin-top: 15px">
+            <div class="section-title">
+                <h3>Add Note <span class="optional">(optional)</span></h3>
+            </div>
+            <div class="input-wrapper textarea">
                 <textarea formControlName="note" placeholder=" " rows="1" (input)="autoResize($event)"></textarea>
                 <label [class.focused]="form.get('note')?.value">Describe in more detail</label>
-              </div>
             </div>
-  
-            <div class="nav">
-              <button type="button" class="button submit-btn ghost" (click)="goBack()">← Back</button>
-              <button type="button" class="button submit-btn primary" (click)="goNext()">Next →</button>
-            </div>
-          </form>
-        }
-  
-        @case (3) {
-            <form class="form" [formGroup]="form" (ngSubmit)="submit()" autocomplete="on">
-              <!-- PUBLIC -->
-              <section class="info-block public">
-                <div class="block-head">
-                  <span class="ico">📣</span>
-                  <div class="t">
+        </div>
+
+        <div class="nav">
+            <button type="button" class="button submit-btn ghost" (click)="goBack()">← Back</button>
+            <button type="button" class="button submit-btn primary" (click)="goNext()">Next →</button>
+        </div>
+    </form>
+    }
+
+    @case (3) {
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()" autocomplete="on">
+        <!-- PUBLIC -->
+        <section class="info-block public">
+            <div class="block-head">
+                <span class="ico">📣</span>
+                <div class="t">
                     <h4>Publicly shown on card</h4>
-                  </div>
                 </div>
-          
-                <!-- City -->
-                <div class="form-group">
-                  <div class="input-wrapper with-counter">
-                    <w-autocomplete
-                        field="location"
-                        placeholder=""
-                        formControlName="location"
-                        autocomplete="address-level2"
-                        name="location"
-                        status="all"
-                        [maxLength]="maxMap.location"
-                        [initial]=""
-                        emptyHint="Type to search location"
-                        #refLocation/>
-                    <label
-                        [class.focused]="form.get('location')?.value || refLocation.isFocused">
+            </div>
+
+            <!-- City -->
+            <div class="form-group">
+                <div class="input-wrapper with-counter">
+                    <w-autocomplete field="location" placeholder="" formControlName="location"
+                        autocomplete="address-level2" name="location" status="all" [maxLength]="maxMap.location"
+                        [initial]="" emptyHint="Type to search location" #refLocation />
+                    <label [class.focused]="form.get('location')?.value || refLocation.isFocused">
                         City *
                     </label>
                     <span class="counter">{{ getLen('location') }}/{{ maxMap.location }}</span>
                     <button class="loc-btn" type="button" (click)="null">📍</button> <!-- pickLocation?.() -->
-                  </div>
                 </div>
-          
-                <!-- Credit to -->
-                <div class="form-group">
-                  <div class="input-wrapper with-counter">
-                    <w-autocomplete
-                        field="creditTo"
-                        placeholder=""
-                        formControlName="creditTo"
-                        name="creditTo"
-                        status="all"
-                        [maxLength]="maxMap.creditTo"
-                        [initial]=""
-                        emptyHint="Type to search creditTo"
-                        #refCreditTo/>
-                    <label
-                        [class.focused]="form.get('creditTo')?.value || refCreditTo.isFocused">
+            </div>
+
+            <!-- Credit to -->
+            <div class="form-group">
+                <div class="input-wrapper with-counter">
+                    <w-autocomplete field="creditTo" placeholder="" formControlName="creditTo" name="creditTo"
+                        status="all" [maxLength]="maxMap.creditTo" [initial]="" emptyHint="Type to search creditTo"
+                        #refCreditTo />
+                    <label [class.focused]="form.get('creditTo')?.value || refCreditTo.isFocused">
                         Credit to
                     </label>
                     <span class="counter">{{ getLen('creditTo') }}/{{ maxMap.creditTo }}</span>
-                  </div>
                 </div>
-              </section>
-          
-              <!-- PRIVATE -->
-              <section class="info-block private">
-                <div class="block-head">
-                  <span class="ico">🔒</span>
-                  <div class="t">
+            </div>
+        </section>
+
+        <!-- PRIVATE -->
+        <section class="info-block private">
+            <div class="block-head">
+                <span class="ico">🔒</span>
+                <div class="t">
                     <h4>Never shown on card</h4>
-                  </div>
                 </div>
-          
-                <!-- Name -->
-                <div class="form-group">
-                  <div class="input-wrapper with-counter">
-                    <input
-                      formControlName="name"
-                      placeholder=" "
-                      [attr.maxlength]="maxMap.name"
-                      autocomplete="name"
-                      autocapitalize="words"
-                      name="name"/>
+            </div>
+
+            <!-- Name -->
+            <div class="form-group">
+                <div class="input-wrapper with-counter">
+                    <input formControlName="name" placeholder=" " [attr.maxlength]="maxMap.name" autocomplete="name"
+                        autocapitalize="words" name="name" />
                     <label [class.focused]="form.get('name')?.value">Name</label>
                     <span class="counter">{{ getLen('name') }}/{{ maxMap.name }}</span>
-                  </div>
                 </div>
-          
-                <!-- Email -->
-                <div class="form-group">
-                  <div class="input-wrapper with-counter">
-                    <input
-                        [attr.maxlength]="maxMap.email"
-                        name="email"
-                        autocomplete="email"
-                        formControlName="email"
-                        inputmode="email"
-                        placeholder=" "
-                        spellcheck="false"
-                        type="email" />
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <div class="input-wrapper with-counter">
+                    <input [attr.maxlength]="maxMap.email" name="email" autocomplete="email" formControlName="email"
+                        inputmode="email" placeholder=" " spellcheck="false" type="email" />
                     <label [class.focused]="form.get('email')?.value">Email</label>
                     <span class="counter">{{ getLen('email') }}/{{ maxMap.email }}</span>
-                  </div>
                 </div>
-              </section>
-          
-              <!-- <div class="form-group checkbox">
+            </div>
+        </section>
+
+        <!-- <div class="form-group checkbox">
                 <input type="checkbox" formControlName="consent" id="consent" />
                 <label for="consent">
                   I agree to let WondrVoices use my submission in printed or digital form to bring hope to patients. I understand that not all submissions may be printed or shared.
                 </label>
               </div> -->
-          
-              <div class="nav">
-                <button type="button" class="button submit-btn ghost" (click)="goBack()">← Back</button>
-                @if (!isLoading()) {
-                  <button [disabled]="form.invalid && form.touched && form.dirty" class="button submit-btn primary" type="submit">Submit</button>
-                } @else {
-                  <button class="button submit-btn primary" disabled>
+
+        <div class="nav">
+            <button type="button" class="button submit-btn ghost" (click)="goBack()">← Back</button>
+            @if (!isLoading()) {
+                <button [disabled]="form.invalid && form.touched && form.dirty" class="button submit-btn primary"
+                    type="submit">Submit</button>
+            } @else {
+                <button class="button submit-btn primary" disabled>
                     <span class="loader"></span>
-                  </button>
-                }
-              </div>
-            </form>
-          }          
-      }
-    </div>
-  } @else {
-    <div class="submit-another-wrap">
-      <h3>Thank you for your submission!</h3>
-      <p>Your voice is now part of a growing community that spreads kindness and hope. We’ll be in touch soon.</p>
-      <button class="button submit primary" (click)="submitted.set(false); form.reset(); step.set(1); rotationDeg.set(0);">Submit Another →</button>
-    </div>
-  }
-  
+                </button>
+            }
+        </div>
+    </form>
+    }
+    }
+</div>
+} @else {
+<div class="submit-another-wrap">
+    <h3>Thank you for your submission!</h3>
+    <p>Your voice is now part of a growing community that spreads kindness and hope. We’ll be in touch soon.</p>
+    <button class="button submit primary"
+        (click)="submitted.set(false); form.reset(); step.set(1); rotationDeg.set(0);">Submit Another →</button>
+</div>
+}
