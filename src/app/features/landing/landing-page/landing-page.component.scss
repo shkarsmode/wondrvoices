@@ -101,6 +101,10 @@
     box-shadow: -16px 15px 20px 3px rgb(248 245 242 / 91%), -20px 13px 20px 60px rgb(248 245 242 / 66%);
     z-index: 2;
     height: var(--header-h);
+
+    @media screen and (max-width: 500px) {
+        box-shadow: none;
+    }
 }
 
 .burger {
