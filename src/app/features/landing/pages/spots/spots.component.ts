@@ -3,7 +3,6 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import { first } from 'rxjs';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
 import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
@@ -165,27 +164,27 @@ export class SpotsComponent implements OnInit, OnDestroy {
     }
 
     private async createSubmissionAndPdf(logoUrl?: string): Promise<void> {
-        this.submissionService
-            .create({
-                formType: this.formType,
-                data: {
-                    organizationName: this.form.value.organizationName,
-                    contactPerson: this.form.value.contactPerson,
-                    email: this.form.value.email,
-                    city: this.form.value.city,
-                    ...(logoUrl ? { logoUrl } : {})
-                }
-            })
-            .pipe(first())
-            .subscribe(async () => {
+        // this.submissionService
+        //     .create({
+        //         formType: this.formType,
+        //         data: {
+        //             organizationName: this.form.value.organizationName,
+        //             contactPerson: this.form.value.contactPerson,
+        //             email: this.form.value.email,
+        //             city: this.form.value.city,
+        //             ...(logoUrl ? { logoUrl } : {})
+        //         }
+        //     })
+        //     .pipe(first())
+        //     .subscribe(async () => {
                 this.submitted.set(true);
                 this.isLoading.set(false);
 
                 const LOGO_SLOT = {
-                    x: 85,
-                    y: 750,
-                    maxW: 200,
-                    maxH: 90,
+                    x: 38,
+                    y: 780,
+                    maxW: 300,
+                    maxH: 125,
                     pad: 8, 
                     drawBadge: false,
                     badgeOpacity: 0.92,
@@ -200,9 +199,9 @@ export class SpotsComponent implements OnInit, OnDestroy {
                     fallbackText: this.form.value.organizationName || 'Your Organization',
                 });
                 this.pdfUrl.set(pdfUrl);
-            }, () => {
-                this.isLoading.set(false);
-            });
+            // }, () => {
+            //     this.isLoading.set(false);
+            // });
     }
 
     private async generatePdfFromTemplate(opts: {
@@ -267,7 +266,7 @@ export class SpotsComponent implements OnInit, OnDestroy {
             page.drawImage(img, { x, y, width: w, height: h });
         } else if (opts.fallbackText) {
             const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-            const size = 14;
+            const size = 25;
             const textW = font.widthOfTextAtSize(opts.fallbackText, size);
             const tx = opts.slot.x + (opts.slot.maxW - textW) / 2;
             const ty = opts.slot.y - opts.slot.maxH / 2 - size / 2;
