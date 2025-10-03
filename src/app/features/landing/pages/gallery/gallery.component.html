@@ -8,63 +8,77 @@
             Explore heartfelt cards, art, and words from people who care.
         </p>
     
-        <div class="hero-tabs" role="tablist" aria-label="Categories">
-            @for (tab of tabs; track tab) {
-                <button role="tab" type="button" [attr.aria-selected]="tab === activeTab()" [class.active]="tab === activeTab()"
-                    (click)="selectTab(tab)">
-                    {{ tab }}
-                    <!-- <span class="count" aria-hidden="true">{{ tabCounts()[slugify(tab)] ?? 0 }}</span> -->
-                </button>
-            }
-        </div>
     </section>
     
-    <section class="filters-block" aria-label="Search and filters">
-        <div class="filters-row">
-            <w-autocomplete
-                [isAllInfo]="true"
-                placeholder="Search by location, credit to, or tag"
-                emptyHint="Type to search"
-                (select)="applyTextFilter($event)"
-                (inputChange)="null" />
 
-            @if (hasAnyFilter()) {
-                <button
-                    class="btn-clear"
-                    type="button"
-                    (click)="clearAllFilters()">
-                    <span class="material-symbols-outlined sm" aria-hidden="true">close</span>
-                    Clear
-                </button>
-            }
-        </div>
 
-        @if (hasAnyFilter()) {
-            <div class="chips-row" aria-live="polite">
-                @if (filters().location) {
-                    <button class="chip" type="button" (click)="applyTextFilter({ key: 'location', value: '' })">
-                        <span class="material-symbols-outlined sm" aria-hidden="true">location_on</span>
-                        <span class="label">{{ filters().location }}</span>
-                        <span class="x" aria-label="Remove location">×</span>
+        <section class="filters-block" aria-label="Search and filters">
+            <div
+                [class.hidden]="hasAnyFilter()"
+                class="hero-tabs"
+                aria-label="Categories"
+                role="tablist">
+                <w-autocomplete
+                    [isAllInfo]="true"
+                    placeholder="Search by location, credit to, or tag"
+                    emptyHint="Type to search"
+                    [class.short-autocomplete]="!isSearchActive()"
+                    (select)="applyTextFilter($event)"
+                    (inputChange)="null" 
+                    (click)="onAutocompleteClick()"
+                    (inputBlur)="onAutocompleteBlur()"/>
+
+                @for (tab of tabs; track tab) {
+                    <button
+                        [class.hidden]="isSearchActive()"
+                        [class.active]="tab === activeTab()"
+                        [attr.aria-selected]="tab === activeTab()"
+                        (click)="selectTab(tab)"
+                        role="tab"
+                        type="button">
+                        {{ tab }}
                     </button>
                 }
-                @if (filters().creditTo) {
-                    <button class="chip" type="button" (click)="applyTextFilter({ key: 'creditTo', value: '' })">
-                        <span class="material-symbols-outlined sm" aria-hidden="true">favorite</span>
-                        <span class="label">{{ filters().creditTo }}</span>
-                        <span class="x" aria-label="Remove credit">×</span>
+
+
+                <!-- @if (isSearchActive()) {
+                    <button
+                        class="btn-clear"
+                        (click)="clearAllFilters()"
+                        [class.hidden]="!isSearchActive()"
+                        type="button">
+                        <span class="material-symbols-outlined sm" aria-hidden="true">close</span>
+                        Clear
                     </button>
-                }
-                @if (activeTab() !== 'All') {
-                    <button class="chip" type="button" (click)="applyTextFilter({ key: 'tab', value: 'All' })">
-                        <span class="material-symbols-outlined sm" aria-hidden="true">label</span>
-                        <span class="label">{{ filters().tab }}</span>
-                        <span class="x" aria-label="Remove tag">×</span>
-                    </button>
-                }
+                } -->
+
             </div>
-        }
-    </section>
+            @if (hasAnyFilter()) {
+                <div class="chips-row" aria-live="polite">
+                    @if (filters().location) {
+                        <button class="chip" type="button" (click)="applyTextFilter({ key: 'location', value: '' })">
+                            <span class="material-symbols-outlined sm" aria-hidden="true">location_on</span>
+                            <span class="label">{{ filters().location }}</span>
+                            <span class="x" aria-label="Remove location">×</span>
+                        </button>
+                    }
+                    @if (filters().creditTo) {
+                        <button class="chip" type="button" (click)="applyTextFilter({ key: 'creditTo', value: '' })">
+                            <span class="material-symbols-outlined sm" aria-hidden="true">favorite</span>
+                            <span class="label">{{ filters().creditTo }}</span>
+                            <span class="x" aria-label="Remove credit">×</span>
+                        </button>
+                    }
+                    @if (activeTab() !== 'All') {
+                        <button class="chip" type="button" (click)="applyTextFilter({ key: 'tab', value: 'All' })">
+                            <span class="material-symbols-outlined sm" aria-hidden="true">label</span>
+                            <span class="label">{{ filters().tab }}</span>
+                            <span class="x" aria-label="Remove tag">×</span>
+                        </button>
+                    }
+                </div>
+            }
+        </section>
 
     @if (!isLoading() && cards().length === 0) {
         <div class="empty-state" aria-live="polite">

@@ -232,7 +232,7 @@ input {
     border: 1px solid #d0d7de;
     border-radius: 10px;
     background: #ffffff;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, width .3s;
 }
 input:focus {
     outline: none;
@@ -411,6 +411,7 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
 
     @Output() select = new EventEmitter<{ key: 'location' | 'creditTo' | 'tab'; value: string }>();
     @Output() inputChange = new EventEmitter<string>();
+    @Output() inputBlur = new EventEmitter<void>();
 
     public isFocused = false;
     loading = signal<boolean>(false);
@@ -564,6 +565,7 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
     onBlur(): void {
         // Allow option mousedown to fire before closing.
         this.isFocused = false;
+        this.inputBlur.emit();
         setTimeout(() => {
             this.open.set(false);
             this.onTouched();

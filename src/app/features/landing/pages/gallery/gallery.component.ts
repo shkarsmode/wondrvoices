@@ -29,6 +29,7 @@ export class GalleryComponent implements OnInit {
     public tabs: string[] = [];
     public activeTab = signal<string>('All');
     public tabCounts = signal<Record<string, number>>({});
+    public isSearchActive = signal<boolean>(false);
 
     readonly activeImageId = signal<number | null>(null);
     readonly computedViewImg = (id: number) => `img-voice-${id}`;
@@ -129,6 +130,22 @@ export class GalleryComponent implements OnInit {
     }
 
 
+    public toggleSearch(state?: boolean): void {
+        if (state !== undefined) {
+            this.isSearchActive.set(state);
+            return;
+        }
+        this.isSearchActive.set(!this.isSearchActive());
+    }
+
+    public onAutocompleteClick(): void {
+        if (!this.isSearchActive()) this.toggleSearch();
+    }
+
+    public onAutocompleteBlur(): void {
+        if (this.isSearchActive() && !this.hasAnyFilter()) this.toggleSearch();
+    }
+
     private loadPage(nextPage: number, initial: boolean): void {
         const f = this.filters();
 
@@ -183,10 +200,6 @@ export class GalleryComponent implements OnInit {
 
     public selectTab(tab: string) {
         tab = this.deslugify(tab);
-        if (!this.tabs.includes(tab)) {
-            this.tabs = this.tabs.slice(0, 6);
-            this.tabs.push(tab);
-        }
         this.activeTab.set(tab);
 
         this.router.navigate([], {
@@ -272,6 +285,7 @@ export class GalleryComponent implements OnInit {
         delete qp['location']; delete qp['description']; delete qp['creditTo'];
         delete qp['tabs']; delete qp['tagsMode']; delete qp['tab'];
         this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
+        this.toggleSearch(false);
     }
 
     public ngOnDestroy(): void {
