@@ -1043,3 +1043,9 @@
 [title="Copy link"] {
     grid-column: span 2 / span 2;
 }
+
+::ng-deep #mobileDonateFab {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+}
