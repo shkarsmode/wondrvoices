@@ -911,3 +911,135 @@
     opacity: 0;
     pointer-events: none;
 }
+
+.share-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.share-trigger {
+    border: 1px solid #C8BFC1 !important;
+    background-color: #fff !important;
+
+    &:hover {
+        background: #FAAF71 !important;
+        border-color: #FAAF71 !important;
+    }
+}
+
+.share-popover {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+
+    --surface: #ffffff;
+
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 300px;
+    padding: 8px;
+    border-radius: 16px;
+    background: var(--surface, #121212);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.35),
+        0 2px 10px rgba(0, 0, 0, 0.25);
+    z-index: 50;
+    transform-origin: top right;
+    animation: share-popover-in 140ms cubic-bezier(.2, .8, .2, 1) both;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: -5px;
+        right: 16px;
+        width: 12px;
+        height: 12px;
+        transform: rotate(45deg);
+        background: inherit;
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+        @media screen and (max-width: 600px) {
+            right: 73px;
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        position: fixed;
+        right: 50%;
+        transform: translateX(50%) !important;
+    }
+}
+
+@keyframes share-popover-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.share-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 8px;
+    border-radius: 12px;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+        background: rgb(246 246 246);
+    }
+
+    .material-symbols-outlined,
+    img {
+        flex: 0 0 auto;
+        width: 20px;
+        height: 22px;
+        display: inline-block;
+    }
+
+    img {
+        object-fit: contain;
+        filter: brightness(1);
+    }
+
+    .text {
+        display: grid;
+        gap: 2px;
+
+        .title {
+            font-size: 14px !important;
+            line-height: 1.2;
+        }
+
+        .hint {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+    }
+}
+
+// /* Optional: hide native share if not supported; you already have "only-web-share" */
+// .only-web-share {
+//     display: none;
+// }
+
+@supports (selector(:has(*))) {
+    /* Keep as-is; detection of navigator.share happens in TS */
+}
+
+[title="Copy link"] {
+    grid-column: span 2 / span 2;
+}

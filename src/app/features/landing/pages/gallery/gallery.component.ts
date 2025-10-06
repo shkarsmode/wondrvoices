@@ -1,5 +1,5 @@
-import { JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { isPlatformBrowser, JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, OnInit, PLATFORM_ID, signal, ViewChild, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -16,6 +16,15 @@ type Filters = {
     tab?: string;
     tagsMode?: 'any' | 'all';
 };
+
+type SharePlatform = 'twitter' | 'facebook' | 'linkedin';
+
+const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
+    twitter: 'https://x.com/intent/tweet',
+    facebook: 'https://www.facebook.com/sharer/sharer.php',
+    linkedin: 'https://www.linkedin.com/sharing/share-offsite/'
+};
+
 
 @Component({
     selector: 'app-gallery',
@@ -50,12 +59,18 @@ export class GalleryComponent implements OnInit {
     public hasMore = signal(true);
     private observer?: IntersectionObserver;
 
+    isShareOptionsOpen = signal(false);
+    @ViewChild('sharePopover', { read: ElementRef })
+    private sharePopoverRef?: ElementRef<HTMLElement>;
+
     public isLoading: WritableSignal<boolean> = signal(false);
 
     @ViewChild('sentinel', { static: true }) sentinelRef?: ElementRef<HTMLElement>;
 
     // ---- Query params → Filters + tab ----
     private queryParams = signal(this.route.snapshot.queryParamMap);
+    platformId = inject(PLATFORM_ID);
+
     constructor() {
         this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((m) => this.queryParams.set(m));
     }
@@ -127,6 +142,122 @@ export class GalleryComponent implements OnInit {
                 threshold: 0,
             },
         );
+    }
+
+    toggleShareOptions(): void {
+        this.isShareOptionsOpen.update((state) => !state);
+    }
+
+    onShareTriggerKeydown(event: KeyboardEvent): void {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            this.toggleShareOptions();
+        }
+        if (event.key === 'Escape' && this.isShareOptionsOpen()) {
+            this.isShareOptionsOpen.set(false);
+        }
+    }
+
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        if (!this.isShareOptionsOpen()) return;
+
+        const popover = this.sharePopoverRef?.nativeElement;
+        const target = event.target as Node | null;
+        const clickedInside = popover?.contains(target as Node) ||
+            (event.composedPath && event.composedPath().some((n) =>
+                (n as HTMLElement)?.classList?.contains('share-trigger')));
+
+        if (!clickedInside) {
+            this.isShareOptionsOpen.set(false);
+        }
+    }
+
+    // Close on Escape when focus is within popover
+    @HostListener('document:keydown', ['$event'])
+    onEscapeClose(event: KeyboardEvent): void {
+        if (event.key === 'Escape' && this.isShareOptionsOpen()) {
+            this.isShareOptionsOpen.set(false);
+        }
+    }
+
+    public shareNative(): void {
+        if (!isPlatformBrowser(this.platformId)) return;
+        const url = window.location.href;
+        if ('share' in navigator) {
+            navigator.share({
+                url
+            }).catch(() => { });
+        }
+    }
+
+
+    // Reuse your existing copy logic, but keep popover UX tight
+    copyFromPopover(): void {
+        this.copyLink(); // your existing method
+        // Keep popover open briefly so user sees "Copied" state; auto-close feels snappier:
+        setTimeout(() => this.isShareOptionsOpen.set(false), 700);
+    }
+
+    public isCopied = signal<boolean>(false);
+    public async copyLink(): Promise<void> {
+        const url = window.location.href;
+        const copied = await this.tryCopy(url);
+        this.isCopied.set(copied);
+        setTimeout(() => this.isCopied.set(false), 1800);
+    }
+
+    public buildShareLink(platform: SharePlatform): string {
+        switch (platform) {
+            case 'twitter': {
+                const params = new URLSearchParams({ url: window.location.href, via: 'Wondrlnk' });
+                return `${SHARE_ENDPOINTS.twitter}?${params.toString()}`;
+            }
+            case 'facebook': {
+                const params = new URLSearchParams({ u: window.location.href, });
+                return `${SHARE_ENDPOINTS.facebook}?${params.toString()}`;
+            }
+            case 'linkedin': {
+                const params = new URLSearchParams({ url: window.location.href, });
+                return `${SHARE_ENDPOINTS.linkedin}?${params.toString()}`;
+            }
+            default:
+                return window.location.href;
+        }
+    }
+    
+    private async tryCopy(text: string): Promise<boolean> {
+        if (isPlatformBrowser(this.platformId) && navigator?.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch { /* fallback below */ }
+        }
+        try {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.pointerEvents = 'none';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            return ok;
+        } catch {
+            return false;
+        }
+    }
+
+
+    private buildCanonicalVoiceUrl(id: number): string {
+        const path = `voices/${id}`;
+        if (isPlatformBrowser(this.platformId) && typeof window !== 'undefined') {
+            const origin = 'https://www.wondrvoices.com';
+            return `${origin}/${path}`;
+        }
+        return `https://www.wondrvoices.com/${path}`;
     }
 
 

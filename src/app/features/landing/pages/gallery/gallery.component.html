@@ -77,6 +77,100 @@
                         <span class="x" aria-label="Remove tag">×</span>
                     </button>
                 }
+                <div class="share-wrapper">
+                    <button
+                        #shareTrigger
+                        class="chip share-trigger"
+                        type="button"
+                        (click)="toggleShareOptions()"
+                        (keydown)="onShareTriggerKeydown($event)"
+                        [attr.aria-expanded]="isShareOptionsOpen()"
+                        aria-haspopup="menu"
+                        title="Share">
+                        <span class="material-symbols-outlined sm" aria-hidden="true">ios_share</span>
+                        <span class="label">Share</span>
+                    </button>
+
+                    @if (isShareOptionsOpen()) {
+                        <div
+                            class="share-popover"
+                            role="menu"
+                            (click)="$event.stopPropagation()"
+                            #sharePopover>
+                            <button
+                                class="share-item"
+                                type="button"
+                                (click)="copyFromPopover()"
+                                title="Copy link">
+                                <span class="material-symbols-outlined" aria-hidden="true">
+                                    {{ isCopied() ? 'library_add_check' : 'content_copy' }}
+                                </span>
+                                <div class="text">
+                                    <span class="title">{{ isCopied() ? 'Copied' : 'Copy link' }}</span>
+                                    <span class="hint">The link will be copied to clipboard</span>
+                                </div>
+                            </button>
+
+                            <a
+                                class="share-item"
+                                [href]="buildShareLink('twitter')"
+                                target="_blank"
+                                rel="noopener noreferrer me"
+                                aria-label="Share on X (Twitter)"
+                                title="Share on X"
+                                role="menuitem">
+                                <img src="assets/svg/twitter.svg" alt="Twitter">
+                                <div class="text">
+                                    <span class="title">X (Twitter)</span>
+                                    <!-- <span class="hint">Open share dialog</span> -->
+                                </div>
+                            </a>
+
+                            <a
+                                class="share-item"
+                                [href]="buildShareLink('facebook')"
+                                target="_blank"
+                                rel="noopener noreferrer me"
+                                aria-label="Share on Facebook"
+                                title="Share on Facebook"
+                                role="menuitem">
+                                <img src="assets/svg/fb.svg" alt="Facebook">
+                                <div class="text">
+                                    <span class="title">Facebook</span>
+                                    <!-- <span class="hint">Open share dialog</span> -->
+                                </div>
+                            </a>
+
+                            <a
+                                class="share-item"
+                                [href]="buildShareLink('linkedin')"
+                                target="_blank"
+                                rel="noopener noreferrer me"
+                                aria-label="Share on LinkedIn"
+                                title="Share on LinkedIn"
+                                role="menuitem">
+                                <img src="assets/svg/linkedin.svg" alt="LinkedIn">
+                                <div class="text">
+                                    <span class="title">LinkedIn</span>
+                                    <!-- <span class="hint">Open share dialog</span> -->
+                                </div>
+                            </a>
+
+                            <button
+                                class="share-item only-web-share"
+                                type="button"
+                                (click)="shareNative()"
+                                title="Share via system dialog">
+                                <span class="material-symbols-outlined" aria-hidden="true">share</span>
+                                <div class="text">
+                                    <span class="title">System share</span>
+                                    <!-- <span class="hint">Use device dialog</span> -->
+                                </div>
+                            </button>
+                        </div>
+                    }
+                </div>
+
             </div>
         }
     </section>
