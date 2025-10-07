@@ -759,6 +759,8 @@
     gap: 10px;
     justify-items: center;
 
+    transition: all .3s;
+
     background-color: #f8f5f2;
 
     position: sticky;
@@ -1062,9 +1064,21 @@
     cursor: pointer;
     margin-bottom: 1rem;
     font-size: 14px;
+    position: relative;
+    z-index: 1;
 
     &:hover {
         text-decoration: underline;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 67px;
+        height: 50px;
+        background-color: rgba(255, 0, 0, 0.507);
+        left: 0;
+        top: -20px;
     }
 
     @media screen and (max-width: 768px) {
@@ -1085,3 +1099,8 @@
         text-align: left;
     }
 }
+
+// ::ng-deep body:has(.top-bar.is-sticky.sticked:not(.is-hidden)) .filters-block {
+//     opacity: 0;
+//     transform: translateY(-100%);
+// }
