@@ -659,7 +659,7 @@
     @media screen and (max-width: 700px) {
         text-align: left;
         padding: 0;
-        
+
     }
 }
 
@@ -845,7 +845,7 @@
     max-width: 50px !important;
     z-index: 1;
 
-    > div {
+    >div {
         position: absolute !important;
         transition: all .45s;
         width: 100%;
@@ -856,7 +856,7 @@
 
         @media screen and (max-width: 448px) {
             max-width: 345px !important;
-            
+
         }
 
 
@@ -869,7 +869,7 @@
         .search {
             left: 14px !important;
             top: 9px !important;
-    
+
             transition: all .3s;
             pointer-events: none
         }
@@ -878,20 +878,20 @@
     &.short-autocomplete {
         width: 50px;
         // display: inline-flex;
-    
-        > div {
+
+        >div {
             width: 50px !important;
             height: 39px !important;
             max-width: 50px !important;
 
             * {
-                    cursor: pointer;
+                cursor: pointer;
             }
-            
+
             &:hover {
                 transform: translateY(-2px);
             }
-            
+
             input {
                 display: block;
                 border-radius: 20px;
@@ -903,8 +903,8 @@
             }
         }
 
-        
-        
+
+
     }
 }
 
@@ -920,7 +920,7 @@
     width: fit-content;
     margin-top: 20px;
 
-    > button {
+    >button {
         padding: 5px 10px;
         border-radius: 10px;
         font-size: 16px;
