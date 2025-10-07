@@ -915,6 +915,19 @@
 .share-wrapper {
     position: relative;
     display: inline-block;
+    width: fit-content;
+    margin-top: 20px;
+
+    > button {
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 16px;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        cursor: pointer;
+        font-weight: 500;
+    }
 }
 
 .share-trigger {
@@ -936,7 +949,7 @@
 
     position: absolute;
     top: calc(100% + 8px);
-    right: 0;
+    left: 0;
     width: 300px;
     padding: 8px;
     border-radius: 16px;
@@ -953,23 +966,13 @@
         content: "";
         position: absolute;
         top: -5px;
-        right: 16px;
+        left: 15px;
         width: 12px;
         height: 12px;
         transform: rotate(45deg);
         background: inherit;
         border-left: 1px solid rgba(255, 255, 255, 0.08);
         border-top: 1px solid rgba(255, 255, 255, 0.08);
-
-        @media screen and (max-width: 600px) {
-            right: 73px;
-        }
-    }
-
-    @media screen and (max-width: 600px) {
-        position: fixed;
-        right: 50%;
-        transform: translateX(50%) !important;
     }
 }
 
@@ -1048,4 +1051,37 @@
     opacity: 0;
     pointer-events: none;
     transform: translateY(8px);
+}
+
+.back-btn {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    font-size: 14px;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    @media screen and (max-width: 768px) {
+        margin-bottom: 0px;
+    }
+}
+
+.filters-content {
+    max-width: 1000px;
+    padding: 0 10px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    .hero-title {
+        margin: 0;
+        text-align: left;
+    }
 }

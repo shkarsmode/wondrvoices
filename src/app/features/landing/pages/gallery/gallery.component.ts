@@ -330,6 +330,8 @@ export class GalleryComponent implements OnInit {
     }
 
     public selectTab(tab: string) {
+        this.clearAllFilters();
+        
         tab = this.deslugify(tab);
         this.activeTab.set(tab);
 
