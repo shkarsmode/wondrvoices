@@ -1076,7 +1076,6 @@
         position: absolute;
         width: 67px;
         height: 50px;
-        background-color: rgba(255, 0, 0, 0.507);
         left: 0;
         top: -20px;
     }
@@ -1087,6 +1086,7 @@
 }
 
 .filters-content {
+    position: relative;
     max-width: 1000px;
     padding: 0 10px;
     margin: 0 auto;
