@@ -1,0 +1,33 @@
+<section class="map-wrapper" aria-label="WondrVoices Map">
+    <header class="toolbar">
+        <div class="filters">
+            <label>
+                <span>City</span>
+                <select (change)="setCity(($any($event.target).value)||null)">
+                    <option [value]="''">All</option>
+                    @for (c of distinctCities(); track c) {
+                        <option [selected]="c === queryCity()" [value]="c">{{ c }}</option>
+                    }
+                </select>
+            </label>
+            <label>
+                <span>Credit to</span>
+                <select (change)="setCredit(($any($event.target).value)||null)">
+                    <option [value]="''">All</option>
+                    @for (p of distinctCredits(); track p) {
+                        <option [selected]="p === queryCredit()" [value]="p">{{ p }}</option>
+                    }
+                </select>
+            </label>
+            <button class="clear" (click)="clearFilters()" [disabled]="!queryCity() && !queryCredit()">Clear</button>
+        </div>
+        <div class="meta">
+            <span>{{ filtered().length }} voices</span>
+            @if (!mapReady()) {
+                <span class="loading">Loading map…</span>
+            }
+        </div>
+    </header>
+
+    <div #map class="map"></div>
+</section>

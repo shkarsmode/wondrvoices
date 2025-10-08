@@ -23,6 +23,9 @@ export interface IVoice {
     category?: string;
 
     consent?: boolean;
+
+    lat?: number;
+    lng?: number;
 }
 
 export interface VoicesListResponse {

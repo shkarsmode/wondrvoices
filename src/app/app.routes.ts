@@ -50,6 +50,11 @@ export const routes: Routes = [
                 .then(m => m.PostComponent)
             },
             {
+                path: 'map',
+                loadComponent: () => import('./features/landing/pages/map/map.component')
+                    .then(m => m.MapComponent)
+            },
+            {
                 path: 'terms',
                 loadComponent: () => import('./features/landing/pages/terms/terms.component')
                     .then(m => m.TermsComponent)
