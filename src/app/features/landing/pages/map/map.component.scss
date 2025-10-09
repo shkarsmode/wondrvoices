@@ -245,5 +245,11 @@ button.clear:disabled {
             cursor: pointer;
         }
 
-        
+        .marker-cluster {
+            &.marker-cluster-small, &.marker-cluster-large, &.marker-cluster-medium {
+                background-color: transparent;
+            }
+            
+            
+        }
 }
