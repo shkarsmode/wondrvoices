@@ -13,11 +13,12 @@ import {
     viewChild
 } from '@angular/core';
 import { Router } from '@angular/router';
-import * as L from 'leaflet';
-import 'leaflet.markercluster';
 import { first } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
+
+// ❗ Типы подтянем через import type, чтобы не тянуть рантайм-модуль на сервере
+import type * as Leaflet from 'leaflet';
 
 @Component({
     selector: 'app-map',
@@ -65,24 +66,34 @@ export class MapComponent implements AfterViewInit {
         });
     });
 
-    public effect = effect(() => this.refreshLayers());
-    
-    private map?: L.Map;
-    private baseLayer?: L.TileLayer;
+    public effect = effect(() => { this.voices(); this.refreshLayers()});
 
-    private clusters: L.MarkerClusterGroup = L.markerClusterGroup({
-        showCoverageOnHover: false,
-        maxClusterRadius: 45,
-        spiderfyOnEveryZoom: false,
-        zoomToBoundsOnClick: true,
-        disableClusteringAtZoom: 20,
-    });
+    // ✅ Держим один экземпляр Leaflet, загруженный динамически
+    private L!: typeof Leaflet;
+
+    private map?: Leaflet.Map;
+    private baseLayer?: Leaflet.TileLayer;
+    private clusters?: any; // тип из @types/leaflet.markercluster тянется на рантайме, поэтому any
 
     mapEl = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     async ngAfterViewInit() {
         if (typeof window === 'undefined') return;
 
+        // 1) Один экземпляр Leaflet
+        const leafletModule = await import('leaflet');
+        this.L = resolveLeafletNamespace(leafletModule);
+        (window as any).L = this.L;
+
+        // 2) Важно: UMD-версия плагина, чтобы он пропатчил window.L
+        // @ts-ignore
+        await import('leaflet.markercluster/dist/leaflet.markercluster.js');
+
+        // 3) Диагностика (можно удалить после проверки)
+        console.log('L === window.L', this.L === (window as any).L);
+        console.log('has markerClusterGroup', typeof (this.L as any).markerClusterGroup);
+
+        // 4) Дальше обычный поток
         this.initMap();
         await this.loadVoices();
         this.mapReady.set(true);
@@ -93,19 +104,23 @@ export class MapComponent implements AfterViewInit {
     }
 
     private initMap() {
-        this.map = L.map(this.mapEl().nativeElement, {
+        this.map = this.L.map(this.mapEl().nativeElement, {
             preferCanvas: true,
             zoomControl: true,
-        }).setView([50.4501, 30.5234], 6); // старт — Киев (неважно, всё равно fitBounds)
+        }).setView([50.4501, 30.5234], 6);
 
-        this.baseLayer = L.tileLayer(
+        this.baseLayer = this.L.tileLayer(
             'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-            {
-                maxZoom: 19,
-                attribution:
-                    '&copy; OpenStreetMap &copy; CARTO',
-            }
+            { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }
         ).addTo(this.map);
+
+        this.clusters = (this.L as any).markerClusterGroup({
+            showCoverageOnHover: false,
+            maxClusterRadius: 45,
+            spiderfyOnEveryZoom: false,
+            zoomToBoundsOnClick: true,
+            disableClusteringAtZoom: 20,
+        });
 
         this.map.addLayer(this.clusters);
     }
@@ -118,41 +133,40 @@ export class MapComponent implements AfterViewInit {
     }
 
     private refreshLayers() {
-        if (!this.map || typeof window === 'undefined') return;
+        if (!this.map || !this.clusters || typeof window === 'undefined') return;
 
         this.clusters.clearLayers();
 
         const current = this.filtered();
+        let withCoords = 0;
 
         for (const v of current) {
             if (v.lat == null || v.lng == null) continue;
+            withCoords++;
 
-            const m = L.marker([v.lat, v.lng], { icon: makeDotIcon('voice') }).bindPopup(
-                this.renderVoicePopup(v),
-                { maxWidth: 320, minWidth: 240, className: 'voice-popup' },
-            );
+            const m = this.L
+                .marker([Number(v.lat), Number(v.lng)], { icon: this.makeDotIcon('voice') })
+                .bindPopup(this.renderVoicePopup(v), {
+                    maxWidth: 320,
+                    minWidth: 240,
+                    className: 'voice-popup',
+                });
 
-            m.on('popupopen', (ev: L.LeafletEvent) => {
-                const popup = (ev as any).popup as L.Popup;
+            m.on('popupopen', (ev: Leaflet.LeafletEvent) => {
+                const popup = (ev as any).popup as Leaflet.Popup;
                 const el = popup.getElement();
                 if (!el) return;
-
                 el.querySelectorAll('img').forEach((img: HTMLImageElement) => {
                     if (img.complete) return;
                     img.addEventListener('load', () => popup.update(), { once: true });
-                    img.addEventListener(
-                        'error',
-                        () => {
-                            img.style.display = 'none';
-                            popup.update();
-                        },
-                        { once: true },
-                    );
+                    img.addEventListener('error', () => { img.style.display = 'none'; popup.update(); }, { once: true });
                 });
             });
 
             this.clusters.addLayer(m);
         }
+
+        console.log('voices total:', current.length, 'with coords:', withCoords);
 
         const b = this.clusters.getBounds();
         if (b.isValid()) {
@@ -170,26 +184,22 @@ export class MapComponent implements AfterViewInit {
 
     private renderVoicePopup(v: IVoice): string {
         const loc = [v.location].filter(Boolean).join(', ');
-        const who = v.creditTo ? `<div><small>Credit to: ${escapeHtml(v.creditTo)}</small></div>` : '';
+        const who = v.creditTo ? `<div><small>Credit to: ${this.escapeHtml(v.creditTo)}</small></div>` : '';
 
         const msg = v.note
-            ? `
-            <div class="msg">
-                ${escapeHtml(v.note)}
-            </div>`
+            ? `<div class="msg">${this.escapeHtml(v.note)}</div>`
             : '';
 
         const img = v.img
-            ? `
-            <div class="vp-img">
-                <img src="${escapeHtml(v.img)}" alt="" width="250" height="250" loading="lazy" style="view-transition-name: img-voice-${v.id};"/>
-            </div>`
+            ? `<div class="vp-img">
+                    <img src="${this.escapeHtml(v.img)}" alt="" width="250" height="250" loading="lazy" style="view-transition-name: img-voice-${v.id};"/>
+               </div>`
             : '';
 
         return `
             <div class="voice-popup">
                 <div><strong class="vp-link" data-voice-id="${v.id}">Voice #${v.id}</strong></div>
-                ${loc ? `<div>${escapeHtml(loc)}</div>` : ''}
+                ${loc ? `<div>${this.escapeHtml(loc)}</div>` : ''}
                 ${who}
                 ${msg}
                 ${img}
@@ -213,33 +223,39 @@ export class MapComponent implements AfterViewInit {
         this.router.navigate(['/voices', id]);
     };
 
-    // === UI handlers ===
     setCity(c: string | null) {
         this.queryCity.set(c);
     }
+
     setCredit(c: string | null) {
         this.queryCredit.set(c);
     }
+
     clearFilters() {
         this.queryCity.set(null);
         this.queryCredit.set(null);
     }
+
+    // === Helpers ===
+    private makeDotIcon(kind: 'city' | 'voice'): Leaflet.DivIcon {
+        const bg = kind === 'city' ? '#3b82f6' : '#22c55e';
+        const border = kind === 'city' ? '#1d4ed8' : '#15803d';
+        const html = `<div class="lv-dot" style="--bg:${bg};--bd:${border}"></div>`;
+        return this.L.divIcon({
+            className: 'lv-dot-wrap',
+            html,
+            iconSize: [18, 18],
+            iconAnchor: [9, 9],
+            popupAnchor: [0, -10],
+        });
+    }
+
+    private escapeHtml(s: string): string {
+        return s.replace(/[&<>"]+/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    }
 }
 
-// === Helpers (no external assets) ===
-function makeDotIcon(kind: 'city' | 'voice'): L.DivIcon {
-    const bg = kind === 'city' ? '#3b82f6' : '#22c55e'; // blue vs green
-    const border = kind === 'city' ? '#1d4ed8' : '#15803d';
-    const html = `<div class="lv-dot" style="--bg:${bg};--bd:${border}"></div>`;
-    return L.divIcon({
-        className: 'lv-dot-wrap',
-        html,
-        iconSize: [18, 18],
-        iconAnchor: [9, 9],
-        popupAnchor: [0, -10],
-    });
-}
-
-function escapeHtml(s: string): string {
-    return s.replace(/[&<>"]+/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+function resolveLeafletNamespace(mod: unknown): any {
+    const m = mod as any;
+    return m?.default ?? m; // some builds export under default
 }
