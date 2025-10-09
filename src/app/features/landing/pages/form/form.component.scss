@@ -694,3 +694,47 @@ h4 {
 .input-wrapper input {
     padding-right: 74px;
 }
+
+.input-wrapper {
+    position: relative;
+
+    .ac-list {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        z-index: 20;
+        margin: 6px 0 0;
+        padding: 6px 0;
+        list-style: none;
+        background: var(--surface, #fff);
+        border: 1px solid rgba(255, 255, 255, 0.508);
+        border-radius: 10px;
+        max-height: 260px;
+        overflow: auto;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        
+        .ac-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 14px;
+
+            &:hover {
+                background: #f8f9fa;
+            }
+        }
+
+        .loading {
+            padding: 10px 12px;
+            opacity: 0.8;
+            font-style: italic;
+        }
+    }
+
+    .error {
+        display: block;
+        margin-top: 6px;
+        color: #f66;
+        font-size: 12px;
+    }
+}

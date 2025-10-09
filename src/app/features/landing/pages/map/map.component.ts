@@ -5,19 +5,19 @@ import {
     Component,
     DestroyRef,
     ElementRef,
+    HostListener,
     computed,
     effect,
     inject,
     signal,
-    viewChild,
+    viewChild
 } from '@angular/core';
+import { Router } from '@angular/router';
 import * as L from 'leaflet';
+import 'leaflet.markercluster';
 import { first } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { IVoice } from 'src/app/shared/types/voices';
-
-// подключаем кластеризацию (обязательно после leaflet)
-import 'leaflet.markercluster';
 
 @Component({
     selector: 'app-map',
@@ -28,6 +28,7 @@ import 'leaflet.markercluster';
 })
 export class MapComponent implements AfterViewInit {
     private voicesSvc = inject(VoicesService);
+    private router = inject(Router);
     private destroyRef = inject(DestroyRef);
 
     // === Signals ===
@@ -64,23 +65,19 @@ export class MapComponent implements AfterViewInit {
         });
     });
 
-    // триггерим перерисовку слоёв, когда меняются фильтры/данные
     public effect = effect(() => this.refreshLayers());
-
-    // === Leaflet state ===
+    
     private map?: L.Map;
     private baseLayer?: L.TileLayer;
 
-    // Кластерный слой (заменяет voicesLayer)
     private clusters: L.MarkerClusterGroup = L.markerClusterGroup({
         showCoverageOnHover: false,
         maxClusterRadius: 45,
         spiderfyOnEveryZoom: false,
         zoomToBoundsOnClick: true,
-        disableClusteringAtZoom: 16,
+        disableClusteringAtZoom: 20,
     });
 
-    // контейнер карты
     mapEl = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     async ngAfterViewInit() {
@@ -110,7 +107,6 @@ export class MapComponent implements AfterViewInit {
             }
         ).addTo(this.map);
 
-        // подключаем кластерный слой
         this.map.addLayer(this.clusters);
     }
 
@@ -124,7 +120,6 @@ export class MapComponent implements AfterViewInit {
     private refreshLayers() {
         if (!this.map || typeof window === 'undefined') return;
 
-        // очищаем кластеры и наполняем заново
         this.clusters.clearLayers();
 
         const current = this.filtered();
@@ -137,7 +132,6 @@ export class MapComponent implements AfterViewInit {
                 { maxWidth: 320, minWidth: 240, className: 'voice-popup' },
             );
 
-            // Поправка размеров после загрузки изображений в попапе
             m.on('popupopen', (ev: L.LeafletEvent) => {
                 const popup = (ev as any).popup as L.Popup;
                 const el = popup.getElement();
@@ -160,7 +154,6 @@ export class MapComponent implements AfterViewInit {
             this.clusters.addLayer(m);
         }
 
-        // зум/центр по границам всех кластеров
         const b = this.clusters.getBounds();
         if (b.isValid()) {
             this.map.fitBounds(b.pad(0.2), { animate: true });
@@ -170,7 +163,6 @@ export class MapComponent implements AfterViewInit {
     }
 
     private invalidateSoon() {
-        // несколько тиков, чтобы убрать артефакты раскладки
         queueMicrotask(() => this.map?.invalidateSize());
         requestAnimationFrame(() => this.map?.invalidateSize());
         setTimeout(() => this.map?.invalidateSize(), 0);
@@ -190,20 +182,36 @@ export class MapComponent implements AfterViewInit {
         const img = v.img
             ? `
             <div class="vp-img">
-                <img src="${escapeHtml(v.img)}" alt="" width="250" height="250" loading="lazy"/>
+                <img src="${escapeHtml(v.img)}" alt="" width="250" height="250" loading="lazy" style="view-transition-name: img-voice-${v.id};"/>
             </div>`
             : '';
 
         return `
             <div class="voice-popup">
-                <div><strong>Voice #${v.id}</strong></div>
+                <div><strong class="vp-link" data-voice-id="${v.id}">Voice #${v.id}</strong></div>
                 ${loc ? `<div>${escapeHtml(loc)}</div>` : ''}
                 ${who}
                 ${msg}
                 ${img}
+                <button class="vp-link" data-voice-id="${v.id}">Show</button>
             </div>
         `;
     }
+
+    @HostListener('document:click', ['$event'])
+    protected onDocClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const link = target.closest('.vp-link') as HTMLAnchorElement | null;
+        if (!link) return;
+
+        const id = link.dataset['voiceId'];
+        if (!id) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        this.router.navigate(['/voices', id]);
+    };
 
     // === UI handlers ===
     setCity(c: string | null) {

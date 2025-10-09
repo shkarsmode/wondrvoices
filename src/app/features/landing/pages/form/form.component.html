@@ -33,33 +33,43 @@
           </p> -->
 
     <form class="form" [formGroup]="form" autocomplete="on">
-        <div class="form-group dropzone" [class.dragover]="isDragOver()" [class.preview]="!!previewUrl()"
-            (click)="fileInput.click()" (dragleave)="onDragLeave()" (dragover)="onDragOver($event)"
+        <div
+            class="form-group dropzone"
+            [class.dragover]="isDragOver()"
+            [class.preview]="!!previewUrl()"
+            (click)="fileInput.click()"
+            (dragleave)="onDragLeave()"
+            (dragover)="onDragOver($event)"
             (drop)="onFileDrop($event)">
             @if (!previewUrl()) {
-            <label class="upload-label">
-                Upload a photo of your drawing, artwork, or handwritten message
-            </label>
+                <label class="upload-label">
+                    Upload a photo of your drawing, artwork, or handwritten message
+                </label>
 
-            <button class="button submit-btn primary" type="button">Choose a file</button>
+                <button class="button submit-btn primary" type="button">Choose a file</button>
             }
 
-            <div class="dropzone-content" [class.dropzone-content--rotated]="rotated()"
+            <div
+                class="dropzone-content"
                 [class.dropzone-content--additional-margin]="naturalH() > naturalW() && rotated()"
-                [style]="'--i: ' + computeQuadraticMargin(naturalH() - naturalW()) + 'px'" [style.aspectRatio]="
-                    rotated() ? '1 / 1' : null
-                ">
+                [class.dropzone-content--rotated]="rotated()"
+                [style.aspectRatio]="rotated() ? '1 / 1' : null"
+                [style]="'--i: ' + computeQuadraticMargin(naturalH() - naturalW()) + 'px'">
                 @if (!previewUrl()) {
-                <p>📁 Click to choose a file or drag here</p>
-                <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
+                    <p>📁 Click to choose a file or drag here</p>
+                    <small>Accepts image, .pdf, .doc, .docx – Max 50 MB</small>
                 } @else {
-                <div class="clear-file" (click)="clearFile($event)">✖</div>
-                <img class="preview-img" [style.transform]="'rotate(' + rotationDeg() + 'deg)'" [src]="previewUrl()"
-                    alt="preview" (load)="onImgLoad($event)" />
+                    <div class="clear-file" (click)="clearFile($event)">✖</div>
+                    <img
+                        class="preview-img"
+                        [style.transform]="'rotate(' + rotationDeg() + 'deg)'"
+                        [src]="previewUrl()"
+                        (load)="onImgLoad($event)"
+                        alt="preview" />
                 }
             </div>
 
-            <input hidden (change)="onFileChange($event)" #fileInput type="file" />
+            <input hidden (change)="onFileChange($event)" #fileInput type="file" accept="image/png, image/gif, image/jpeg"/>
         </div>
 
         @if (previewUrl()) {
@@ -197,23 +207,62 @@
             <!-- City -->
             <div class="form-group">
                 <div class="input-wrapper with-counter">
-                    <w-autocomplete field="location" placeholder="" formControlName="location"
-                        autocomplete="address-level2" name="location" status="all" [maxLength]="maxMap.location"
-                        [initial]="" emptyHint="Type to search location" #refLocation />
-                    <label [class.focused]="form.get('location')?.value || refLocation.isFocused">
-                        City *
+                    <input
+                        [attr.maxlength]="maxMap.location"
+                        autocomplete="off"
+                        formControlName="location"
+                        name="loc"
+                        placeholder=" "
+                        (blur)="onLocationBlur()"
+                        aria-autocomplete="list"
+                        aria-haspopup="listbox"
+                        [attr.aria-expanded]="locOpen()"
+                        #refLocation />
+
+                    <label [class.focused]="form.get('location')?.value">
+                        Сity *
                     </label>
+
                     <span class="counter">{{ getLen('location') }}/{{ maxMap.location }}</span>
-                    <button class="loc-btn" type="button" (click)="null">📍</button> <!-- pickLocation?.() -->
+
+                    <button class="loc-btn" type="button" (click)="useMyLocation()">📍</button>
+
+                    @if (locOpen() && (locSuggestions().length || locLoading())) {
+                        <ul
+                            class="ac-list"
+                            role="listbox">
+                            @if (locLoading()) {
+                                <li class="loading">Searching...</li>
+                            }
+                            @for (s of locSuggestions(); track $index) {
+                                <li class="ac-item" role="option" (mousedown)="selectLocation(s)">
+                                    {{ getLocationName(s) }}
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    @if (form.hasError('locationNotSelected') && form.get('location')?.touched) {
+                        <small class="error">
+                            Please pick a city from the list.
+                        </small>
+                    }
                 </div>
             </div>
 
             <!-- Credit to -->
             <div class="form-group">
                 <div class="input-wrapper with-counter">
-                    <w-autocomplete field="creditTo" placeholder="" formControlName="creditTo" name="creditTo"
-                        status="all" [maxLength]="maxMap.creditTo" [initial]="" emptyHint="Type to search creditTo"
-                        #refCreditTo />
+                    <w-autocomplete
+                        [initial]=""
+                        [maxLength]="maxMap.creditTo"
+                        name="creditTo"
+                        #refCreditTo
+                        emptyHint="Type to search creditTo"
+                        field="creditTo"
+                        formControlName="creditTo"
+                        placeholder=""
+                        status="all" />
                     <label [class.focused]="form.get('creditTo')?.value || refCreditTo.isFocused">
                         Credit to
                     </label>

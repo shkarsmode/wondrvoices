@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { catchError, debounceTime, distinctUntilChanged, filter, first, map, of, Subscription, switchMap, tap } from 'rxjs';
+import { LocationIqService, LocationIqSuggestion } from 'src/app/shared/services/location-iq.service';
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
+import { locationSelectedValidator } from 'src/app/shared/validators/location-selected.validator';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
 import { VoicesService } from '../../../../shared/services/voices.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
@@ -47,6 +50,14 @@ export class FormComponent {
     public cloudinaryService: CloudinaryService = inject(CloudinaryService);
     public voicesService: VoicesService = inject(VoicesService);
     private readonly scrollToService: ScrollToService = inject(ScrollToService);
+
+    private locationIq = inject(LocationIqService);
+    private subs = new Subscription();
+
+    public locOpen = signal(false);
+    public locLoading = signal(false);
+    public locSuggestions = signal<LocationIqSuggestion[]>([]);
+    private locSelectInProgress = false;
 
     public whatOptions: TagOption[] = [
         // { key: 'drawing', label: 'Drawing', emoji: '✏️' },
@@ -119,13 +130,77 @@ export class FormComponent {
             name: ['', [Validators.maxLength(this.maxMap.name)]],
             email: ['', [Validators.email, Validators.maxLength(this.maxMap.email)]],
             location: ['', [Validators.required, Validators.maxLength(this.maxMap.location)]],
+            lat: [null as number | null],
+            lng: [null as number | null],
+
             creditTo: ['', [Validators.maxLength(this.maxMap.creditTo)]],
             what: this.fb.control<string[]>([], []),
             express: this.fb.control<string[]>([], []),
             note: [''],
             img: [null, Validators.required],
-            // consent: [false, Validators.requiredTrue]
-          });
+        }, { validators: [locationSelectedValidator()] });
+    }
+
+    ngOnInit(): void {
+        // Подписка на изменения поля location для автокомплита
+        const locCtrl = this.form.get('location') as FormControl<string>;
+        this.subs.add(
+            locCtrl.valueChanges.pipe(
+                tap(() => {
+                    // если юзер что-то напечатывает руками — сбрасываем lat/lng
+                    if (!this.locSelectInProgress) {
+                        this.form.patchValue({ lat: null, lng: null }, { emitEvent: false });
+                    }
+                }),
+                map(v => (v || '').trim()),
+                tap(v => this.locOpen.set(!!v)),
+                filter(v => v.length >= 2),
+                debounceTime(250),
+                distinctUntilChanged(),
+                tap(() => this.locLoading.set(true)),
+                switchMap(q =>
+                    this.locationIq.searchCities(q).pipe(
+                        catchError(() => of([]))
+                    )
+                ),
+                tap(() => this.locLoading.set(false))
+            ).subscribe(list => {
+                this.locSuggestions.set(list);
+            })
+        );
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
+    }
+
+    public selectLocation(s: LocationIqSuggestion): void {
+        this.locSelectInProgress = true;
+        const label = this.getLocationName(s);
+        this.form.patchValue({
+            location: label,
+            lat: Number(s.lat),
+            lng: Number(s.lon)
+        }, { emitEvent: false });
+        this.locOpen.set(false);
+        queueMicrotask(() => this.locSelectInProgress = false);
+    }
+
+    public getLocationName(s: LocationIqSuggestion): string {
+        return s.address?.country + ', ' + s.address?.name;
+    }
+
+    public onLocationBlur(): void {
+        // даём время на click по элементу списка
+        setTimeout(() => this.locOpen.set(false), 150);
+    }
+
+    public useMyLocation(): void {
+        if (!('geolocation' in navigator)) return;
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            this.form.patchValue({ lat: latitude, lng: longitude });
+        });
     }
 
     public isSelected(group: TagGroup, key: string): boolean {
@@ -266,15 +341,20 @@ export class FormComponent {
             express: this.form.get('express')?.value,
             note: this.form.get('note')?.value,
             img,
-            consent: true
+            consent: true,
+            lat: this.form.get('lat')?.value,
+            lng: this.form.get('lng')?.value,
         };
-        this.voicesService.createVoice(body).subscribe({
-            next: () => {
-                this.isLoading.set(false);
-                this.submitted.set(true);
-            },
-            error: () => this.isLoading.set(false)
-        });
+        
+        this.voicesService.createVoice(body)
+            .pipe(first())
+            .subscribe({
+                next: () => {
+                    this.isLoading.set(false);
+                    this.submitted.set(true);
+                },
+                error: () => this.isLoading.set(false)
+            });
     }
 
     public autoResize(event: Event): void {

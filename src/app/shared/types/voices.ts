@@ -47,6 +47,8 @@ export interface CreateVoiceRequest {
     img: string;
     /** Required: must be true to submit */
     consent: boolean;
+    lat: number;
+    lng: number;
 }
 
 export type UpdateVoiceRequest = Partial<Omit<CreateVoiceRequest, 'consent' | 'img'>> & {
