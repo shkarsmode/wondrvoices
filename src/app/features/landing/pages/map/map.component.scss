@@ -4,6 +4,12 @@
     display: block;
 }
 
+::ng-deep #mobileDonateFab {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+}
+
 .map-wrapper {
     display: grid;
     grid-template-rows: auto 1fr;
