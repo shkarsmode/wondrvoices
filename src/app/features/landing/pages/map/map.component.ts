@@ -66,34 +66,27 @@ export class MapComponent implements AfterViewInit {
         });
     });
 
-    public effect = effect(() => { this.voices(); this.refreshLayers()});
+    public effect = effect(() => { this.voices(); this.refreshLayers() });
 
-    // ✅ Держим один экземпляр Leaflet, загруженный динамически
     private L!: typeof Leaflet;
 
     private map?: Leaflet.Map;
     private baseLayer?: Leaflet.TileLayer;
-    private clusters?: any; // тип из @types/leaflet.markercluster тянется на рантайме, поэтому any
+    private clusters?: any;
 
     mapEl = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
     async ngAfterViewInit() {
         if (typeof window === 'undefined') return;
 
-        // 1) Один экземпляр Leaflet
         const leafletModule = await import('leaflet');
         this.L = resolveLeafletNamespace(leafletModule);
         (window as any).L = this.L;
 
-        // 2) Важно: UMD-версия плагина, чтобы он пропатчил window.L
         // @ts-ignore
         await import('leaflet.markercluster/dist/leaflet.markercluster.js');
 
-        // 3) Диагностика (можно удалить после проверки)
-        console.log('L === window.L', this.L === (window as any).L);
-        console.log('has markerClusterGroup', typeof (this.L as any).markerClusterGroup);
 
-        // 4) Дальше обычный поток
         this.initMap();
         await this.loadVoices();
         this.mapReady.set(true);

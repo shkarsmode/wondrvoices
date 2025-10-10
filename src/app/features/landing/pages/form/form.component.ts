@@ -187,7 +187,8 @@ export class FormComponent {
     }
 
     public getLocationName(s: LocationIqSuggestion): string {
-        return s.address?.country + ', ' + s.address?.name;
+        // return s.address?.country + ', ' + s.address?.name;
+        return s.display_name;
     }
 
     public onLocationBlur(): void {

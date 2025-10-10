@@ -24,17 +24,18 @@ export interface LocationIqSuggestion {
 @Injectable({ providedIn: 'root' })
 export class LocationIqService {
     private http = inject(HttpClient);
-    private base = 'https://api.locationiq.com/v1/autocomplete';
+    private base = 'https://api.locationiq.com/v1/search';
 
     searchCities(q: string, limit = 6): Observable<LocationIqSuggestion[]> {
         const params = new HttpParams()
             .set('key', environment.locationIqToken)
             .set('q', q)
             .set('limit', limit)
-            .set('dedupe', '1')
-            .set('normalizeaddress', '1')
+            .set('format', 'json')
+            // .set('dedupe', '1')
+            // .set('normalizeaddress', '1')
             // Фильтр на поселения: city/town/village (class=place)
-            .set('tag', 'place:city,place:town,place:village');
+            // .set('tag', 'place:city,place:town,place:village');
 
         return this.http.get<LocationIqSuggestion[]>(this.base, { params });
     }
