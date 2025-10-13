@@ -182,6 +182,7 @@ export class FormComponent {
             lat: Number(s.lat),
             lng: Number(s.lon)
         }, { emitEvent: false });
+        this.form.get('creditTo')!.setValue(s.display_place);
         this.locOpen.set(false);
         queueMicrotask(() => this.locSelectInProgress = false);
     }
