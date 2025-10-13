@@ -123,7 +123,7 @@ export class FormComponent {
     public inputModeMap: Record<string, string> = { email: 'email' };
     public typeMap: Record<string, string> = { email: 'email' };
     public autocapitalizeMap: Record<string, string> = { firstName: 'words' };
-    
+
 
     constructor() {
         this.form = this.fb.group({
@@ -347,7 +347,7 @@ export class FormComponent {
             lat: this.form.get('lat')?.value,
             lng: this.form.get('lng')?.value,
         };
-        
+
         this.voicesService.createVoice(body)
             .pipe(first())
             .subscribe({
@@ -439,17 +439,17 @@ export class FormComponent {
         if (this.step() === 1 && !this.form.get('img')?.value) return;
         if (this.step() === 5) return;
         this.step.update(s => (s + 1) as Step);
-        setTimeout(() => 
+        setTimeout(() =>
             this.scrollToService.scrollToTop()
-        , 200);
-        
+            , 200);
+
     }
     goBack() {
         if (this.step() === 1) return;
         this.step.update(s => (s - 1) as Step);
-        setTimeout(() => 
+        setTimeout(() =>
             this.scrollToService.scrollToTop()
-        , 200);
+            , 200);
     }
 
     naturalW = signal(1);
