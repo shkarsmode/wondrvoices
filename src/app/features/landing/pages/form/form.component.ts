@@ -19,7 +19,7 @@ interface TagOption {
     custom?: boolean;
 }
 
-type Step = 1 | 2 | 3;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 @Component({
     selector: 'app-form',
@@ -436,7 +436,7 @@ export class FormComponent {
 
     goNext() {
         if (this.step() === 1 && !this.form.get('img')?.value) return;
-        if (this.step() === 3) return;
+        if (this.step() === 5) return;
         this.step.update(s => (s + 1) as Step);
         setTimeout(() => 
             this.scrollToService.scrollToTop()
