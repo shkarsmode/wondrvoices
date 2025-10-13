@@ -7,6 +7,8 @@ import { environment } from '../../../environments/environment';
 export interface LocationIqSuggestion {
     place_id: string;
     display_name: string;
+    display_place: string;
+    display_address: string;
     lat: string;
     lon: string;
     class: string;
@@ -24,7 +26,7 @@ export interface LocationIqSuggestion {
 @Injectable({ providedIn: 'root' })
 export class LocationIqService {
     private http = inject(HttpClient);
-    private base = 'https://api.locationiq.com/v1/search';
+    private base = 'https://api.locationiq.com/v1/autocomplete';
 
     searchCities(q: string, limit = 6): Observable<LocationIqSuggestion[]> {
         const params = new HttpParams()
@@ -32,7 +34,7 @@ export class LocationIqService {
             .set('q', q)
             .set('limit', limit)
             .set('format', 'json')
-            // .set('dedupe', '1')
+            .set('dedupe', '1')
             // .set('normalizeaddress', '1')
             // Фильтр на поселения: city/town/village (class=place)
             // .set('tag', 'place:city,place:town,place:village');

@@ -715,10 +715,16 @@ h4 {
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         
         .ac-item {
-            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            padding: 7px 12px;
             cursor: pointer;
             font-size: 14px;
 
+            span {
+                font-size: 11px;
+                color: #7d7d7d;
+            }
             &:hover {
                 background: #f8f9fa;
             }
