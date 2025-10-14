@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { catchError, debounceTime, distinctUntilChanged, filter, first, map, of, Subscription, switchMap, tap } from 'rxjs';
 import { LocationIqService, LocationIqSuggestion, LocationIqSuggestionAddress } from 'src/app/shared/services/location-iq.service';
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
+import { ToastService } from 'src/app/shared/toast/toast.service';
 import { locationSelectedValidator } from 'src/app/shared/validators/location-selected.validator';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
 import { VoicesService } from '../../../../shared/services/voices.service';
@@ -43,10 +44,11 @@ export class FormComponent {
         email: 50
     };
 
-    step = signal<Step>(4);
+    step = signal<Step>(1);
     rotationDeg = signal(0);
 
     private fb: FormBuilder = inject(FormBuilder);
+    private toast: ToastService = inject(ToastService);
     public cloudinaryService: CloudinaryService = inject(CloudinaryService);
     public voicesService: VoicesService = inject(VoicesService);
     private readonly scrollToService: ScrollToService = inject(ScrollToService);
@@ -58,6 +60,9 @@ export class FormComponent {
     public locLoading = signal(false);
     public locSuggestions = signal<LocationIqSuggestion[]>([]);
     private locSelectInProgress = false;
+    public gsLoading = signal(false);
+    private GS_LICENSE_KEY = '533c5007525500020157065239095701525554560107070c55185a0145575b1d04460107165446473a03060451520501505252';
+    public isCameraAllowed = signal(false);
 
     public whatOptions: TagOption[] = [
         // { key: 'drawing', label: 'Drawing', emoji: '✏️' },
@@ -139,9 +144,10 @@ export class FormComponent {
             note: [''],
             img: [null, Validators.required],
         }, { validators: [locationSelectedValidator()] });
+
     }
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Подписка на изменения поля location для автокомплита
         const locCtrl = this.form.get('location') as FormControl<string>;
         this.subs.add(
@@ -168,6 +174,8 @@ export class FormComponent {
                 this.locSuggestions.set(list);
             })
         );
+
+        this.isCameraAllowed.set(await this.hasCameraConclusive());
     }
 
     ngOnDestroy(): void {
@@ -217,7 +225,7 @@ export class FormComponent {
         }
 
         const credit_to = isPoiLike && !isPlaceLike && venue ? venue : '';
-        
+
         this.form.get('creditTo')!.setValue(credit_to);
     }
 
@@ -504,4 +512,90 @@ export class FormComponent {
         const margin = (a * delta * delta) + (b * delta) + c;
         return Math.min(55, Math.max(10, margin));
     }
+
+    public async scanWithGeniusScan(): Promise<void> {
+        if (this.gsLoading()) return;
+        this.gsLoading.set(true);
+
+        try {
+            // @ts-ignore
+            const GS = window.GSSDK ?? window.GeniusScan;
+            if (!GS) {
+                this.toast.warn('[Genius Scan SDK]', 'global not found. Ensure the <script> is loaded', 5000);
+                return;
+            }
+
+            const starter =
+                (typeof GS.scanWithConfiguration === 'function' && GS.scanWithConfiguration) ||
+                (typeof GS.start === 'function' && GS.start) ||
+                (typeof GS.open === 'function' && GS.open);
+    
+            if (!starter) {
+                console.error('No start function on GSSDK/GeniusScan (expected scanWithConfiguration/start/open).');
+                return;
+            }
+
+            await GS.setLicenseKey(this.GS_LICENSE_KEY)
+            // console.log('test', );
+    
+            const cfg = {
+                multiPage: false,
+                "defaultFilter": "photo",
+                "multiPageFormat": "none",
+                jpegQuality: 60,
+                "showFps": true,
+            };
+    
+            const result = await starter(cfg);
+
+            const { scans, multiPageDocument } = result;
+    
+            const first =
+                result?.images?.[0] ??
+                result?.pages?.[0] ??
+                result?.scans?.[0];
+    
+            if (!first) {
+                this.toast.warn('[Genius Scan SDK]', 'No scans returned');
+                console.warn('No scans returned');
+                return;
+            }
+    
+            const blob = scans[0].enhancedImage.data;
+            const file = new File([blob], `wondr-scan-${Date.now()}.jpg`, { type: 'image/jpeg' });
+            this.setFile(file);
+            this.toast.success('[Genius Scan SDK]', 'Scan completed');
+        } catch (e: any) {
+            // @ts-ignore
+            const GS = window.GSSDK ?? window.GeniusScan;
+            if (GS?.MissingLicenseKeyError && e instanceof GS.MissingLicenseKeyError) {
+                this.toast.warn('[Genius Scan SDK]', 'missing license key');
+            } else if (GS?.InvalidLicenseKeyError && e instanceof GS.InvalidLicenseKeyError) {
+                this.toast.warn('[Genius Scan SDK]', 'invalid license key');
+            } else {
+                this.toast.warn('[Genius Scan SDK]', `Genius Scan error ${JSON.stringify(e)}`);
+            }
+        } finally {
+            this.gsLoading.set(false);
+        }
+    }
+    
+
+    public async hasCameraConclusive(): Promise<boolean> {
+        if (!('mediaDevices' in navigator) || !('getUserMedia' in navigator.mediaDevices)) {
+            return false;
+        }
+        this.gsLoading.set(true);
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            stream.getTracks().forEach((t) => t.stop());
+            this.toast.success('Camera access', 'Access granted');
+            return true;
+        } catch {
+            return false;
+        } finally {
+            this.gsLoading.set(false);
+        }
+    }
+
 }

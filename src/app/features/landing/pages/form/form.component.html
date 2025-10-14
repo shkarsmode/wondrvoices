@@ -34,16 +34,31 @@
                         class="form-group dropzone"
                         [class.dragover]="isDragOver()"
                         [class.preview]="!!previewUrl()"
-                        (click)="fileInput.click()"
+                        
                         (dragleave)="onDragLeave()"
                         (dragover)="onDragOver($event)"
-                        (drop)="onFileDrop($event)">
+                        (drop)="onFileDrop($event)"> <!-- (click)="fileInput.click()" -->
                         @if (!previewUrl()) {
                             <label class="upload-label">
                                 Upload a photo of your drawing, artwork, or handwritten message
                             </label>
 
-                            <button class="button submit-btn primary" type="button">Choose a file</button>
+                            <button
+                                class="button submit-btn primary"
+                                (click)="fileInput.click()"
+                                type="button">
+                                Choose a file
+                            </button>
+
+                            @if (isCameraAllowed() || gsLoading()) {
+                                <button
+                                    class="button outline"
+                                    [disabled]="isLoading() || gsLoading()"
+                                    (click)="scanWithGeniusScan()"
+                                    type="button">
+                                    @if (gsLoading()) { Scanning… } @else { Scan with Genius Scan }
+                                </button>
+                            }
                         }
 
                         <div

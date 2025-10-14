@@ -1,0 +1,36 @@
+<ul class="stack">
+  <li
+    class="toast"
+    *ngFor="let t of toasts(); trackBy: trackById"
+    [@toastAnim]
+    [attr.role]="ariaRole(t)"
+    [attr.aria-live]="t.ariaLive"
+    (mouseenter)="onEnter(t)"
+    (mouseleave)="onLeave(t)"
+    [class.is-success]="t.type === 'success'"
+    [class.is-info]="t.type === 'info'"
+    [class.is-warn]="t.type === 'warn'"
+    [class.is-error]="t.type === 'error'"
+  >
+    <div class="icon">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path [attr.d]="iconPath(t)" />
+      </svg>
+    </div>
+
+    <div class="content">
+      <div class="title" *ngIf="t.title">{{ t.title }}</div>
+      <div class="message" *ngIf="t.message">{{ t.message }}</div>
+    </div>
+
+    <button
+      *ngIf="t.dismissible"
+      type="button"
+      class="close"
+      (click)="dismiss(t)"
+      aria-label="Dismiss"
+    >✕</button>
+
+    <div class="progress" [ngStyle]="progressStyle(t)"></div>
+  </li>
+</ul>

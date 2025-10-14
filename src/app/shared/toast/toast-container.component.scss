@@ -1,0 +1,194 @@
+/* Набор переменных под сайт: подкрути — и оно «подстроится» */
+:host {
+    --toast-font-family: var(--app-font, Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif);
+    --toast-font-size: 14px;            /* сделать меньше — меняешь тут */
+    --toast-radius: 14px;
+    --toast-shadow: 0 10px 30px rgba(0,0,0,.12);
+
+    --toast-bg: #fff;
+    --toast-fg: #1b1f23;
+    --toast-muted: #6b7280;
+
+    --toast-success: #16a34a;
+    --toast-info:    #2563eb;
+    --toast-warn:    #d97706;
+    --toast-error:   #dc2626;
+
+    --toast-gap: 10px;                  /* расстояние между тостами */
+    --toast-width: min(96vw, 380px);    /* компоновка */
+    --toast-padding: 12px 12px 14px 12px;
+
+    --toast-progress-height: 3px;
+    --toast-progress-duration: 4000ms;  /* переопределяется инлайном */
+
+    position: fixed;
+    z-index: 9999;
+    inset: auto 16px 16px auto;         /* bottom-right как дефолт */
+    pointer-events: none;               /* кликаются только внутренности */
+}
+
+:host.pos-top-right { inset: 16px 16px auto auto; }
+:host.pos-top-left  { inset: 16px auto auto 16px; }
+:host.pos-bottom-right { inset: auto 16px 16px auto; }
+:host.pos-bottom-left  { inset: auto auto 16px 16px; }
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--toast-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toast {
+    width: var(--toast-width);
+    background: var(--toast-bg);
+    color: var(--toast-fg);
+    border-radius: var(--toast-radius);
+    box-shadow: var(--toast-shadow);
+    font-family: var(--toast-font-family);
+    font-size: var(--toast-font-size);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: 10px;
+    padding: var(--toast-padding);
+    pointer-events: auto;
+
+    /* анимация появления/ухода */
+    transform: translateX(8px);
+    opacity: 0;
+    animation: toast-in .28s cubic-bezier(.2,.8,.2,1) forwards;
+
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes toast-in {
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.icon {
+    display: grid;
+    place-items: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    margin-top: 2px;
+
+    svg { width: 18px; height: 18px; stroke: currentColor; fill: currentColor; }
+}
+
+.is-success .icon { background: color-mix(in srgb, var(--toast-success) 18%, white); color: var(--toast-success); }
+.is-info    .icon { background: color-mix(in srgb, var(--toast-info) 18%, white);    color: var(--toast-info); }
+.is-warn    .icon { background: color-mix(in srgb, var(--toast-warn) 18%, white);    color: var(--toast-warn); }
+.is-error   .icon { background: color-mix(in srgb, var(--toast-error) 18%, white);   color: var(--toast-error); }
+
+.content {
+    display: grid;
+    gap: 2px;
+    min-width: 0; /* чтобы текст нормально усекался */
+}
+
+.title {
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.message {
+    color: var(--toast-muted);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.close {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 4px;
+    margin-top: -4px;
+    opacity: .65;
+    transition: opacity .15s ease;
+    color: var(--toast-muted);
+}
+.close:hover { opacity: 1; }
+
+.progress {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: var(--toast-progress-height);
+    background: transparent;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        transform-origin: left center;
+        background: var(--toast-info);
+        animation: progress var(--toast-progress-duration) linear forwards;
+    }
+}
+
+/* красим прогресс по типу */
+.is-success .progress::before { background: var(--toast-success); }
+.is-warn    .progress::before { background: var(--toast-warn); }
+.is-error   .progress::before { background: var(--toast-error); }
+
+/* при ховере — пауза (см. setHover в сервисе) */
+.toast:hover .progress::before {
+    animation-play-state: paused;
+}
+
+/* более мелкая типографика на мобильных */
+@media (max-width: 480px) {
+    :host { --toast-font-size: 13px; --toast-width: 94vw; }
+}
+
+
+.toast {
+  /* плавное появление делаем через Angular Animations; тут лёгкий пред-стейт */
+  transform: translateY(0);
+  opacity: 1;
+  position: relative;
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+
+/* Прогресс: скейлим от 1 до 0 слева-направо. Управляет CSS-переменная --p (0..1 пройдено). */
+.progress {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: var(--toast-progress-height);
+  background: transparent;
+  overflow: hidden;
+  pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    right: 0;
+    transform-origin: left center;
+    transform: scaleX(var(--p)); /* 0..1 */
+    transition: transform 100ms linear; /* микросглаживание между тиками */
+    will-change: transform;
+    background: var(--toast-info);
+  }
+}
+
+/* цвет прогресса по типу */
+.is-success .progress::before { background: var(--toast-success); }
+.is-warn    .progress::before { background: var(--toast-warn); }
+.is-error   .progress::before { background: var(--toast-error); }
+
+/* при ховере ничего не анимируем — сервис просто замораживает remaining */
