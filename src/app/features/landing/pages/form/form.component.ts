@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, debounceTime, distinctUntilChanged, filter, first, map, of, Subscription, switchMap, tap } from 'rxjs';
-import { LocationIqService, LocationIqSuggestion } from 'src/app/shared/services/location-iq.service';
+import { LocationIqService, LocationIqSuggestion, LocationIqSuggestionAddress } from 'src/app/shared/services/location-iq.service';
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { locationSelectedValidator } from 'src/app/shared/validators/location-selected.validator';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
@@ -43,7 +43,7 @@ export class FormComponent {
         email: 50
     };
 
-    step = signal<Step>(1);
+    step = signal<Step>(4);
     rotationDeg = signal(0);
 
     private fb: FormBuilder = inject(FormBuilder);
@@ -182,9 +182,43 @@ export class FormComponent {
             lat: Number(s.lat),
             lng: Number(s.lon)
         }, { emitEvent: false });
-        this.form.get('creditTo')!.setValue(s.display_place);
+        this.setCreditToFromAutoComplete(s);
         this.locOpen.set(false);
         queueMicrotask(() => this.locSelectInProgress = false);
+    }
+
+    private setCreditToFromAutoComplete(r: LocationIqSuggestion): void {
+        const norm = (s: string) => s.trim().toLowerCase();
+
+        const PLACE_TYPES = new Set(['country','state','region','province','state_district','district','county','city','town','village','hamlet','suburb','neighbourhood','quarter','residential','island','archipelago','continent','municipality','locality']);
+        const POI_CLASSES = new Set(['amenity','shop','tourism','leisure','aeroway','railway','man_made','office','healthcare','historic','natural','sport']);
+        const POI_HIGHWAY_TYPES = new Set(['bus_stop','tram_stop','station','platform','rest_area','services']);
+
+        const cls = (r.class ?? '').toLowerCase();
+        const typ = (r.type ?? '').toLowerCase();
+
+        const isPlaceLike = PLACE_TYPES.has(typ) || cls === 'place';
+        const isPoiLike   = POI_CLASSES.has(cls) || (cls === 'highway' && POI_HIGHWAY_TYPES.has(typ));
+
+        let venue = r.address?.name || '';
+        if (!venue && r.display_place) {
+            const i = r.display_place.indexOf(',');
+            if (i > 0) venue = r.display_place.slice(0, i).trim();
+        }
+
+        if (venue) {
+            const addr: LocationIqSuggestionAddress | undefined = r.address;
+            if (!addr) return;
+            const topo = [
+                addr.city, addr.state, addr.country, addr.suburb, addr.neighbourhood, addr.county, addr.road, addr.postcode
+            ]
+                .filter(Boolean).map(v => norm(String(v)));
+            if (topo.includes(norm(venue))) venue = '';
+        }
+
+        const credit_to = isPoiLike && !isPlaceLike && venue ? venue : '';
+        
+        this.form.get('creditTo')!.setValue(credit_to);
     }
 
     public getLocationName(s: LocationIqSuggestion): string {

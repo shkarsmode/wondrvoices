@@ -13,15 +13,22 @@ export interface LocationIqSuggestion {
     lon: string;
     class: string;
     type: string;
-    address?: {
-        city?: string;
-        town?: string;
-        village?: string;
-        state?: string;
-        country?: string;
-        name?: string
-    };
+    address?: LocationIqSuggestionAddress;
 }
+
+export type LocationIqSuggestionAddress = {
+    name: string;
+    house_number?: string;
+    road?: string;
+    neighbourhood?: string;
+    suburb?: string;
+    city?: string;
+    county?: string;
+    state?: string;
+    postcode?: string;
+    country?: string;
+    country_code?: string;
+};
 
 @Injectable({ providedIn: 'root' })
 export class LocationIqService {

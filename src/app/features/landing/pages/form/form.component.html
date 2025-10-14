@@ -261,7 +261,10 @@
                                             <li class="loading">Searching...</li>
                                         }
                                         @for (s of locSuggestions(); track $index) {
-                                            <li class="ac-item" role="option" (mousedown)="selectLocation(s)">
+                                            <li
+                                                class="ac-item"
+                                                (mousedown)="selectLocation(s)"
+                                                role="option">
                                                 {{ s.display_place }}
                                                 <span>{{ s.display_address }}</span>
                                             </li>
