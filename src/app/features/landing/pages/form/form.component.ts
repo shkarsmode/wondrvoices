@@ -5,7 +5,7 @@ import { LocationIqService, LocationIqSuggestion, LocationIqSuggestionAddress } 
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { ToastService } from 'src/app/shared/toast/toast.service';
 import { locationSelectedValidator } from 'src/app/shared/validators/location-selected.validator';
-import { environment } from 'src/environments/environment.development';
+import { environment } from 'src/environments/environment';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
 import { VoicesService } from '../../../../shared/services/voices.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
