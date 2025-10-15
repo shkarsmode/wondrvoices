@@ -583,20 +583,45 @@ export class FormComponent {
     
 
     public async hasCameraConclusive(): Promise<boolean> {
-        if (!('mediaDevices' in navigator) || !('getUserMedia' in navigator.mediaDevices)) {
-            return false;
-        }
+        if (!navigator.mediaDevices?.getUserMedia || !navigator.mediaDevices?.enumerateDevices) return false;
+    
         this.gsLoading.set(true);
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            stream.getTracks().forEach((t) => t.stop());
-            this.toast.success('Camera access', 'Access granted');
-            return true;
+            // 1) Ask for any camera to unlock device labels
+            const warmupStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            warmupStream.getTracks().forEach(track => track.stop());
+    
+            // 2) Try to find back/environment cameras by label
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoInputs = devices.filter(d => d.kind === 'videoinput');
+    
+            const backLabel = /(back|rear|environment|wide)/i;
+            const frontLabel = /(front|user|face|integrated|webcam)/i;
+    
+            const backCameras = videoInputs.filter(d => backLabel.test(d.label) && !frontLabel.test(d.label));
+            if (backCameras.length > 0) {
+                this.toast.success('Camera access', 'Back camera available');
+                return true;
+            }
+    
+            // 3) If labels are inconclusive (e.g., iOS), try environment constraint directly
+            try {
+                const envProbe = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: 'environment' } },
+                    audio: false
+                });
+                envProbe.getTracks().forEach(track => track.stop());
+                this.toast.success('Camera access', 'Environment camera available');
+                return true;
+            } catch {
+                // No environment camera or not switchable
+            }
+    
+            return false;
         } catch {
             return false;
         } finally {
             this.gsLoading.set(false);
         }
     }
-
 }
