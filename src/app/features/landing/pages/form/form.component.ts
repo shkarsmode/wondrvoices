@@ -537,7 +537,7 @@ export class FormComponent {
             }
 
             await GS.setLicenseKey(this.GS_LICENSE_KEY)
-            // console.log('test', );
+            console.log('test', this.GS_LICENSE_KEY);
     
             const cfg = {
                 multiPage: false,
