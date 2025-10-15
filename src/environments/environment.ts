@@ -5,5 +5,5 @@ export const environment = {
     geoPathAPI: 'https://api.geoapify.com/v1/geocode/autocomplete',
     geoApiKey: '3b23dc57405b446fbbf29846a2d2b6dd',
     locationIqToken: 'pk.0e75ab005ceb08e738472e1ae6f534ca',
-    geniusscansdkToken: '533c5007525500020151035139465a0d0011440b5d55574a4c555b0b68090706510450540f0200'
+    geniusscansdkToken: '533c50075255010008550756394642144a145d0a504444560b555115195b5f5d3d0553540b040505530001'
 };
