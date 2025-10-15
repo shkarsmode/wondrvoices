@@ -10,6 +10,10 @@
     transform: translateY(8px);
 }
 
+::ng-deep .map {
+    height: 74vh !important;
+}
+
 .map-wrapper {
     display: grid;
     grid-template-rows: auto 1fr;
