@@ -5,6 +5,7 @@ import { LocationIqService, LocationIqSuggestion, LocationIqSuggestionAddress } 
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { ToastService } from 'src/app/shared/toast/toast.service';
 import { locationSelectedValidator } from 'src/app/shared/validators/location-selected.validator';
+import { environment } from 'src/environments/environment.development';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
 import { VoicesService } from '../../../../shared/services/voices.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
@@ -61,7 +62,7 @@ export class FormComponent {
     public locSuggestions = signal<LocationIqSuggestion[]>([]);
     private locSelectInProgress = false;
     public gsLoading = signal(false);
-    private GS_LICENSE_KEY = '533c5007525500020157065239095701525554560107070c55185a0145575b1d04460107165446473a03060451520501505252';
+    private GS_LICENSE_KEY = environment.geniusscansdkToken;
     public isCameraAllowed = signal(false);
 
     public whatOptions: TagOption[] = [
