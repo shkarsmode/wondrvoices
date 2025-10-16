@@ -531,6 +531,12 @@ h3 {
         background: #ededed;
         color: #777;
         font-weight: 800;
+        cursor: pointer;
+        transition: all .2s;
+
+        &:hover {
+            transform: translateY(-3px);
+        }
     }
 
     .dot.active {
@@ -546,6 +552,18 @@ h3 {
         background: #e9e9e9;
         position: relative;
 
+        &::after {
+            content: '';
+            position: absolute;
+            width: inherit;
+            height: inherit;
+            background: rgba($form-accent, .6);
+            width: 100%;
+
+            animation: hide-line-anim .45s ease forwards;
+            animation-delay: var(--y);
+        }
+
         &.active {
             &::after {
                 content: '';
@@ -553,8 +571,10 @@ h3 {
                 width: inherit;
                 height: inherit;
                 background: rgba($form-accent, .6);
+                width: 0%;
 
                 animation: show-line-anim .45s ease forwards;
+                animation-delay: var(--i) !important;
             }
 
             @keyframes show-line-anim {
@@ -564,6 +584,16 @@ h3 {
 
                 to {
                     width: 100%;
+                }
+            }
+
+            @keyframes hide-line-anim {
+                from {
+                    width: 100%;
+                }
+
+                to {
+                    width: 0%;
                 }
             }
         }

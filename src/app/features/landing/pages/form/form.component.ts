@@ -46,6 +46,7 @@ export class FormComponent {
     };
 
     step = signal<Step>(1);
+    previousStep = signal<Step>(1);
     rotationDeg = signal(0);
 
     private fb: FormBuilder = inject(FormBuilder);
@@ -478,9 +479,25 @@ export class FormComponent {
         ctrl.markAsTouched();
     }
 
+    chooseStep(step: number): void {
+        // switch (step) {
+        //     case 5:
+        //         if (!this.form.get('lat')?.value || !this.form.get('lng')?.value) return;
+        //     case 4:
+        //     case 3:
+        //     case 2:
+        //         if (!this.form.get('img')?.value) return;
+
+        // }
+
+        this.previousStep.set(this.step());
+        this.step.set(step as Step);
+    }
+
     goNext() {
         if (this.step() === 1 && !this.form.get('img')?.value) return;
         if (this.step() === 5) return;
+        this.previousStep.set(this.step());
         this.step.update(s => (s + 1) as Step);
         setTimeout(() =>
             this.scrollToService.scrollToTop()
@@ -489,6 +506,7 @@ export class FormComponent {
     }
     goBack() {
         if (this.step() === 1) return;
+        this.previousStep.set(this.step());
         this.step.update(s => (s - 1) as Step);
         setTimeout(() =>
             this.scrollToService.scrollToTop()
