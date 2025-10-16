@@ -514,10 +514,7 @@ export class FormComponent {
         return Math.min(55, Math.max(10, margin));
     }
 
-    public async scanWithGeniusScan(): Promise<void> {
-        if (this.gsLoading()) return;
-        this.gsLoading.set(true);
-
+    public async scanWithGeniusScan(isOpenSource: boolean = false): Promise<void> {
         try {
             // @ts-ignore
             const GS = window.GSSDK ?? window.GeniusScan;
@@ -538,16 +535,23 @@ export class FormComponent {
 
             await GS.setLicenseKey(this.GS_LICENSE_KEY);
     
-            const cfg = {
+            const cfg: any = {
                 multiPage: false,
-                "defaultFilter": "photo",
+                "defaultFilter": "automatic",
                 "multiPageFormat": "none",
-                jpegQuality: 60,
-                "showFps": true,
+                jpegQuality: 90,
             };
     
-            const result = await starter(cfg);
+            const resultPromise = starter(cfg);
 
+            if (isOpenSource) {
+                (document.querySelector('#image-file') as HTMLInputElement)!.click();
+                // setTimeout(() => {
+                //     (document.querySelector('#gssdk-overlay-container > div > div:nth-child(3) > div > div:nth-child(1) > button:nth-child(2)') as HTMLButtonElement).click();
+                // }, 2000);
+            }
+
+            const result = await resultPromise;
             const { scans, multiPageDocument } = result;
     
             const first =
@@ -576,7 +580,7 @@ export class FormComponent {
                 this.toast.warn('[Genius Scan SDK]', `Genius Scan error ${JSON.stringify(e)}`);
             }
         } finally {
-            this.gsLoading.set(false);
+            // this.gsLoading.set(false);
         }
     }
     
