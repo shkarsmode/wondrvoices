@@ -540,6 +540,8 @@ export class FormComponent {
                 "defaultFilter": "automatic",
                 "multiPageFormat": "none",
                 jpegQuality: 90,
+                source: 'camera',
+                photoLibraryButtonHidden: true
             };
     
             const resultPromise = starter(cfg);
@@ -549,6 +551,9 @@ export class FormComponent {
                 // setTimeout(() => {
                 //     (document.querySelector('#gssdk-overlay-container > div > div:nth-child(3) > div > div:nth-child(1) > button:nth-child(2)') as HTMLButtonElement).click();
                 // }, 2000);
+            } else {
+                (document.querySelector('[data-testid="scan-file-button"]') as HTMLDivElement)
+                    .style.display = 'none'
             }
 
             const result = await resultPromise;
