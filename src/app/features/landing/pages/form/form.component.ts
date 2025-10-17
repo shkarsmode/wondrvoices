@@ -481,15 +481,19 @@ export class FormComponent {
     }
 
     chooseStep(step: number): void {
-        // switch (step) {
-        //     case 5:
-        //         if (!this.form.get('lat')?.value || !this.form.get('lng')?.value) return;
-        //     case 4:
-        //     case 3:
-        //     case 2:
-        //         if (!this.form.get('img')?.value) return;
+        switch (step) {
+            case 5:
+                if (
+                    !this.form.get('lat')?.value || 
+                    !this.form.get('lng')?.value || 
+                    !this.form.get('creditTo')?.value
+                ) return;
+            case 4:
+            case 3:
+            case 2:
+                if (!this.form.get('img')?.value) return;
 
-        // }
+        }
 
         this.previousStep.set(this.step());
         this.step.set(step as Step);
