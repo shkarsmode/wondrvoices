@@ -82,7 +82,7 @@
                                 Choose a file
                             </button>
 
-                            @if (isCameraAllowed() || gsLoading()) {
+                            <!-- @if (isCameraAllowed() || gsLoading()) { -->
                                 <button
                                     class="button outline"
                                     [disabled]="isLoading() || gsLoading()"
@@ -90,7 +90,7 @@
                                     type="button">
                                     @if (gsLoading()) { Scanning… } @else { Scan with a camera }
                                 </button>
-                            }
+                            <!-- } -->
                         }
 
                         <div

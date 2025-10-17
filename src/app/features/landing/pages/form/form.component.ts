@@ -64,7 +64,6 @@ export class FormComponent {
     private locSelectInProgress = false;
     public gsLoading = signal(false);
     private GS_LICENSE_KEY = environment.geniusscansdkToken;
-    public isCameraAllowed = signal(false);
 
     public whatOptions: TagOption[] = [
         // { key: 'drawing', label: 'Drawing', emoji: '✏️' },
@@ -177,7 +176,7 @@ export class FormComponent {
             })
         );
 
-        this.isCameraAllowed.set(await this.hasCameraConclusive());
+        // this.isCameraAllowed.set(await this.hasCameraConclusive());
     }
 
     ngOnDestroy(): void {
@@ -535,6 +534,10 @@ export class FormComponent {
     }
 
     public async scanWithGeniusScan(isOpenSource: boolean = false): Promise<void> {
+        if (!(await this.hasCameraConclusive())) {
+            isOpenSource = true;
+            this.toast.warn('Your device has no camera to scan');
+        }
         try {
             // @ts-ignore
             const GS = window.GSSDK ?? window.GeniusScan;
