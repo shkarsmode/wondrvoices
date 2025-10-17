@@ -324,7 +324,10 @@
                                     </ul>
                                 }
 
-                                @if (form.hasError('locationNotSelected') && form.get('location')?.touched) {
+                                @if (
+                                    form.hasError('locationNotSelected') && 
+                                    form.get('location')?.touched
+                                ) {
                                     <small class="error">
                                         Please pick a city from the list.
                                     </small>
@@ -333,24 +336,30 @@
                         </div>
 
                         <!-- Credit to -->
-                        <div class="form-group">
-                            <div class="input-wrapper with-counter">
-                                <w-autocomplete
-                                    [initial]=""
-                                    [maxLength]="maxMap.creditTo"
-                                    name="creditTo"
-                                    #refCreditTo
-                                    emptyHint="Type to search creditTo"
-                                    field="creditTo"
-                                    formControlName="creditTo"
-                                    placeholder=""
-                                    status="all" />
-                                <label [class.focused]="form.get('creditTo')?.value || refCreditTo.isFocused">
-                                    Credit to
-                                </label>
-                                <span class="counter">{{ getLen('creditTo') }}/{{ maxMap.creditTo }}</span>
+                        @if (
+                            form.get('location')?.value && 
+                            (form.get('lat')?.value && form.get('lng')?.value) &&
+                            !hasLocation()
+                        ) {
+                            <div class="form-group">
+                                <div class="input-wrapper with-counter">
+                                    <w-autocomplete
+                                        [initial]=""
+                                        [maxLength]="maxMap.creditTo"
+                                        name="creditTo"
+                                        #refCreditTo
+                                        emptyHint="Type to search creditTo"
+                                        field="creditTo"
+                                        formControlName="creditTo"
+                                        placeholder=""
+                                        status="all" />
+                                    <label [class.focused]="form.get('creditTo')?.value || refCreditTo.isFocused">
+                                        Credit to
+                                    </label>
+                                    <span class="counter">{{ getLen('creditTo') }}/{{ maxMap.creditTo }}</span>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </section>
                 </form>
                 <div class="nav">
@@ -361,7 +370,7 @@
                     <button
                         class="button submit-btn primary"
                         (click)="goNext()"
-                        [disabled]="!form.get('lat')?.value || !form.get('lng')?.value"
+                        [disabled]="!form.get('lat')?.value || !form.get('lng')?.value || !form.get('creditTo')?.value"
                         type="button">Next →</button>
                 </div>
             }

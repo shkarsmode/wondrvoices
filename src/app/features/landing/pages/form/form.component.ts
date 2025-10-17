@@ -140,7 +140,7 @@ export class FormComponent {
             lat: [null as number | null],
             lng: [null as number | null],
 
-            creditTo: ['', [Validators.maxLength(this.maxMap.creditTo)]],
+            creditTo: ['', [Validators.required, Validators.maxLength(this.maxMap.creditTo)]],
             what: this.fb.control<string[]>([], []),
             express: this.fb.control<string[]>([], []),
             note: [''],
@@ -197,6 +197,7 @@ export class FormComponent {
         queueMicrotask(() => this.locSelectInProgress = false);
     }
 
+    public hasLocation = signal(false);
     private setCreditToFromAutoComplete(r: LocationIqSuggestion): void {
         const norm = (s: string) => s.trim().toLowerCase();
 
@@ -228,6 +229,7 @@ export class FormComponent {
 
         const credit_to = isPoiLike && !isPlaceLike && venue ? venue : '';
 
+        this.hasLocation.set(!!credit_to);
         this.form.get('creditTo')!.setValue(credit_to);
     }
 
