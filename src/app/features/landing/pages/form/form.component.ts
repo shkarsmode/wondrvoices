@@ -135,7 +135,7 @@ export class FormComponent {
         this.form = this.fb.group({
             name: ['', [Validators.maxLength(this.maxMap.name)]],
             email: ['', [Validators.email, Validators.maxLength(this.maxMap.email)]],
-            location: ['', [Validators.required, Validators.maxLength(this.maxMap.location)]],
+            location: ['', [Validators.required]],
             lat: [null as number | null],
             lng: [null as number | null],
 
@@ -145,7 +145,6 @@ export class FormComponent {
             note: [''],
             img: [null, Validators.required],
         }, { validators: [locationSelectedValidator()] });
-
     }
 
     async ngOnInit(): Promise<void> {

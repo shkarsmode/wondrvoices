@@ -77,13 +77,14 @@
 
                             <button
                                 class="button submit-btn primary"
-                                (click)="scanWithGeniusScan(true)"
-                                type="button"> <!-- (click)="fileInput.click()" -->
+                                (click)="fileInput.click()"
+                                type="button"> 
                                 Choose a file
                             </button>
 
                             <!-- @if (isCameraAllowed() || gsLoading()) { -->
                                 <button
+                                    id="scan-button"
                                     class="button outline"
                                     [disabled]="isLoading() || gsLoading()"
                                     (click)="scanWithGeniusScan()"
@@ -121,7 +122,7 @@
                             type="file" />
                     </div>
 
-                    <!-- @if (previewUrl()) {
+                    @if (previewUrl()) {
                         <div class="rotate-tools">
                             <button
                                 class="btn"
@@ -137,7 +138,7 @@
                                 <span class="material-symbols-outlined md">rotate_right</span>
                             </button>
                         </div>
-                    } -->
+                    }
 
                     
                 </form>

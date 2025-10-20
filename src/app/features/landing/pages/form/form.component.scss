@@ -821,3 +821,9 @@ h4 {
         display: none !important;
     }
 }
+
+#scan-button {
+    @media screen and (max-width: 980px) {
+        display: none;
+    }
+}
