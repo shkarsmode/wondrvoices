@@ -117,13 +117,25 @@ export class FormComponent {
     public typeMap: Record<string, string> = { email: 'email' };
     public autocapitalizeMap: Record<string, string> = { firstName: 'words' };
 
+    /* Statuses */
+    public perItemStatus = signal<Array<'pending' | 'uploading' | 'uploaded' | 'creating' | 'done' | 'failed'>>([]);
+    public progressTotalSteps = signal(0);
+    public progressCurrentStep = signal(0);
+    public progressMessage = signal<string>('');
+    public devProgressVisible = computed(() => this.isMultipleUpload && this.isLoading());
+    public progressPercent = computed(() => {
+        const total = this.progressTotalSteps();
+        const current = this.progressCurrentStep();
+        return total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
+    });
+
     constructor() {
         if (typeof window !== 'undefined') {
             this.isMultipleUpload = Number(localStorage?.getItem('dev')) === 1;
         }
         this.form = this.fb.group({
-            name: ['', [Validators.maxLength(this.maxMap.name)]],
-            email: ['', [Validators.email, Validators.maxLength(this.maxMap.email)]],
+            name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(this.maxMap.name)]],
+            email: ['', [Validators.required,Validators.email, Validators.maxLength(this.maxMap.email)]],
             location: ['', [Validators.required]],
             lat: [null as number | null],
             lng: [null as number | null],
@@ -206,6 +218,7 @@ export class FormComponent {
             this.activeIndex.set(Math.max(0, nextFiles.length - 1));
         }
         this.syncFormImg();
+        this.syncPerItemStatuses();
     }
 
     public clearAllFiles(): void {
@@ -214,6 +227,7 @@ export class FormComponent {
         this.rotationDegrees.set([]);
         this.activeIndex.set(0);
         this.syncFormImg();
+        this.syncPerItemStatuses();
     }
 
     public setActiveIndex(index: number): void {
@@ -242,6 +256,7 @@ export class FormComponent {
 
         this.syncFormImg();
         this.recomputeImgNaturalSize();
+        this.syncPerItemStatuses();
     }
 
     private async readPreviews(files: File[]): Promise<string[]> {
@@ -313,23 +328,44 @@ export class FormComponent {
     public prepareToUploadVoice(): void {
         if (this.form.invalid) return;
         this.isLoading.set(true);
+
+        // init totals: для multi — 2 шага на файл (upload + create)
+        const count = this.files().length || 0;
+        const totalSteps = this.isMultipleUpload ? count * 2 : 2;
+        this.progressTotalSteps.set(totalSteps);
+        this.progressCurrentStep.set(0);
+        this.progressMessage.set('');
+
         if (this.isMultipleUpload) {
-            this.uploadManyAndCreateVoices().finally(() => this.isLoading.set(false));
+            this.uploadManyAndCreateVoices()
+                .finally(() => this.isLoading.set(false));
         } else {
-            this.uploadSingleAndCreateVoice().finally(() => this.isLoading.set(false));
+            this.uploadSingleAndCreateVoice()
+                .finally(() => this.isLoading.set(false));
         }
     }
 
     private async uploadSingleAndCreateVoice(): Promise<void> {
         try {
+            // single тоже будет иметь массив из одного элемента для унификации
+            this.perItemStatus.set(['uploading']);
             const idx = this.activeIndex();
             const original = this.files()[idx];
             const rotated = await this.maybeRotatedFile(original, idx);
+
+            this.progressMessage.set(`Uploading 1/1 to Cloudinary…`);
             const url = await this.uploadToCloudinary(rotated);
+            this.bumpProgress('Uploaded 1/1');
+
+            this.perItemStatus.set(['creating']);
+            this.progressMessage.set(`Creating voice 1/1…`);
             await this.createVoice(url);
+            this.bumpProgress('Created 1/1');
+            this.perItemStatus.set(['done']);
+
             this.submitted.set(true);
         } catch {
-            /* silent fail already notified by services if needed */
+            this.perItemStatus.set(['failed']);
         }
     }
 
@@ -337,20 +373,55 @@ export class FormComponent {
         const files = this.files();
         const urls: string[] = [];
 
+        // Upload phase
         for (let i = 0; i < files.length; i++) {
             try {
+                // mark uploading
+                const cur = this.perItemStatus().slice();
+                cur[i] = 'uploading';
+                this.perItemStatus.set(cur);
+
+                this.progressMessage.set(`Uploading ${i + 1}/${files.length} to Cloudinary…`);
                 const rotated = await this.maybeRotatedFile(files[i], i);
                 const url = await this.uploadToCloudinary(rotated);
                 urls.push(url);
+
+                // mark uploaded
+                const cur2 = this.perItemStatus().slice();
+                cur2[i] = 'uploaded';
+                this.perItemStatus.set(cur2);
+
+                this.bumpProgress(`Uploaded ${i + 1}/${files.length}`);
             } catch {
+                const cur3 = this.perItemStatus().slice();
+                cur3[i] = 'failed';
+                this.perItemStatus.set(cur3);
                 this.toast.warn('Upload', `Failed to upload image #${i + 1}`);
             }
         }
 
+        // Create phase
         for (let i = 0; i < urls.length; i++) {
+            if (!urls[i]) continue; // skip failed uploads
             try {
+                // mark creating
+                const cur = this.perItemStatus().slice();
+                cur[i] = 'creating';
+                this.perItemStatus.set(cur);
+
+                this.progressMessage.set(`Creating voice ${i + 1}/${urls.length}…`);
                 await this.createVoice(urls[i]);
+
+                // mark done
+                const cur2 = this.perItemStatus().slice();
+                cur2[i] = 'done';
+                this.perItemStatus.set(cur2);
+
+                this.bumpProgress(`Created ${i + 1}/${urls.length}`);
             } catch {
+                const cur3 = this.perItemStatus().slice();
+                cur3[i] = 'failed';
+                this.perItemStatus.set(cur3);
                 this.toast.warn('Submit', `Failed to submit card #${i + 1}`);
             }
         }
@@ -359,6 +430,9 @@ export class FormComponent {
             this.submitted.set(true);
         }
     }
+
+    public perItemStatusDoneLength =
+        computed(() => this.perItemStatus().filter(s => s === 'done').length);
 
     private async uploadToCloudinary(file: File): Promise<string> {
         const res: ImageUrlResponseDto = await firstValueFrom(this.cloudinaryService.uploadImageAndGetUrl(file));
@@ -591,7 +665,7 @@ export class FormComponent {
     }
 
     // private setFile(file: File) { this.form.patchValue({ img: file }); const reader = new FileReader(); reader.onload = () => this.previewUrl.set(reader.result as string); reader.readAsDataURL(file); this.rotationDeg.set(0); }
-    
+
     public disableChip(group: TagGroup, key: string): boolean {
         const selected = (this.form.get(group)?.value as string[]) ?? [];
         return selected.length >= 3 && !selected.includes(key);
@@ -622,18 +696,18 @@ export class FormComponent {
         this.locOpen.set(false);
         queueMicrotask(() => this.locSelectInProgress = false);
     }
-    
+
     private setCreditToFromAutoComplete(r: LocationIqSuggestion): void {
         const norm = (s: string) => s.trim().toLowerCase();
-        const PLACE_TYPES = new Set(['country','state','region','province','state_district','district','county','city','town','village','hamlet','suburb','neighbourhood','quarter','residential','island','archipelago','continent','municipality','locality']);
-        const POI_CLASSES = new Set(['amenity','shop','tourism','leisure','aeroway','railway','man_made','office','healthcare','historic','natural','sport']);
-        const POI_HIGHWAY_TYPES = new Set(['bus_stop','tram_stop','station','platform','rest_area','services']);
+        const PLACE_TYPES = new Set(['country', 'state', 'region', 'province', 'state_district', 'district', 'county', 'city', 'town', 'village', 'hamlet', 'suburb', 'neighbourhood', 'quarter', 'residential', 'island', 'archipelago', 'continent', 'municipality', 'locality']);
+        const POI_CLASSES = new Set(['amenity', 'shop', 'tourism', 'leisure', 'aeroway', 'railway', 'man_made', 'office', 'healthcare', 'historic', 'natural', 'sport']);
+        const POI_HIGHWAY_TYPES = new Set(['bus_stop', 'tram_stop', 'station', 'platform', 'rest_area', 'services']);
 
         const cls = (r.class ?? '').toLowerCase();
         const typ = (r.type ?? '').toLowerCase();
 
         const isPlaceLike = PLACE_TYPES.has(typ) || cls === 'place';
-        const isPoiLike   = POI_CLASSES.has(cls) || (cls === 'highway' && POI_HIGHWAY_TYPES.has(typ));
+        const isPoiLike = POI_CLASSES.has(cls) || (cls === 'highway' && POI_HIGHWAY_TYPES.has(typ));
 
         let venue = r.address?.name || '';
         if (!venue && r.display_place) {
@@ -670,26 +744,26 @@ export class FormComponent {
 
     public async hasCameraConclusive(): Promise<boolean> {
         if (!navigator.mediaDevices?.getUserMedia || !navigator.mediaDevices?.enumerateDevices) return false;
-    
+
         this.gsLoading.set(true);
         try {
             // 1) Ask for any camera to unlock device labels
             const warmupStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             warmupStream.getTracks().forEach(track => track.stop());
-    
+
             // 2) Try to find back/environment cameras by label
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoInputs = devices.filter(d => d.kind === 'videoinput');
-    
+
             const backLabel = /(back|rear|environment|wide)/i;
             const frontLabel = /(front|user|face|integrated|webcam)/i;
-    
+
             const backCameras = videoInputs.filter(d => backLabel.test(d.label) && !frontLabel.test(d.label));
             if (backCameras.length > 0) {
                 this.toast.success('Camera access', 'Back camera available');
                 return true;
             }
-    
+
             // 3) If labels are inconclusive (e.g., iOS), try environment constraint directly
             try {
                 const envProbe = await navigator.mediaDevices.getUserMedia({
@@ -702,7 +776,7 @@ export class FormComponent {
             } catch {
                 // No environment camera or not switchable
             }
-    
+
             return false;
         } catch {
             return false;
@@ -710,4 +784,27 @@ export class FormComponent {
             this.gsLoading.set(false);
         }
     }
+
+    private syncPerItemStatuses(): void {
+        const len = this.files().length;
+        const next = new Array(len).fill('pending') as Array<'pending' | 'uploading' | 'uploaded' | 'creating' | 'done' | 'failed'>;
+        this.perItemStatus.set(next);
+    }
+
+    private bumpProgress(stepLabel: string): void {
+        this.progressCurrentStep.update((v) => v + 1);
+        this.progressMessage.set(stepLabel);
+    }
+
+    public statusIcon(status: 'pending' | 'uploading' | 'uploaded' | 'creating' | 'done' | 'failed'): string {
+        switch (status) {
+            case 'pending': return '⏳';
+            case 'uploading': return '☁️';
+            case 'uploaded': return '✅';
+            case 'creating': return '🧾';
+            case 'done': return '🎉';
+            case 'failed': return '⚠️';
+        }
+    }
+    public getFileName(index: number): string | undefined { return this.files()[index]?.name || ('image-' + (index + 1)); }
 }

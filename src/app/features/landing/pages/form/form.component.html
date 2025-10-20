@@ -188,8 +188,18 @@
                     </section>
                 </form>
                 <div class="nav">
-                    <button type="button" class="button submit-btn ghost" (click)="goBack()">← Back</button>
-                    <button type="button" class="button submit-btn primary" (click)="goNext()">Next →</button>
+                    <button
+                        class="button submit-btn ghost"
+                        (click)="goBack()"
+                        type="button">
+                        ← Back
+                    </button>
+                    <button
+                        class="button submit-btn primary"
+                        (click)="goNext()"
+                        type="button">
+                        Next →
+                    </button>
                 </div>
             }
 
@@ -212,7 +222,11 @@
             }
 
             @case (4) {
-                <form class="form" [formGroup]="form" (ngSubmit)="submit()" autocomplete="on">
+                <form
+                    class="form"
+                    [formGroup]="form"
+                    (ngSubmit)="submit()"
+                    autocomplete="on">
                     <section class="info-block public">
                         <div class="block-head">
                             <span class="ico">📣</span>
@@ -283,7 +297,11 @@
             }
 
             @case (5) {
-                <form class="form" [formGroup]="form" (ngSubmit)="submit()" autocomplete="on">
+                <form
+                    class="form"
+                    [formGroup]="form"
+                    (ngSubmit)="submit()"
+                    autocomplete="on">
                     <section class="info-block private">
                         <div class="block-head">
                             <span class="ico">🔒</span>
@@ -321,12 +339,62 @@
                 </div>
             }
         }
+
+        @if (devProgressVisible()) {
+            <div class="dev-panel" role="status" aria-live="polite">
+                <div class="dev-panel__head">
+                    <strong>Dev Upload Queue</strong>
+                    <span class="dev-panel__count">
+                        {{ perItemStatusDoneLength() }}/{{ perItemStatus().length }} done
+                    </span>
+                </div>
+        
+                <div class="dev-progress">
+                    <div class="dev-progress__bar" [style.width.%]="progressPercent()"></div>
+                </div>
+                <div class="dev-progress__meta">
+                    <span>{{ progressMessage() || 'Preparing…' }}</span>
+                    <span>{{ progressPercent() }}%</span>
+                </div>
+        
+                <ul class="dev-list">
+                    @for (status of perItemStatus(); track $index) {
+                        <li class="dev-item">
+                            <span class="dev-item__idx">#{{ $index + 1 }}</span>
+        
+                            <span
+                                class="dev-item__name"
+                                [title]="">
+                                {{ getFileName($index) }}
+                            </span>
+        
+                            <span
+                                class="dev-item__stage"
+                                [class.is-queued]="status === 'pending'"
+                                [class.is-uploading]="status === 'uploading'"
+                                [class.is-uploaded]="status === 'uploaded'"
+                                [class.is-creating]="status === 'creating'"
+                                [class.is-done]="status === 'done'"
+                                [class.is-error]="status === 'failed'">
+                                {{ statusIcon(status) }} {{ status }}
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        
+        
     </div>
 } @else {
     <div class="submit-another-wrap">
         <h3>Thank you for your submission!</h3>
         <p>Your voice is now part of a growing community that spreads kindness and hope. We’ll be in touch soon.</p>
-        <button class="button submit primary" (click)="submitted.set(false); resetAll(); step.set(1);">Submit Another →</button>
+        <button
+            class="button submit primary"
+            (click)="submitted.set(false); resetAll(); step.set(1);">
+            Submit Another →
+        </button>
     </div>
 }
 
