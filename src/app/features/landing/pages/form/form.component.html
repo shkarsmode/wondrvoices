@@ -14,7 +14,10 @@
 
         @switch (step()) {
             @case (1) {
-                <form class="form step-1" [formGroup]="form" autocomplete="on">
+                <form
+                    class="form step-1"
+                    [formGroup]="form"
+                    autocomplete="on">
                     <div
                         class="form-group dropzone"
                         [class.dragover]="isDragOver()"
@@ -24,9 +27,14 @@
                         (drop)="onFileDrop($event)">
 
                         @if (!currentPreviewUrl()) {
-                            <label class="upload-label">Upload a photo of your drawing, artwork, or handwritten message</label>
+                            <label class="upload-label">
+                                Upload a photo of your drawing, artwork, or handwritten message
+                            </label>
 
-                            <button class="button submit-btn primary" (click)="fileInput.click()" type="button">
+                            <button
+                                class="button submit-btn primary"
+                                (click)="fileInput.click()"
+                                type="button">
                                 Choose a file
                             </button>
 
@@ -42,10 +50,12 @@
 
                         <div
                             class="dropzone-content"
-                            [class.dropzone-content--additional-margin]="naturalH() > naturalW() && rotated()"
+                            [class.dropzone-content--additional-margin]="
+                                naturalH() > naturalW() && rotated()
+                            "
                             [class.dropzone-content--rotated]="rotated()"
                             [style.aspectRatio]="rotated() ? '1 / 1' : null"
-                            [style]="'--i: ' + computeQuadraticMargin(naturalH() - naturalW()) + 'px'">
+                            [style.--i]="computeQuadraticMargin(naturalH() - naturalW()) + 'px'">
 
                             @if (!currentPreviewUrl()) {
                                 <p>📁 Click to choose a file or drag here</p>

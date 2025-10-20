@@ -822,11 +822,13 @@ h4 {
     }
 }
 
-#scan-button {
-    @media screen and (max-width: 980px) {
+@media screen and (min-width: 980px) {
+
+    #scan-button {
         display: none;
     }
 }
+
 
 .gallery {
     display: grid;
