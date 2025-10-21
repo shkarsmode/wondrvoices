@@ -929,6 +929,7 @@
         align-items: center;
         cursor: pointer;
         font-weight: 500;
+        color: black;
     }
 }
 
@@ -1002,6 +1003,7 @@
     text-align: left;
     cursor: pointer;
     text-decoration: none;
+    color: black;
 
     &:hover {
         background: rgb(246 246 246);
@@ -1116,12 +1118,14 @@
     align-items: center;
     gap: 18px;
     padding: 12px 0;
+    padding-bottom: 35px;
     border-bottom: 1px solid #C8BFC188;
 
     @media (max-width: 700px) {
         grid-template-columns: 72px 1fr;
         gap: 12px;
         padding: 8px 0;
+        padding-bottom: 35px;
     }
 }
 
