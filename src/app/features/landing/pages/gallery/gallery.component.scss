@@ -1127,6 +1127,10 @@
         padding: 8px 0;
         padding-bottom: 35px;
     }
+
+    @media (max-width: 500px) {
+        padding-bottom: 15px;
+    }
 }
 
 .brand-visual {
@@ -1181,7 +1185,12 @@
 
 .brand-main {
     display: grid;
-    gap: 6px;
+    gap: 20px;
+
+    @media screen and (max-width: 700px) {
+        gap: 12px;
+        
+    }
 
     .hero-title {
         margin: 0;
@@ -1199,7 +1208,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 8px 12px;
-    margin-top: 15px;
+    // margin-top: 15px;
 
     .meta-item {
         display: inline-flex;
