@@ -1,4 +1,4 @@
-import { DecimalPipe, isPlatformBrowser, JsonPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, isPlatformBrowser, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, OnInit, PLATFORM_ID, signal, ViewChild, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
@@ -29,7 +29,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 @Component({
     selector: 'app-gallery',
     standalone: true,
-    imports: [RouterModule, JsonPipe, AutocompleteInputComponent, DecimalPipe],
+    imports: [RouterModule, JsonPipe, AutocompleteInputComponent, DecimalPipe, DatePipe],
     templateUrl: './gallery.component.html',
     styleUrl: './gallery.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -59,6 +59,16 @@ export class GalleryComponent implements OnInit {
         // normalized key
         'sarasota art museum': 'https://marvel-b1-cdn.bc0a.com/f00000000114784/www.ringling.edu/wp-content/uploads/2023/04/SarasotaArtMuseum_Horizontal.jpg'
     };
+    private readonly venueColors: Record<string, string> = {
+        'sarasota art museum': '#e02986'
+    };
+
+    // Track latest updatedAt among current items
+    public lastUpdated = signal<Date | null>(null);
+
+    // Mini header stickiness
+    public isMiniHeaderVisible = signal<boolean>(false);
+    
 
     public cards = signal<IVoice[]>([]);
 
@@ -122,9 +132,9 @@ export class GalleryComponent implements OnInit {
         // init venue visuals from query
         const credit = this.filters().creditTo || null;
         this.venueDisplayName.set(credit);
-        console.log(credit);
+
         this.brandLogoUrl.set(this.venueLogos[this.normalizeVenueKey(credit)] || null);
-        console.log(this.brandLogoUrl())
+
         if (typeof window !== 'undefined') {
             this.loadPage(1, true);
         }
@@ -134,6 +144,7 @@ export class GalleryComponent implements OnInit {
                 // update venue visuals when query changes
                 const updatedCredit = this.filters().creditTo || null;
                 this.venueDisplayName.set(updatedCredit);
+                this.afterVenueContextChanged();
                 this.brandLogoUrl.set(this.venueLogos[this.normalizeVenueKey(updatedCredit)] || null);
 
                 this.page.set(1);
@@ -142,12 +153,13 @@ export class GalleryComponent implements OnInit {
                 this.loadPage(1, true);
             }
         });
+
+        this.afterVenueContextChanged();
     }
 
     private updateVenueMeta(fallbackFirstImage?: string | null): void {
         const venue = this.venueDisplayName() || this.filters().creditTo || 'Gallery';
         const total = this.totalCount();
-        const hasLogo = !!this.brandLogoUrl();
         const image = this.brandLogoUrl() || fallbackFirstImage || null;
     
         const metaTitle = `${venue} • ${total > 0 ? total + ' cards • ' : ''}Wondrvoices`;
@@ -160,18 +172,24 @@ export class GalleryComponent implements OnInit {
         this.meta.updateTag({ property: 'og:description', content: metaDesc });
         this.meta.updateTag({ property: 'twitter:description', content: metaDesc });
     
-        if (image) {
-            this.meta.updateTag({ property: 'og:image', content: image });
-            this.meta.updateTag({ name: 'twitter:image', content: image });
-        } else {
-            // optional: clear or set a site default
-            this.meta.updateTag({ property: 'og:image', content: 'https://play-lh.googleusercontent.com/ieK2B2z7PLxd1UQJ6flvxYRiX8hXPs_8Xs3yPdL4YqIVo5puOZOFUb-4y3AqeT3LyF3RMalHT5mPKdnoYctsfA=w2560-h1440-rw' });
-            this.meta.updateTag({ name: 'twitter:image', content: 'https://play-lh.googleusercontent.com/ieK2B2z7PLxd1UQJ6flvxYRiX8hXPs_8Xs3yPdL4YqIVo5puOZOFUb-4y3AqeT3LyF3RMalHT5mPKdnoYctsfA=w2560-h1440-rw' });
-        }
+        const fallback = 'https://play-lh.googleusercontent.com/ieK2B2z7PLxd1UQJ6flvxYRiX8hXPs_8Xs3yPdL4YqIVo5puOZOFUb-4y3AqeT3LyF3RMalHT5mPKdnoYctsfA=w2560-h1440-rw';
+        const finalImage = image || fallback;
     
-        // card type already set in ngOnInit
+        this.meta.updateTag({ property: 'og:image', content: finalImage });
+        this.meta.updateTag({ property: 'og:image:secure_url', content: finalImage });
+        this.meta.updateTag({ property: 'og:image:alt', content: `${venue} cover` });
+        this.meta.updateTag({ name: 'twitter:image', content: finalImage });
     }
     
+    @HostListener('window:scroll')
+    onWindowScroll(): void {
+        if (!this.hasAnyFilter()) {
+            this.isMiniHeaderVisible.set(false);
+            return;
+        }
+        const y = (typeof window !== 'undefined') ? window.scrollY : 0;
+        this.isMiniHeaderVisible.set(y > 250);
+    }
 
     public ngAfterViewInit(): void {
         if (typeof window === 'undefined') return;
@@ -355,6 +373,17 @@ export class GalleryComponent implements OnInit {
             .subscribe(({ items, total }) => {
                 const newItems = Array.isArray(items) ? items : [];
                 const firstImage = newItems?.[0]?.img || this.cards()?.[0]?.img || null;
+
+                if (newItems.length) {
+                    const isoDates = newItems
+                        .map(v => v.createdAt)
+                        .filter(Boolean)
+                        .map(s => new Date(s as any).getTime());
+                    const maxTs = Math.max(...isoDates, this.lastUpdated()?.getTime() || 0);
+                    if (Number.isFinite(maxTs)) this.lastUpdated.set(new Date(maxTs));
+                }
+
+                setTimeout(() => this.isMiniHeaderVisible.set(true), 200);
     
                 if (initial) {
                     this.cards.set(newItems);
@@ -479,6 +508,18 @@ export class GalleryComponent implements OnInit {
 
     private normalizeVenueKey(value?: string | null): string {
         return (value || '').trim().toLowerCase();
+    }
+
+    private applyBrandColor(): void {
+        const key = this.normalizeVenueKey(this.venueDisplayName() || this.filters().creditTo || '');
+        const color = this.venueColors[key] || '#C8BFC1';
+        document.documentElement.style.setProperty('--brand', color);
+    }
+
+    private afterVenueContextChanged(): void {
+        this.applyBrandColor();
+        // show skeleton until data arrives
+        this.isMiniHeaderVisible.set(false);
     }
 
     public ngOnDestroy(): void {

@@ -1,3 +1,10 @@
+::ng-deep body :has(app-gallery) {
+    .is-shown {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+}
+
 .message-board {
     font-family: 'Inter', sans-serif;
     text-align: center;
@@ -1225,4 +1232,135 @@
     }
 
     .share-wrapper { margin-left: 4px; margin-top: 0px; }
+}
+
+:root {
+    --brand: #C8BFC1; /* default, перезаписуємо в TS під venue */
+}
+
+.brand-row {
+    position: relative;
+}
+
+/* Decorative brand band */
+.brand-band {
+    height: 10px;
+    width: 100%;
+    margin-top: -8px;
+    background:
+        linear-gradient(90deg, color-mix(in oklab, var(--brand) 30%, #ffffff) 0%, var(--brand) 50%, color-mix(in oklab, var(--brand) 30%, #ffffff) 100%);
+    border-radius: 10px;
+    opacity: .55;
+
+    @media (max-width: 700px) {
+        border-radius: 8px;
+        height: 8px;
+    }
+}
+
+/* Logo skeleton */
+.brand-logo-skeleton {
+    width: 200px;
+    height: 90px;
+    border-radius: 8px;
+    background:
+        linear-gradient(90deg, #eee 25%, #f6f6f6 37%, #eee 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.2s infinite linear;
+
+    @media (max-width: 700px) {
+        width: 150px;
+        height: 72px;
+    }
+}
+
+@keyframes shimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+}
+
+/* Mini sticky header */
+.mini-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform .22s ease, opacity .22s ease;
+    background: rgba(248, 245, 242, .82);
+    backdrop-filter: saturate(130%) blur(6px);
+    border-bottom: 1px solid #C8BFC144;
+
+    &.visible {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.mini-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.mini-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mini-logo {
+    width: 32px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: 4px;
+    background: #fff;
+    border: 1px solid #C8BFC166;
+    box-shadow: 0 1px 0 rgba(0,0,0,.02);
+}
+
+.mini-fallback {
+    width: 32px;
+    height: 24px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    background: #fff;
+    border: 1px solid #C8BFC166;
+    border-radius: 4px;
+}
+
+.mini-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #3b2b2e;
+}
+
+.mini-meta {
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid #C8BFC1;
+    background: #fff;
+    border-radius: 999px;
+}
+
+/* Logo polish */
+.brand-logo {
+    /* already set; add subtle shadow & mask tweak */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .04);
+    /* smart fit for extra-wide/higher logos */
+    aspect-ratio: 10 / 4;
+    object-position: center;
+}
+
+@media (max-width: 400px) {
+    .share-popover {
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(92vw, 360px);
+    }
 }

@@ -21,17 +21,20 @@
 
             <div class="brand-row">
                 <div class="brand-visual" [class.with-logo]="!!brandLogoUrl()">
+                    @if (isLoading() && !brandLogoUrl()) {
+                        <div class="brand-logo-skeleton"></div>
+                    }
                     @if (brandLogoUrl()) {
                         <img
-                            [src]="brandLogoUrl()"
-                            alt="Logo of {{ venueDisplayName() || filters().creditTo }}"
-                            class="brand-logo"
-                            [style.viewTransitionName]="'brand-logo'"/>
-                    } @else {
-                        <div class="brand-fallback" [style.viewTransitionName]="'brand-logo'">
-                            {{ (venueDisplayName() || filters().creditTo || '').charAt(0) }}
-                        </div>
-                    }
+                                [src]="brandLogoUrl()"
+                                alt="Logo of {{ venueDisplayName() || filters().creditTo }}"
+                                class="brand-logo"
+                                [style.viewTransitionName]="'brand-logo'"/>
+                        } @else {
+                            <div class="brand-fallback" [style.viewTransitionName]="'brand-logo'">
+                                {{ (venueDisplayName() || filters().creditTo || '').charAt(0) }}
+                            </div>
+                        }
                 </div>
 
                 <div class="brand-main">
@@ -121,7 +124,36 @@
                             <span class="material-symbols-outlined sm" aria-hidden="true">image</span>
                             <span class="label">{{ totalCount() | number }} cards</span>
                         </span>
+
+                        @if (lastUpdated()) {
+                            <span class="meta-item">
+                                <span class="material-symbols-outlined sm" aria-hidden="true">schedule</span>
+                                <span class="label">Updated {{ lastUpdated() | date:'mediumDate' }}</span>
+                            </span>
+                        }
                     </div>
+                </div>
+            </div>
+            <div class="brand-band" aria-hidden="true"></div>
+        </div>
+        <div class="mini-header" [class.visible]="isMiniHeaderVisible()">
+            <div class="mini-inner">
+                <div class="mini-left">
+                    @if (brandLogoUrl()) {
+                        <img
+                            class="mini-logo"
+                            [src]="brandLogoUrl()"
+                            alt="Logo of {{ venueDisplayName() || filters().creditTo }}"
+                            [style.viewTransitionName]="'brand-logo'"/>
+                    } @else {
+                        <div class="mini-fallback">
+                            {{ (venueDisplayName() || filters().creditTo || 'V').charAt(0) }}
+                        </div>
+                    }
+                    <span class="mini-title">{{ venueDisplayName() || filters().creditTo }}</span>
+                </div>
+                <div class="mini-right">
+                    <span class="mini-meta">{{ totalCount() | number }} cards</span>
                 </div>
             </div>
         </div>

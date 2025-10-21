@@ -57,12 +57,14 @@ export class LandingPageComponent implements OnInit {
         this.menuOpened.update(isOpen => !isOpen);
     }
 
+    public scrollY = signal(0);
     private mountScrollHandler(): void {
         this.lastScrollY = window.scrollY || 0;
 
         // Passive listener + rAF for perf
         const onScroll = () => {
             const currentY = window.scrollY || 0;
+            this.scrollY.set(this.lastScrollY);
 
             if (!this.ticking) {
                 this.ticking = true;
