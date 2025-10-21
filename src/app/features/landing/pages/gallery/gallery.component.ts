@@ -57,10 +57,12 @@ export class GalleryComponent implements OnInit {
 
     private readonly venueLogos: Record<string, string> = {
         // normalized key
-        'sarasota art museum': 'https://marvel-b1-cdn.bc0a.com/f00000000114784/www.ringling.edu/wp-content/uploads/2023/04/SarasotaArtMuseum_Horizontal.jpg'
+        'sarasota art museum': 'https://marvel-b1-cdn.bc0a.com/f00000000114784/www.ringling.edu/wp-content/uploads/2023/04/SarasotaArtMuseum_Horizontal.jpg',
+        'clay center of st. petersburg': 'https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium'
     };
     private readonly venueColors: Record<string, string> = {
-        'sarasota art museum': '#e02986'
+        'sarasota art museum': '#e02986',
+        'clay center of st. petersburg': '#000'
     };
 
     // Track latest updatedAt among current items
@@ -379,7 +381,7 @@ export class GalleryComponent implements OnInit {
                         .map(v => v.createdAt)
                         .filter(Boolean)
                         .map(s => new Date(s as any).getTime());
-                    const maxTs = Math.max(...isoDates, this.lastUpdated()?.getTime() || 0);
+                    const maxTs = Math.max(...isoDates);
                     if (Number.isFinite(maxTs)) this.lastUpdated.set(new Date(maxTs));
                 }
 

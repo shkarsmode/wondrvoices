@@ -152,7 +152,9 @@
                             {{ (venueDisplayName() || filters().creditTo || filters().location || filters().tab) }}
                         </div>
                     }
-                    <span class="mini-title">{{ venueDisplayName() || filters().creditTo }}</span>
+                    @if (brandLogoUrl()) {
+                        <span class="mini-title">{{ venueDisplayName() || filters().creditTo }}</span>
+                    }
                 </div>
                 <div class="mini-right">
                     <span class="mini-meta">{{ totalCount() | number }} cards</span>
