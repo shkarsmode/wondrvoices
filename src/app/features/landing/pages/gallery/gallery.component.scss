@@ -1,5 +1,5 @@
 ::ng-deep body :has(app-gallery) {
-    .is-shown {
+    .header-scrolled {
         opacity: 0 !important;
         pointer-events: none !important;
     }
@@ -1324,11 +1324,12 @@
 }
 
 .mini-fallback {
-    width: 32px;
+    // width: 32px;
     height: 24px;
     display: grid;
     place-items: center;
     font-weight: 700;
+    padding: 0 3px;
     background: #fff;
     border: 1px solid #C8BFC166;
     border-radius: 4px;

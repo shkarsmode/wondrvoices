@@ -134,7 +134,9 @@
                     </div>
                 </div>
             </div>
-            <div class="brand-band" aria-hidden="true"></div>
+            @if (brandLogoUrl()) {
+                <div class="brand-band" aria-hidden="true"></div>
+            }
         </div>
         <div class="mini-header" [class.visible]="isMiniHeaderVisible()">
             <div class="mini-inner">
@@ -147,7 +149,7 @@
                             [style.viewTransitionName]="'brand-logo'"/>
                     } @else {
                         <div class="mini-fallback">
-                            {{ (venueDisplayName() || filters().creditTo || 'V').charAt(0) }}
+                            {{ (venueDisplayName() || filters().creditTo || filters().location || filters().tab) }}
                         </div>
                     }
                     <span class="mini-title">{{ venueDisplayName() || filters().creditTo }}</span>

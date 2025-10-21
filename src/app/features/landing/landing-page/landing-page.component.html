@@ -6,7 +6,7 @@
     <header
         class="top-bar is-sticky"
         [class.is-hidden]="hideHeader()"
-        [class.is-shown]="!hideHeader() && scrollY() > 100">
+        [class.header-scrolled]="scrollY() > 3">
         <div class="logo" [routerLink]="''" (click)="scrollToTop()">
             <img src="assets/svg/full-logo.svg" alt="Logo" />
         </div>

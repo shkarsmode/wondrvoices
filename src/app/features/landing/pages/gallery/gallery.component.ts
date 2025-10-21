@@ -383,10 +383,10 @@ export class GalleryComponent implements OnInit {
                     if (Number.isFinite(maxTs)) this.lastUpdated.set(new Date(maxTs));
                 }
 
-                setTimeout(() => this.isMiniHeaderVisible.set(true), 200);
-    
+                
                 if (initial) {
                     this.cards.set(newItems);
+                    // setTimeout(() => this.isMiniHeaderVisible.set(true), 200);
                 } else {
                     const map = new Map<number, IVoice>();
                     for (const c of this.cards()) map.set(c.id, c);
