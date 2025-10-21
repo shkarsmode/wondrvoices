@@ -394,9 +394,7 @@ export class GalleryComponent implements OnInit {
         this.activeTab.set(tab);
 
         this.router.navigate([], {
-            relativeTo: this.route,
             queryParams: { tab: this.slugify(tab) },
-            queryParamsHandling: 'merge',
             replaceUrl: true,
         });
     }
