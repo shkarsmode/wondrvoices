@@ -1,4 +1,4 @@
-import { isPlatformBrowser, JsonPipe } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, OnInit, PLATFORM_ID, signal, ViewChild, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
@@ -29,7 +29,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 @Component({
     selector: 'app-gallery',
     standalone: true,
-    imports: [RouterModule, JsonPipe, AutocompleteInputComponent],
+    imports: [RouterModule, JsonPipe, AutocompleteInputComponent, DecimalPipe],
     templateUrl: './gallery.component.html',
     styleUrl: './gallery.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -50,6 +50,15 @@ export class GalleryComponent implements OnInit {
     private meta = inject(Meta);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
+
+    public totalCount = signal<number>(0);
+    public brandLogoUrl = signal<string | null>(null);
+    public venueDisplayName = signal<string | null>(null);
+
+    private readonly venueLogos: Record<string, string> = {
+        // normalized key
+        'sarasota art museum': 'https://marvel-b1-cdn.bc0a.com/f00000000114784/www.ringling.edu/wp-content/uploads/2023/04/SarasotaArtMuseum_Horizontal.jpg'
+    };
 
     public cards = signal<IVoice[]>([]);
 
@@ -99,10 +108,10 @@ export class GalleryComponent implements OnInit {
     public ngOnInit(): void {
         this.tabs = Object.keys(HIGH_LEVEL_TAGS_MAP).map(this.deslugify);
 
-        const description = 'Explore heartfelt cards, creative art, and inspiring words from people who care. Every message is a reminder that you’re never alone on your journey.'
-        const title = 'Messages and moments that lift us up';
+        const description = 'Explore heartfelt cards, creative art, and inspiring words from people who care. Every message is a reminder that you’re never alone on your journey.';
+        const title = 'Gallery | Wondrvoices';
 
-        this.title.setTitle('Gallery | Wondrvoices');
+        this.title.setTitle(title);
         this.meta.updateTag({ name: 'description', content: description });
         this.meta.updateTag({ property: 'og:title', content: title });
         this.meta.updateTag({ property: 'og:description', content: description });
@@ -110,12 +119,23 @@ export class GalleryComponent implements OnInit {
         this.meta.updateTag({ property: 'twitter:description', content: description });
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
 
+        // init venue visuals from query
+        const credit = this.filters().creditTo || null;
+        this.venueDisplayName.set(credit);
+        console.log(credit);
+        this.brandLogoUrl.set(this.venueLogos[this.normalizeVenueKey(credit)] || null);
+        console.log(this.brandLogoUrl())
         if (typeof window !== 'undefined') {
             this.loadPage(1, true);
         }
 
         this.route.queryParamMap.subscribe(() => {
             if (!this.isLoading()) {
+                // update venue visuals when query changes
+                const updatedCredit = this.filters().creditTo || null;
+                this.venueDisplayName.set(updatedCredit);
+                this.brandLogoUrl.set(this.venueLogos[this.normalizeVenueKey(updatedCredit)] || null);
+
                 this.page.set(1);
                 this.hasMore.set(true);
                 this.cards.set([]);
@@ -123,6 +143,35 @@ export class GalleryComponent implements OnInit {
             }
         });
     }
+
+    private updateVenueMeta(fallbackFirstImage?: string | null): void {
+        const venue = this.venueDisplayName() || this.filters().creditTo || 'Gallery';
+        const total = this.totalCount();
+        const hasLogo = !!this.brandLogoUrl();
+        const image = this.brandLogoUrl() || fallbackFirstImage || null;
+    
+        const metaTitle = `${venue} • ${total > 0 ? total + ' cards • ' : ''}Wondrvoices`;
+        const metaDesc = `Explore cards from ${venue}. Curated messages and art from our community.`;
+    
+        this.title.setTitle(metaTitle);
+        this.meta.updateTag({ property: 'og:title', content: metaTitle });
+        this.meta.updateTag({ property: 'twitter:title', content: metaTitle });
+        this.meta.updateTag({ name: 'description', content: metaDesc });
+        this.meta.updateTag({ property: 'og:description', content: metaDesc });
+        this.meta.updateTag({ property: 'twitter:description', content: metaDesc });
+    
+        if (image) {
+            this.meta.updateTag({ property: 'og:image', content: image });
+            this.meta.updateTag({ name: 'twitter:image', content: image });
+        } else {
+            // optional: clear or set a site default
+            this.meta.updateTag({ property: 'og:image', content: 'https://play-lh.googleusercontent.com/ieK2B2z7PLxd1UQJ6flvxYRiX8hXPs_8Xs3yPdL4YqIVo5puOZOFUb-4y3AqeT3LyF3RMalHT5mPKdnoYctsfA=w2560-h1440-rw' });
+            this.meta.updateTag({ name: 'twitter:image', content: 'https://play-lh.googleusercontent.com/ieK2B2z7PLxd1UQJ6flvxYRiX8hXPs_8Xs3yPdL4YqIVo5puOZOFUb-4y3AqeT3LyF3RMalHT5mPKdnoYctsfA=w2560-h1440-rw' });
+        }
+    
+        // card type already set in ngOnInit
+    }
+    
 
     public ngAfterViewInit(): void {
         if (typeof window === 'undefined') return;
@@ -279,10 +328,10 @@ export class GalleryComponent implements OnInit {
 
     private loadPage(nextPage: number, initial: boolean): void {
         const f = this.filters();
-
+    
         if (initial) this.isLoading.set(true);
         else this.isFetchingMore.set(true);
-
+    
         this.voicesService
             .getApprovedVoices(this.pageSize, {
                 location: f.location,
@@ -300,12 +349,13 @@ export class GalleryComponent implements OnInit {
                 catchError((err) => {
                     console.error('getApprovedVoices error', err);
                     if (err?.status === 404 || err?.status === 204) this.hasMore.set(false);
-                    return of({ items: [] as IVoice[] });
+                    return of({ items: [] as IVoice[], total: 0 });
                 })
             )
-            .subscribe(({ items }) => {
+            .subscribe(({ items, total }) => {
                 const newItems = Array.isArray(items) ? items : [];
-
+                const firstImage = newItems?.[0]?.img || this.cards()?.[0]?.img || null;
+    
                 if (initial) {
                     this.cards.set(newItems);
                 } else {
@@ -314,12 +364,20 @@ export class GalleryComponent implements OnInit {
                     for (const n of newItems) map.set(n.id, n);
                     this.cards.set(Array.from(map.values()));
                 }
-
+    
+                // total comes from API (see screenshot #2)
+                this.totalCount.set(typeof total === 'number' ? total : this.totalCount());
+    
+                // refresh meta after we know total and have an image fallback
+                if (initial) {
+                    this.updateVenueMeta(firstImage);
+                }
+    
                 this.page.set(nextPage);
                 this.hasMore.set(newItems.length >= this.pageSize);
                 this.isLoading.set(false);
                 this.isFetchingMore.set(false);
-
+    
                 if (initial && typeof window !== 'undefined') {
                     setTimeout(() => {
                         const el = document.querySelector('.sentinel');
@@ -328,7 +386,7 @@ export class GalleryComponent implements OnInit {
                 }
             });
     }
-
+    
     public selectTab(tab: string) {
         this.clearAllFilters();
         
@@ -419,6 +477,10 @@ export class GalleryComponent implements OnInit {
         delete qp['tabs']; delete qp['tagsMode']; delete qp['tab'];
         this.router.navigate([], { relativeTo: this.route, queryParams: qp, replaceUrl: true });
         this.toggleSearch(false);
+    }
+
+    private normalizeVenueKey(value?: string | null): string {
+        return (value || '').trim().toLowerCase();
     }
 
     public ngOnDestroy(): void {

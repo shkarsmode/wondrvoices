@@ -64,7 +64,7 @@ export class GetInvolvedComponent implements OnInit {
         });
         this.meta.updateTag({
             property: 'og:image',
-            content: '	https://www.wondrvoices.com/assets/img/spots/banner-1.webp',
+            content: 'https://www.wondrvoices.com/assets/img/spots/banner-1.webp',
         });
         this.meta.updateTag({
             property: 'og:image:alt',

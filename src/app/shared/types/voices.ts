@@ -31,8 +31,8 @@ export interface IVoice {
 export interface VoicesListResponse {
     items: IVoice[];
     total: number;
-    page: number;
-    limit: number;
+    page?: number;
+    limit?: number;
 }
 
 export interface CreateVoiceRequest {

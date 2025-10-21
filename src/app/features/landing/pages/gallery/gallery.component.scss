@@ -1104,3 +1104,112 @@
 //     opacity: 0;
 //     transform: translateY(-100%);
 // }
+
+/* ===== Brand header (when creditTo filter is active) ===== */
+.brand-header {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 12px 0;
+    border-bottom: 1px solid #C8BFC188;
+
+    @media (max-width: 700px) {
+        grid-template-columns: 72px 1fr;
+        gap: 12px;
+        padding: 8px 0;
+    }
+}
+
+.brand-visual {
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    &.with-logo {
+        display: flex;
+        .brand-fallback { display: none; }
+    }
+}
+
+.brand-logo {
+    width: 100%;
+    max-width: 200px;
+    min-width: 150px;
+    height: 90px;
+    padding: 3px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #C8BFC1;
+
+    @media (max-width: 700px) {
+        max-width: 150px;
+        height: 72px;
+        border-radius: 6px;
+    }
+}
+
+.brand-fallback {
+    width: 100%;
+    max-width: 120px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 28px;
+    color: #3b2b2e;
+    background: #fff;
+    border: 1px solid #C8BFC1;
+    border-radius: 8px;
+
+    @media (max-width: 700px) {
+        max-width: 72px;
+        height: 48px;
+        font-size: 20px;
+        border-radius: 6px;
+    }
+}
+
+.brand-main {
+    display: grid;
+    gap: 6px;
+
+    .hero-title {
+        margin: 0;
+        font-size: 40px;
+        line-height: 1.1;
+
+        @media (max-width: 700px) {
+            font-size: 26px;
+        }
+    }
+}
+
+.brand-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 15px;
+
+    .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid #C8BFC1;
+        background: #fff;
+        font-size: 12px;
+        line-height: 1;
+
+        .label { white-space: nowrap; }
+    }
+
+    .share-wrapper { margin-left: 4px; margin-top: 0px; }
+}

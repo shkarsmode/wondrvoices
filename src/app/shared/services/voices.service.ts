@@ -28,7 +28,7 @@ export class VoicesService {
             orderBy?: 'createdAt' | 'id'; orderDir?: 'ASC' | 'DESC';
             page?: number
         }
-    ) {
+    ): Observable<VoicesListResponse> {
         const stringifiedExtra = JSON.stringify(extra);
 
         let params = new HttpParams().set('limit', String(limit)).set('page', String(extra?.page));
@@ -45,7 +45,7 @@ export class VoicesService {
         const approvedUrl = status === VoiceStatus.Approved ? '/approved' : '';
 
         if (this.cache[stringifiedExtra]) {
-            return of({ items: this.cache[stringifiedExtra] });
+            return of({ items: this.cache[stringifiedExtra], total: this.cache[stringifiedExtra].length });
         }
         return this.http.get<VoicesListResponse>(
             `${this.basePathApi}/${this.path}${approvedUrl}?timestamp=${Date.now()}`,
@@ -74,7 +74,10 @@ export class VoicesService {
         return this.http.get<string[]>(`${this.basePathApi}/voices/suggest`, { params });
     }
 
-    public getApprovedVoices(limit: number, extra?: Parameters<typeof this.getVoices>[2]) {
+    public getApprovedVoices(
+        limit: number, 
+        extra?: Parameters<typeof this.getVoices>[2]
+    ): Observable<VoicesListResponse> {
         return this.getVoices(limit, VoiceStatus.Approved, extra)
             .pipe(tap(cards => {
                 this.cachedCards =
