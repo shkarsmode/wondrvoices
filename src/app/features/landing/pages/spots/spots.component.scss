@@ -496,7 +496,7 @@ a.wondrspot-link {
             transition: background-color 0.3s;
 
             &:hover {
-                background-color: darken(#ffbfae, 10%);
+                background-color: color.adjust(#ffbfae, $lightness: -10%);
             }
 
             &:disabled {
