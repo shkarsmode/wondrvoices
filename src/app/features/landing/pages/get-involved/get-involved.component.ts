@@ -4,12 +4,10 @@ import { Meta, Title } from '@angular/platform-browser';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { first } from 'rxjs';
 import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
-import { SwiperComponent } from '../../components/swiper/swiper.component';
 
 @Component({
     selector: 'app-get-involved',
-    standalone: true,
-    imports: [SwiperComponent, ReactiveFormsModule],
+    imports: [ReactiveFormsModule],
     templateUrl: './get-involved.component.html',
     styleUrl: './get-involved.component.scss'
 })

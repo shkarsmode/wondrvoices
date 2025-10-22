@@ -5,7 +5,6 @@ import { ToastContainerComponent } from './shared/toast/toast-container.componen
 
 @Component({
     selector: 'app-root',
-    standalone: true,
     imports: [RouterOutlet, ToastContainerComponent],
     template: '<app-toast-container position="bottom-right" /> <router-outlet></router-outlet>',
     providers: [ScrollToService]

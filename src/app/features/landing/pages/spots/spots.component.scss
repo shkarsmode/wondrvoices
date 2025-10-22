@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 :host {
     display: block;
     background: #f0ebe6;
@@ -119,7 +121,7 @@
     transition: background 0.3s;
 
     &:hover {
-        background-color: darken(#ffc727, 10%);
+        background-color: color.adjust(#ffc727, $lightness: -10%);
     }
 }
 

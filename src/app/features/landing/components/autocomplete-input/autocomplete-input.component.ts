@@ -1,5 +1,4 @@
 // autocomplete-input.component.ts
-import { NgFor, NgIf } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -20,8 +19,6 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
 
 @Component({
     selector: 'w-autocomplete',
-    standalone: true,
-    imports: [NgIf, NgFor],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         {
@@ -392,7 +389,7 @@ input::placeholder { opacity: 0.72; }
     border: 2px solid #ffffff;
 }
 .menu::-webkit-scrollbar-thumb:hover { background: #dee2e6; }
-    `],
+    `]
 })
 export class AutocompleteInputComponent implements ControlValueAccessor {
     @Input() field: 'creditTo' | 'location' | 'tab' = 'creditTo';

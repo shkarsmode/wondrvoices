@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe, isPlatformBrowser, JsonPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, OnInit, PLATFORM_ID, signal, ViewChild, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
@@ -28,8 +28,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 
 @Component({
     selector: 'app-gallery',
-    standalone: true,
-    imports: [RouterModule, JsonPipe, AutocompleteInputComponent, DecimalPipe, DatePipe],
+    imports: [RouterModule, AutocompleteInputComponent, DecimalPipe, DatePipe],
     templateUrl: './gallery.component.html',
     styleUrl: './gallery.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

@@ -6,7 +6,6 @@ import { ScrollToService } from '../../../shared/services/scroll-to.service';
 
 @Component({
     selector: 'app-landing-page',
-    standalone: true,
     imports: [RouterOutlet, RouterLink, RouterLinkActive],
     templateUrl: './landing-page.component.html',
     styleUrl: './landing-page.component.scss',

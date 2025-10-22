@@ -1,4 +1,4 @@
-import { DatePipe, Location, NgIf, isPlatformBrowser } from '@angular/common';
+import { DatePipe, Location, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, Inject, PLATFORM_ID, ViewChild, computed, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,8 +18,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
     selector: 'app-post',
     templateUrl: './post.component.html',
     styleUrls: ['./post.component.scss'],
-    imports: [DatePipe, NgIf],
-    standalone: true,
+    imports: [DatePipe],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PostComponent {

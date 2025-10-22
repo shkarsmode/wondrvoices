@@ -9,7 +9,6 @@ import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.d
 
 @Component({
     selector: 'app-spots',
-    standalone: true,
     imports: [ReactiveFormsModule, NgIf],
     templateUrl: './spots.component.html',
     styleUrl: './spots.component.scss'

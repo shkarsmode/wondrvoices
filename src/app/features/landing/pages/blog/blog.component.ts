@@ -18,7 +18,6 @@ import { IPost } from '../../../../shared/types/IPost';
     selector: 'app-blog',
     templateUrl: './blog.component.html',
     styleUrls: ['./blog.component.scss'],
-    standalone: true,
     imports: [RouterLink],
     changeDetection: ChangeDetectionStrategy.OnPush
 })

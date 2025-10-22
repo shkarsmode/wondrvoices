@@ -4,12 +4,10 @@ import { RouterLink } from '@angular/router';
 import { first } from 'rxjs';
 import { PostsService } from '../../../../shared/services/posts.service';
 import { IPost } from '../../../../shared/types/IPost';
-import { SwiperComponent } from '../../components/swiper/swiper.component';
 
 @Component({
     selector: 'app-main',
-    standalone: true,
-    imports: [SwiperComponent, RouterLink],
+    imports: [RouterLink],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss',
     schemas: [CUSTOM_ELEMENTS_SCHEMA]

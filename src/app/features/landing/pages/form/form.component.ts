@@ -25,7 +25,6 @@ type Step = 1 | 2 | 3 | 4 | 5;
 
 @Component({
     selector: 'app-form',
-    standalone: true,
     imports: [ReactiveFormsModule, AutocompleteInputComponent],
     templateUrl: './form.component.html',
     styleUrl: './form.component.scss',

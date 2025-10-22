@@ -1,4 +1,4 @@
-import { JsonPipe, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Inject, OnInit, PLATFORM_ID, WritableSignal, inject, signal } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,8 +16,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 
 @Component({
     selector: 'app-voice',
-    standalone: true,
-    imports: [JsonPipe],
+    imports: [],
     templateUrl: './voice.component.html',
     styleUrl: './voice.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
