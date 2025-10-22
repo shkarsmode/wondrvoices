@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 
 import { provideHttpClient } from '@angular/common/http';
@@ -10,7 +10,7 @@ import { AUTH_PATH_API, BASE_PATH_API } from './shared/services/variables';
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        provideZoneChangeDetection({ eventCoalescing: true }),
+        provideZonelessChangeDetection(),
         provideRouter(routes, withEnabledBlockingInitialNavigation(), withViewTransitions(), withInMemoryScrolling({
             scrollPositionRestoration: 'enabled',
             anchorScrolling: 'enabled',
