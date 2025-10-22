@@ -57,7 +57,7 @@ export class GalleryComponent implements OnInit {
 
     private readonly venueLogos: Record<string, string> = {
         // normalized key
-        'sarasota art museum': 'https://marvel-b1-cdn.bc0a.com/f00000000114784/www.ringling.edu/wp-content/uploads/2023/04/SarasotaArtMuseum_Horizontal.jpg',
+        'sarasota art museum': 'assets/img/sarasota1.jpg',
         'clay center of st. petersburg': 'https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium'
     };
     private readonly venueColors: Record<string, string> = {
@@ -513,6 +513,7 @@ export class GalleryComponent implements OnInit {
     }
 
     private applyBrandColor(): void {
+        if (typeof document === 'undefined') return;
         const key = this.normalizeVenueKey(this.venueDisplayName() || this.filters().creditTo || '');
         const color = this.venueColors[key] || '#C8BFC1';
         document.documentElement.style.setProperty('--brand', color);
