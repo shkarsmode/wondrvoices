@@ -1153,15 +1153,15 @@
 }
 
 .brand-logo {
-    width: 100%;
-    max-width: 200px;
-    min-width: 150px;
-    height: 110px;
     padding: 3px;
     object-fit: contain;
     border-radius: 8px;
     background: #fff;
     border: 1px solid #C8BFC1;
+
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
 
     @media (max-width: 700px) {
         max-width: 150px;
