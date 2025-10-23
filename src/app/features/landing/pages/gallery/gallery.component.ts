@@ -56,7 +56,7 @@ export class GalleryComponent implements OnInit {
 
     private readonly venueLogos: Record<string, string> = {
         // normalized key
-        'sarasota art museum': 'assets/img/sarasota1.jpg',
+        'sarasota art museum': 'assets/img/sarasota1.webp',
         'clay center of st. petersburg': 'https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium'
     };
     private readonly venueColors: Record<string, string> = {
