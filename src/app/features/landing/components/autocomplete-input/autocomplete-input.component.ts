@@ -2,18 +2,19 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    effect,
     ElementRef,
     EventEmitter,
+    forwardRef,
     HostBinding,
     Input,
+    OnInit,
     Output,
-    ViewChild,
-    effect,
-    forwardRef,
     signal,
+    ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Subscription, combineLatest } from 'rxjs';
+import { first, Subscription } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { VoiceStatus } from 'src/app/shared/types/voices';
 
@@ -68,7 +69,7 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
             suggestionsSpecific().length > 0 ||
             suggestionsAll().location.length > 0 ||
             suggestionsAll().creditTo.length > 0 ||
-            suggestionsAll().tabs.length > 0
+            suggestionsAll().tag.length > 0
         )
     ) {
         @if (loading()) {
@@ -135,13 +136,13 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
                         }
                     }
 
-                    @if (suggestionsAll().tabs.length) {
+                    @if (suggestionsAll().tag.length) {
                         <!-- <div class="section-label">
                             <span class="material-symbols-outlined md" aria-hidden="true">label</span>
-                            <span class="section-title">Tags</span>
+                            <span class="section-title">tag</span>
                             <span class="count-badge">{{ suggestionsAll().tabs.length }}</span>
                         </div> -->
-                        @for (s of suggestionsAll().tabs; track s; let i = $index) {
+                        @for (s of suggestionsAll().tag; track s; let i = $index) {
                             <li
                                 role="option"
                                 (mousedown)="pick(s, 'tab')"
@@ -391,7 +392,7 @@ input::placeholder { opacity: 0.72; }
 .menu::-webkit-scrollbar-thumb:hover { background: #dee2e6; }
     `]
 })
-export class AutocompleteInputComponent implements ControlValueAccessor {
+export class AutocompleteInputComponent implements ControlValueAccessor, OnInit {
     @Input() field: 'creditTo' | 'location' | 'tab' = 'creditTo';
     @Input() placeholder = 'Type to search…';
     @Input() emptyHint = 'No suggestions';
@@ -418,14 +419,14 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
     value = signal<string>('');
     open = signal<boolean>(false);
     suggestionsSpecific = signal<string[]>([]);
-    suggestionsAll = signal<{ location: string[]; creditTo: string[]; tabs: string[] }>({
+    suggestionsAll = signal<{ location: string[]; creditTo: string[]; tag: string[] }>({
         location: [],
         creditTo: [],
-        tabs: [],
+        tag: [],
     });
     disabled = false;
 
-    private cache = new Map<string, string[] | { location: string[]; creditTo: string[]; tabs: string[] }>();
+    private cache = new Map<string, string[] | { location: string[]; creditTo: string[]; tag: string[] }>();
 
     // CVA callbacks
     private onChange: (v: string) => void = () => { };
@@ -440,12 +441,12 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
             let subscription: Subscription | null = null;
 
             const timerId = setTimeout(() => {
-                const cacheKey = `${this.isAllInfo ? 'all' : this.field}|${this.status}|${this.limit}|${query}`;
+                const cacheKey = `${this.isAllInfo ? 'all' : this.field}|${this.limit}|${query}`;
 
                 if (!query || query.length < 1) {
                     this.loading.set(false);
                     if (this.isAllInfo) {
-                        this.suggestionsAll.set({ location: [], creditTo: [], tabs: [] });
+                        this.suggestionsAll.set({ location: [], creditTo: [], tag: [] });
                     } else {
                         this.suggestionsSpecific.set([]);
                     }
@@ -458,7 +459,7 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
                     if (this.isAllInfo) {
                         this.suggestionsAll.set(cached as any);
                     } else {
-                        this.suggestionsSpecific.set(cached as string[]);
+                        this.suggestionsSpecific.set([]);
                     }
                     return;
                 }
@@ -466,41 +467,25 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
                 this.loading.set(true);
 
                 if (this.isAllInfo) {
-                    const fields: ('creditTo' | 'location' | 'what' | 'express')[] = [
-                        'creditTo',
-                        'location',
-                        'what',
-                        'express',
-                    ];
-
-                    subscription = combineLatest(
-                        fields.map(f =>
-                            this.api.getSuggestions(f, query, { limit: 3, status: this.status }),
-                        ),
-                    ).subscribe({
-                        next: ([creditTo, location, what, express]) => {
-                            const value = {
-                                creditTo,
-                                location,
-                                tabs: [...what, ...express].slice(0, 3),
-                            };
+                    subscription = this.api.getSuggestAllFiltered(query).subscribe({
+                        next: (value) => {
                             this.cache.set(cacheKey, value);
                             this.suggestionsAll.set(value);
                             this.loading.set(false);
                         },
                         error: () => {
-                            this.suggestionsAll.set({ location: [], creditTo: [], tabs: [] });
+                            this.suggestionsAll.set({ location: [], creditTo: [], tag: [] });
                             this.loading.set(false);
                         },
                     });
                 } else {
-                    const apiField = this.field === 'tab' ? 'what' : this.field;
                     subscription = this.api
-                        .getSuggestions(apiField, query, { limit: this.limit, status: this.status })
+                        .getSuggestAllFiltered(query)
                         .subscribe({
                             next: list => {
                                 this.cache.set(cacheKey, list);
-                                this.suggestionsSpecific.set(list);
+                                // const value = list[this.field];
+                                this.suggestionsSpecific.set([]);
                                 this.loading.set(false);
                             },
                             error: () => {
@@ -509,7 +494,7 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
                             },
                         });
                 }
-            }, 250);
+            }, 0);
 
             // Cleanup previous debounce and unsubscribe previous request.
             onCleanup(() => {
@@ -517,6 +502,12 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
                 if (subscription) subscription.unsubscribe();
             });
         });
+    }
+
+    public ngOnInit(): void {
+        this.api.getSuggestAllIndex()
+            .pipe(first())
+            .subscribe();
     }
 
     // ---- ControlValueAccessor ----
@@ -529,26 +520,48 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
 
     // ---- UI handlers ----
 
+    // Treat space, underscore, dash, slash, dot, brackets, punctuation, quotes (incl. Unicode) as separators
+    private isSeparator(ch: string): boolean {
+        return /[\s/_\-\.\(\)\[\],:;!?\|\\]|[’'“”"‘]|[–—]/.test(ch);
+    }
+
+    /** Highlight only word-start matches; preserves original spacing and order. */
     public highlightPrefix(text: string, query: string): string {
+        const raw = String(text ?? '');
         const q = (query ?? '').trim();
-        if (!q) return this.escapeHtml(text ?? '');
+        if (!q) return this.escapeHtml(raw);
 
-        const rx = this.getWordStartRegex(q);
-
+        const lower = raw.toLowerCase();
+        const ql = q.toLowerCase();
         let out = '';
-        let last = 0;
+        let scanFrom = 0; // where to continue searching
+        let last = 0;     // end index of the last emitted plain chunk
 
-        // Use original text for correct \b behavior, escape while building HTML
-        text.replace(rx, (match: string, group: string, offset: number) => {
-            out += this.escapeHtml(text.slice(last, offset));
-            out += `<b>${this.escapeHtml(group)}</b>`;
-            last = offset + group.length;
-            return match;
-        });
+        while (scanFrom <= lower.length) {
+            const idx = lower.indexOf(ql, scanFrom);
+            if (idx === -1) break;
 
-        out += this.escapeHtml(text.slice(last));
+            const isWordStart = idx === 0 || this.isSeparator(lower[idx - 1]);
+            if (!isWordStart) {
+                scanFrom = idx + 1;
+                continue;
+            }
+
+            // Emit plain chunk before the match
+            out += this.escapeHtml(raw.slice(last, idx));
+            // Emit highlighted match
+            out += `<b>${this.escapeHtml(raw.substr(idx, ql.length))}</b>`;
+
+            // Advance pointers after this match
+            last = idx + ql.length;
+            scanFrom = last;
+        }
+
+        // Emit tail
+        out += this.escapeHtml(raw.slice(last));
         return out;
     }
+
 
     onInput(nextValue: string): void {
         this.setValue(nextValue, true);
@@ -585,8 +598,8 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
                 this.isAllInfo
                     ? (this.suggestionsAll().location[0] ||
                         this.suggestionsAll().creditTo[0] ||
-                        this.suggestionsAll().tabs[0])
-                    : this.suggestionsSpecific()[0];
+                        this.suggestionsAll().tag[0])
+                    : this.suggestionsSpecific()?.[0];
 
             if (first) {
                 evt.preventDefault();
@@ -631,9 +644,10 @@ export class AutocompleteInputComponent implements ControlValueAccessor {
         const key = query.toLowerCase();
         const cached = this.prefixRegexCache.get(key);
         if (cached) return cached;
-
-        const rx = new RegExp(`\\b(${this.escapeRegex(query)})`, 'gi');
+    
+        const rx = new RegExp(`(?:^|[\\s_\\-\\/\\.])(${this.escapeRegex(query)})`, 'gi');
         this.prefixRegexCache.set(key, rx);
         return rx;
     }
+    
 }
