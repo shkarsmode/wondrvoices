@@ -183,6 +183,46 @@
                     (inputChange)="null" 
                     (click)="onAutocompleteClick()"
                     (inputBlur)="onAutocompleteBlur()"/>
+
+                @if (isSearchActive()) {
+                    @if ((voicesService.getPopularSuggestions() | async); as popular) {
+                        <div class="autocomplete-chips">
+                            <div
+                                class="autocomplete-chips__chip"
+                                (click)="
+                                    applyTextFilter({ 
+                                        key: 'location', 
+                                        value: popular!.location[0] 
+                                    })
+                                ">
+                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">location_on</span>
+                                {{ popular!.location[0] }}
+                            </div>
+                            <div 
+                                class="autocomplete-chips__chip" 
+                                (click)="
+                                    applyTextFilter({ 
+                                        key: 'creditTo', 
+                                        value: popular!.creditTo[0] 
+                                    })
+                                ">
+                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">favorite</span>
+                                {{ popular!.creditTo[0] }}
+                            </div>
+                            <div 
+                                class="autocomplete-chips__chip"
+                                (click)="
+                                    applyTextFilter({ 
+                                        key: 'tab', 
+                                        value: popular!.tag[0] 
+                                    })
+                                ">
+                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">label</span>
+                                {{ popular!.tag[0] }}
+                            </div>
+                        </div>
+                    }
+                }
     
                 @for (tab of tabs; track tab) {
                     <button
@@ -358,4 +398,11 @@
             </div>
         </div>
     }
+</div>
+
+
+<div class="preload" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;">
+    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">rotate_right</span>
+    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">rotate_left</span>
+    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">location_on</span>
 </div>

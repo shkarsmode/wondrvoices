@@ -81,6 +81,16 @@ export class VoicesService {
             );
     }
 
+    public getPopularSuggestions(): Observable<SuggestAllDto> {
+        return this.getSuggestAllIndex().pipe(
+            map(idx => ({
+                location: idx.location.slice(0, 3),
+                creditTo: idx.creditTo.slice(0, 3),
+                tag: idx.tag.slice(0, 3),
+            }))
+        );
+    }
+
     /** New: return filtered per-kind results by word-start, by default 3 per kind (for "all" UI). */
     public getSuggestAllFiltered(query: string, perKindLimit: number = 3): Observable<SuggestAllDto> {
         const q = (query ?? '').trim();

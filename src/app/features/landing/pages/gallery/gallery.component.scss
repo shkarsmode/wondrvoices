@@ -1366,3 +1366,31 @@
         width: min(92vw, 360px);
     }
 }
+
+.autocomplete-chips {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 87%;
+    gap: 5px;
+
+    &__chip {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 12px;
+        border: 1px solid #C8BFC1;
+        border-radius: 20px;
+        padding: 3px 6px;
+        background-color: white;
+
+        transition: all .3s;
+
+        &:hover {
+            background-color: #ffd5b8;
+            cursor: pointer;
+        }
+    }
+
+    animation: share-popover-in 140ms cubic-bezier(.2, .8, .2, 1) both;
+}

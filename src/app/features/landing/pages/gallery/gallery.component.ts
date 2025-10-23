@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
+import { AsyncPipe, DatePipe, DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, inject, OnInit, PLATFORM_ID, signal, ViewChild, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
@@ -28,7 +28,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 
 @Component({
     selector: 'app-gallery',
-    imports: [RouterModule, AutocompleteInputComponent, DecimalPipe, DatePipe],
+    imports: [RouterModule, AutocompleteInputComponent, DecimalPipe, DatePipe, AsyncPipe],
     templateUrl: './gallery.component.html',
     styleUrl: './gallery.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -45,7 +45,7 @@ export class GalleryComponent implements OnInit {
     readonly computedViewTag = (id: number) => `img-tag-${id}`;
 
     private title = inject(Title);
-    private voicesService = inject(VoicesService);
+    public voicesService = inject(VoicesService);
     private meta = inject(Meta);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
@@ -342,7 +342,8 @@ export class GalleryComponent implements OnInit {
     }
 
     public onAutocompleteBlur(): void {
-        if (this.isSearchActive() && !this.hasAnyFilter()) this.toggleSearch();
+        if (this.isSearchActive() && !this.hasAnyFilter()) 
+            setTimeout(() => this.toggleSearch(), 150);
     }
 
     private loadPage(nextPage: number, initial: boolean): void {
@@ -483,6 +484,7 @@ export class GalleryComponent implements OnInit {
     public applyTextFilter(
         filter: { key: 'location' | 'creditTo' | 'tab', value: string }
     ) {
+        console.log(filter);
         const qp = { [filter.key]: filter.value };
 
         if (this.timeoutId) {
