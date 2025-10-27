@@ -125,15 +125,17 @@
                     </button>
                 </div>
 
-                <h4>Other ways to upload:</h4>
-                <div class="wrap-buttons">
-                    <a href="https://play.google.com/store/apps/details?id=com.fwollo.wondrdrop" target="_blank">
-                        <img src="assets/img/google.webp" alt="Google">
-                    </a>
-                    <a href="https://apps.apple.com/us/app/wondrvoices-share-kindness/id6748359471 ">
-                        <img src="assets/img/app-store.webp" alt="App Store">
-                    </a>
-                </div>
+                @if (!currentPreviewUrl()) {
+                    <h4>Other ways to upload:</h4>
+                    <div class="wrap-buttons">
+                        <a href="https://play.google.com/store/apps/details?id=com.fwollo.wondrdrop" target="_blank">
+                            <img src="assets/img/google.webp" alt="Google">
+                        </a>
+                        <a href="https://apps.apple.com/us/app/wondrvoices-share-kindness/id6748359471 ">
+                            <img src="assets/img/app-store.webp" alt="App Store">
+                        </a>
+                    </div>
+                }
             }
 
             @case (2) {
