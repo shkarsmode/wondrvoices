@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, debounceTime, distinctUntilChanged, filter, first, firstValueFrom, map, of, Subscription, switchMap, tap } from 'rxjs';
 import { LocationIqService, LocationIqSuggestion, LocationIqSuggestionAddress } from 'src/app/shared/services/location-iq.service';
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { ToastService } from 'src/app/shared/toast/toast.service';
+import { WINDOW } from 'src/app/shared/tokens/window.token';
 import { locationSelectedValidator } from 'src/app/shared/validators/location-selected.validator';
 import { environment } from 'src/environments/environment';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
@@ -31,6 +32,8 @@ type Step = 1 | 2 | 3 | 4 | 5;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormComponent {
+    public scanButtonRef = viewChild<ElementRef<HTMLDivElement>>('scanButtonRef');
+
     public form: FormGroup;
     public submitted = signal(false);
     public isLoading = signal(false);
@@ -61,6 +64,7 @@ export class FormComponent {
     step = signal<Step>(1);
     previousStep = signal<Step>(1);
 
+    private readonly isWin = inject(WINDOW);
     private fb: FormBuilder = inject(FormBuilder);
     private toast: ToastService = inject(ToastService);
     public cloudinaryService: CloudinaryService = inject(CloudinaryService);
@@ -134,7 +138,7 @@ export class FormComponent {
         }
         this.form = this.fb.group({
             name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(this.maxMap.name)]],
-            email: ['', [Validators.required,Validators.email, Validators.maxLength(this.maxMap.email)]],
+            email: ['', [Validators.required, Validators.email, Validators.maxLength(this.maxMap.email)]],
             location: ['', [Validators.required]],
             lat: [null as number | null],
             lng: [null as number | null],
@@ -165,6 +169,12 @@ export class FormComponent {
                 tap(() => this.locLoading.set(false))
             ).subscribe(list => this.locSuggestions.set(list))
         );
+    }
+
+    public ngAfterViewInit(): void {
+        if (this.isWin && !this.isMobileUA) {
+            this.scanButtonRef()!.nativeElement.style.display = 'none';
+        }
     }
 
     ngOnDestroy(): void {
@@ -806,4 +816,21 @@ export class FormComponent {
         }
     }
     public getFileName(index: number): string | undefined { return this.files()[index]?.name || ('image-' + (index + 1)); }
+
+
+    private get isMobileUA(): boolean {
+        const uaData = (navigator as any).userAgentData;
+        if (uaData && typeof uaData.mobile === 'boolean') {
+            return uaData.mobile === true;
+        }
+
+        const ua = navigator.userAgent || '';
+        const rxMobile = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Windows Phone|Opera Mini/i;
+
+        const isIPadOS = navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1;
+
+        const isIPadUA = /iPad/i.test(ua);
+
+        return rxMobile.test(ua) || isIPadOS || isIPadUA;
+    }
 }
