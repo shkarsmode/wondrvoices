@@ -634,7 +634,6 @@ export class FormComponent {
 
             const cfg: any = {
                 multiPage: false,
-                defaultFilter: 'none',
                 multiPageFormat: 'none',
                 jpegQuality: 75,
             };
