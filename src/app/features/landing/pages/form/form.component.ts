@@ -608,10 +608,10 @@ export class FormComponent {
     }
 
     public async scanWithGeniusScan(isOpenSource: boolean = false): Promise<void> {
-        if (!(await this.hasCameraConclusive())) {
-            isOpenSource = true;
-            this.toast.warn('Your device has no camera to scan');
-        }
+        // if (!(await this.hasCameraConclusive())) {
+        //     isOpenSource = true;
+        //     this.toast.warn('Your device has no camera to scan');
+        // }
         try {
             // @ts-ignore
             const GS = (window as any).GSSDK ?? (window as any).GeniusScan;
@@ -634,11 +634,9 @@ export class FormComponent {
 
             const cfg: any = {
                 multiPage: false,
-                defaultFilter: 'automatic',
+                defaultFilter: 'none',
                 multiPageFormat: 'none',
-                jpegQuality: 90,
-                source: 'camera',
-                photoLibraryButtonHidden: true
+                jpegQuality: 75,
             };
 
             const result = await starter(cfg);
