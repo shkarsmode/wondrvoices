@@ -7,6 +7,7 @@ import {
     EventEmitter,
     forwardRef,
     HostBinding,
+    inject,
     Input,
     OnInit,
     Output,
@@ -16,6 +17,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { first, Subscription } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
+import { WINDOW } from 'src/app/shared/tokens/window.token';
 import { VoiceStatus } from 'src/app/shared/types/voices';
 
 @Component({
@@ -434,6 +436,8 @@ export class AutocompleteInputComponent implements ControlValueAccessor, OnInit 
 
     @HostBinding('class.disabled') get isDisabled(): boolean { return this.disabled; }
 
+    private readonly isWin = inject(WINDOW);
+
     constructor(private api: VoicesService) {
         // React to input with debounce and cleanup.
         effect(onCleanup => {
@@ -505,6 +509,7 @@ export class AutocompleteInputComponent implements ControlValueAccessor, OnInit 
     }
 
     public ngOnInit(): void {
+        if (!this.isWin) return;
         this.api.getSuggestAllIndex()
             .pipe(first())
             .subscribe();
