@@ -635,8 +635,7 @@ export class FormComponent {
             const cfg: any = {
                 multiPage: false,
                 defaultFilter: 'photo',
-                multiPageFormat: 'none',
-                jpegQuality: 75,
+                jpegQuality: 90,
             };
 
             const result = await starter(cfg);
