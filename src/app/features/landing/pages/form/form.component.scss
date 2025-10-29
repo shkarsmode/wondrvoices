@@ -525,6 +525,7 @@ h3 {
     .dot {
         width: 26px;
         height: 26px;
+        min-width: 26px;
         border-radius: 50%;
         display: grid;
         place-items: center;
