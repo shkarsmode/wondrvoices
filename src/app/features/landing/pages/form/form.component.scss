@@ -1047,8 +1047,11 @@ h4 {
         left: 0px;
         padding: 10px;
 
-        button {
-            width: 50%;
+        button:first-child {
+            width: 30%;
+        }
+        button:last-child {
+            width: 70%;
         }
     }
 }

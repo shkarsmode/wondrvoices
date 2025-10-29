@@ -116,7 +116,12 @@
 
                 @if (currentPreviewUrl()) {
                     <div class="nav">
-                        <span></span>
+                        <button
+                            class="button submit-btn ghost"
+                            (click)="removeCurrentFile($event)"
+                            type="button">
+                            ← Back
+                        </button>
                         <button
                             class="button submit-btn primary"
                             [disabled]="files().length === 0"
