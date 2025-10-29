@@ -114,16 +114,18 @@
                     }
                 </form>
 
-                <div class="nav">
-                    <span></span>
-                    <button
-                        class="button submit-btn primary"
-                        [disabled]="files().length === 0"
-                        (click)="goNext()"
-                        type="button">
-                        Next →
-                    </button>
-                </div>
+                @if (currentPreviewUrl()) {
+                    <div class="nav">
+                        <span></span>
+                        <button
+                            class="button submit-btn primary"
+                            [disabled]="files().length === 0"
+                            (click)="goNext()"
+                            type="button">
+                            Next →
+                        </button>
+                    </div>
+                }
 
                 @if (!currentPreviewUrl()) {
                     <h4>Other ways to upload:</h4>
@@ -142,53 +144,63 @@
                 <form class="form" [formGroup]="form">
                     <section class="tags-section">
                         <div class="section-title">
-                            <h3>Categorize</h3>
-                            <span class="counter">{{ form.get('what')?.value?.length || 0 }}/3</span>
+                            <h3>Tags</h3>
+                            <span class="counter">{{ totalSelectedTags }}/3</span>
                         </div>
-
+                    
                         <div class="chips">
-                            @for (opt of whatOptions; track opt.key) {
-                                <button class="chip" [class.active]="isSelected('what', opt.key)" [disabled]="disableChip('what', opt.key)" (click)="toggle('what', opt.key)" type="button">
+                            @for (opt of mergedTags; track opt.key) {
+                                <button
+                                    class="chip"
+                                    [class.active]="isMergedSelected(opt)"
+                                    [disabled]="isMergedDisabled(opt)"
+                                    (click)="toggleMerged(opt)"
+                                    type="button">
+                                    <span class="emoji">{{ opt.emoji }}</span>
                                     {{ opt.label }}
                                 </button>
                             }
-                            <button class="chip" style="border:1px solid orangered" #refCustom1 (click)="refCustom1.style.display='none'" type="button">
+                            <button
+                                class="chip"
+                                style="border:1px solid orangered"
+                                #refCustomMerged
+                                (click)="refCustomMerged.style.display='none'"
+                                type="button">
                                 <span class="emoji">➕</span>
                             </button>
                         </div>
-
-                        @if (refCustom1.style.display === 'none') {
-                            <div class="add-own" [style.opacity]="disableChip('what', '') ? 0.3 : 1">
-                                <input class="own-input" type="text" [value]="draftWhat" (input)="draftWhat = ($any($event.target).value || '').slice(0, 24)" (keydown.enter)="addCustomTag('what')" placeholder="Add your own" />
-                                <button class="btn add" type="button" (click)="addCustomTag('what')" [disabled]="!canAddDraft('what')">Add</button>
+                    
+                        @if (refCustomMerged.style.display === 'none') {
+                            <div class="add-own">
+                                <input
+                                    class="own-input"
+                                    type="text"
+                                    [value]="draftUnified"
+                                    (input)="draftUnified = ($any($event.target).value || '').slice(0, 24)"
+                                    (keydown.enter)="addCustomUnified('what')"
+                                    placeholder="Add your own" />
+                                <div style="display:flex; gap:8px;">
+                                    <button
+                                        class="btn add"
+                                        type="button"
+                                        (click)="addCustomUnified('what')"
+                                        [disabled]="!canAddDraftUnified('what')">
+                                        Add
+                                    </button>
+                                    <!-- <button
+                                        class="btn add"
+                                        type="button"
+                                        (click)="addCustomUnified('express')"
+                                        [disabled]="!canAddDraftUnified('express')">
+                                        Add to “Describe”
+                                    </button> -->
+                                </div>
                             </div>
                         }
+                    
+                        <small class="hint">Pick up to 3 in total.</small>
                     </section>
-
-                    <section class="tags-section">
-                        <div class="section-title">
-                            <h3>Describe <span class="optional">(optional)</span></h3>
-                            <span class="counter">{{ form.get('express')?.value?.length || 0 }}/3</span>
-                        </div>
-
-                        <div class="chips">
-                            @for (opt of expressOptions; track opt.key) {
-                                <button class="chip" [class.active]="isSelected('express', opt.key)" [disabled]="disableChip('express', opt.key)" (click)="toggle('express', opt.key)" type="button">
-                                    {{ opt.label }}
-                                </button>
-                            }
-                            <button class="chip" style="border:1px solid orangered" #refCustom2 (click)="refCustom2.style.display='none'" type="button">
-                                <span class="emoji">➕</span>
-                            </button>
-                        </div>
-
-                        @if (refCustom2.style.display === 'none') {
-                            <div class="add-own" [style.opacity]="disableChip('express', '') ? 0.3 : 1">
-                                <input class="own-input" type="text" [value]="draftExpress" (input)="draftExpress = ($any($event.target).value || '').slice(0, 24)" (keydown.enter)="addCustomTag('express')" placeholder="Add your own" />
-                                <button class="btn add" type="button" (click)="addCustomTag('express')" [disabled]="!canAddDraft('express')">Add</button>
-                            </div>
-                        }
-                    </section>
+                    
                 </form>
                 <div class="nav">
                     <button
@@ -212,11 +224,19 @@
                         <div class="section-title">
                             <h3>Add Note <span class="optional">(optional)</span></h3>
                         </div>
+                    
                         <div class="input-wrapper textarea">
-                            <textarea formControlName="note" placeholder=" " rows="1" (input)="autoResize($event)"></textarea>
-                            <label [class.focused]="form.get('note')?.value">Describe in more detail</label>
+                            <textarea
+                                formControlName="note"
+                                placeholder=" "
+                                rows="3"
+                                style="min-height: 96px"
+                                aria-required="false"
+                                (input)="autoResize($event)"></textarea>
+                            <label [class.focused]="form.get('note')?.value">Describe in more detail (optional)</label>
                         </div>
                     </div>
+                    
                 </form>
                 <div class="nav">
                     <button type="button" class="button submit-btn ghost" (click)="goBack()">← Back</button>

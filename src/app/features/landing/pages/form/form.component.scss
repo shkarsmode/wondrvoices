@@ -1033,3 +1033,22 @@ h4 {
         margin-top: 2px;
     }
 }
+
+:root {
+    /* read-only alias if you set safe-area with env() on body */
+    --sat-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.nav {
+    @media (max-width: 601px) {
+        position: fixed;
+        bottom: 0px;
+        width: 100%;
+        left: 0px;
+        padding: 10px;
+
+        button {
+            width: 50%;
+        }
+    }
+}

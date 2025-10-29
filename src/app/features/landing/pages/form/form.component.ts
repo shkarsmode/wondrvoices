@@ -14,6 +14,14 @@ import { CreateVoiceRequest } from '../../../../shared/types/voices';
 import { AutocompleteInputComponent } from '../../components/autocomplete-input/autocomplete-input.component';
 
 type TagGroup = 'what' | 'express' | 'from';
+type TagDest = 'what' | 'express';
+interface MergedTagOption {
+    key: string;
+    label: string;
+    emoji: string;
+    dest: TagDest;
+    custom?: boolean;
+}
 
 interface TagOption {
     key: string;
@@ -81,33 +89,19 @@ export class FormComponent {
     public gsLoading = signal(false);
     private GS_LICENSE_KEY = environment.geniusscansdkToken;
 
-    public whatOptions: TagOption[] = [
-        { key: 'art', label: 'Art', emoji: '🎨' },
-        { key: 'photo', label: 'Photo', emoji: '🎨' },
-        { key: 'kids', label: 'Kids', emoji: '🧒' },
-        { key: 'words', label: 'Words', emoji: '📝' },
-        { key: 'other', label: 'Other', emoji: '🌀' },
-    ];
-
-    public expressOptions: TagOption[] = [
-        { key: 'love', label: 'Love', emoji: '❤️' },
-        { key: 'hope', label: 'Hope', emoji: '🌈' },
-        { key: 'faith', label: 'Faith', emoji: '🕊️' },
-        { key: 'grief', label: 'Grief', emoji: '🖤' },
-    ];
-
-    public fromOptions: TagOption[] = [
-        { key: 'child', label: 'Child', emoji: '🧒' },
-        { key: 'senior', label: 'Senior', emoji: '👵' },
-        { key: 'school', label: 'School', emoji: '🏫' },
-        { key: 'program', label: 'Program', emoji: '📘' },
-        { key: 'family', label: 'Family', emoji: '👨‍👩‍👧‍👦' },
-        { key: 'parent', label: 'Parent', emoji: '🧑‍🍼' },
-        { key: 'in_tribute', label: 'In Tribute', emoji: '🎗️' },
-        { key: 'survivor', label: 'Survivor', emoji: '🌟' },
-        { key: 'artist', label: 'Artist', emoji: '🎨' },
-        { key: 'caregiver', label: 'Caregiver', emoji: '🩺' },
-        { key: 'volunteer', label: 'Volunteer', emoji: '🤍' }
+    public mergedTags: MergedTagOption[] = [
+        // what
+        { key: 'art', label: 'Art', emoji: '🎨', dest: 'what' },
+        { key: 'photo', label: 'Photo', emoji: '📸', dest: 'what' },
+        { key: 'kids', label: 'Kids', emoji: '🧒', dest: 'what' },
+        { key: 'words', label: 'Words', emoji: '📝', dest: 'what' },
+        { key: 'other', label: 'Other', emoji: '🌀', dest: 'what' },
+    
+        // express
+        { key: 'love', label: 'Love', emoji: '❤️', dest: 'express' },
+        { key: 'hope', label: 'Hope', emoji: '🌈', dest: 'express' },
+        { key: 'faith', label: 'Faith', emoji: '🕊️', dest: 'express' },
+        { key: 'grief', label: 'Grief', emoji: '🖤', dest: 'express' },
     ];
 
     public autocompleteMap: Record<string, string> = {
@@ -179,6 +173,62 @@ export class FormComponent {
 
     ngOnDestroy(): void {
         this.subs.unsubscribe();
+    }
+
+    /** Max 3 across the unified surface, but enforced per-control. */
+    public get totalSelectedTags(): number {
+        const w = (this.form.get('what')?.value ?? []).length;
+        const e = (this.form.get('express')?.value ?? []).length;
+        return w + e;
+    }
+
+    public isMergedSelected(opt: MergedTagOption): boolean {
+        const ctrl = this.form.get(opt.dest) as FormControl<string[]>;
+        return (ctrl.value ?? []).includes(opt.key);
+    }
+
+    public isMergedDisabled(opt: MergedTagOption): boolean {
+        if (this.isMergedSelected(opt)) return false;
+        return this.totalSelectedTags >= 3;
+    }
+
+    public toggleMerged(opt: MergedTagOption): void {
+        const ctrl = this.form.get(opt.dest) as FormControl<string[]>;
+        const next = (ctrl.value ?? []).slice();
+        const i = next.indexOf(opt.key);
+        if (i >= 0) next.splice(i, 1);
+        else if (this.totalSelectedTags < 3) next.push(opt.key);
+        ctrl.setValue(next);
+        ctrl.markAsDirty();
+        ctrl.markAsTouched();
+    }
+
+    /** Add custom chip into either bucket (‘what’ or ‘express’) from one UI. */
+    public draftUnified = '';
+    public canAddDraftUnified(dest: TagDest): boolean {
+        const v = (this.draftUnified || '').trim();
+        if (v.length < 2 || v.length > 24) return false;
+        if (!/^[\p{Letter}\p{Number}\s-]+$/u.test(v)) return false;
+        if (this.totalSelectedTags >= 3) return false;
+        const norm = v.toLowerCase();
+        const exists = [...(this.form.get('what')?.value ?? []), ...(this.form.get('express')?.value ?? [])]
+            .some(k => (k || '').toLowerCase() === norm);
+        return !exists;
+    }
+
+    public addCustomUnified(dest: TagDest): void {
+        if (!this.canAddDraftUnified(dest)) return;
+        const label = this.draftUnified.trim();
+        const key = label; // keep original label as key for custom
+        const ctrl = this.form.get(dest) as FormControl<string[]>;
+        const current = (ctrl.value ?? []).slice();
+        if (current.length >= 3 || this.totalSelectedTags >= 3) return;
+        current.push(key);
+        ctrl.setValue(current);
+        ctrl.markAsDirty();
+        ctrl.markAsTouched();
+        this.mergedTags.push({ key, label, emoji: '✍️', dest, custom: true });
+        this.draftUnified = '';
     }
 
     /* ————— Upload handling ————— */
@@ -517,51 +567,51 @@ export class FormComponent {
             .replace(/^-|-$/g, '');
     }
 
-    private findOptionByKey(group: TagGroup, key: string): TagOption | undefined {
-        const list = group === 'what' ? this.whatOptions : group === 'express' ? this.expressOptions : this.fromOptions;
-        return list.find(o => o.key === key);
-    }
+    // private findOptionByKey(group: TagGroup, key: string): TagOption | undefined {
+    //     const list = group === 'what' ? this.whatOptions : group === 'express' ? this.expressOptions : this.fromOptions;
+    //     return list.find(o => o.key === key);
+    // }
 
-    public resolveLabel(group: TagGroup, key: string): string {
-        return this.findOptionByKey(group, key)?.label ?? key;
-    }
+    // public resolveLabel(group: TagGroup, key: string): string {
+    //     return this.findOptionByKey(group, key)?.label ?? key;
+    // }
 
-    public canAddDraft(group: 'what' | 'express'): boolean {
-        const draft = group === 'what' ? this.draftWhat : this.draftExpress;
-        const v = (draft || '').trim();
-        if (v.length < 2 || v.length > 24) return false;
-        if (!/^[\p{Letter}\p{Number}\s-]+$/u.test(v)) return false;
-        const ctrl = this.form.get(group) as FormControl<string[]>;
-        const selected = ctrl.value ?? [];
-        if (selected.length >= 3) return false;
-        const norm = v.toLowerCase();
-        const duplicateByLabel = selected.some(k => this.resolveLabel(group, k).toLowerCase() === norm);
-        if (duplicateByLabel) return false;
-        const slug = this.slugifyLabel(v);
-        const existsInOptions = !!this.findOptionByKey('what', slug) || !!this.findOptionByKey('express', slug);
-        if (existsInOptions) return false;
-        return true;
-    }
+    // public canAddDraft(group: 'what' | 'express'): boolean {
+    //     const draft = group === 'what' ? this.draftWhat : this.draftExpress;
+    //     const v = (draft || '').trim();
+    //     if (v.length < 2 || v.length > 24) return false;
+    //     if (!/^[\p{Letter}\p{Number}\s-]+$/u.test(v)) return false;
+    //     const ctrl = this.form.get(group) as FormControl<string[]>;
+    //     const selected = ctrl.value ?? [];
+    //     if (selected.length >= 3) return false;
+    //     const norm = v.toLowerCase();
+    //     const duplicateByLabel = selected.some(k => this.resolveLabel(group, k).toLowerCase() === norm);
+    //     if (duplicateByLabel) return false;
+    //     const slug = this.slugifyLabel(v);
+    //     const existsInOptions = !!this.findOptionByKey('what', slug) || !!this.findOptionByKey('express', slug);
+    //     if (existsInOptions) return false;
+    //     return true;
+    // }
 
-    public addCustomTag(group: 'what' | 'express'): void {
-        if (!this.canAddDraft(group)) return;
-        const draft = (group === 'what' ? this.draftWhat : this.draftExpress).trim();
-        const key = draft;
-        const ctrl = this.form.get(group) as FormControl<string[]>;
-        const current = (ctrl.value ?? []).slice();
-        if (current.length >= 3) return;
-        current.push(key);
-        ctrl.setValue(current);
-        ctrl.markAsDirty();
-        ctrl.markAsTouched();
-        if (group === 'what') {
-            this.whatOptions.push({ key, label: draft, emoji: '✍️', custom: true });
-            this.draftWhat = '';
-        } else {
-            this.expressOptions.push({ key, label: draft, emoji: '✍️', custom: true });
-            this.draftExpress = '';
-        }
-    }
+    // public addCustomTag(group: 'what' | 'express'): void {
+    //     if (!this.canAddDraft(group)) return;
+    //     const draft = (group === 'what' ? this.draftWhat : this.draftExpress).trim();
+    //     const key = draft;
+    //     const ctrl = this.form.get(group) as FormControl<string[]>;
+    //     const current = (ctrl.value ?? []).slice();
+    //     if (current.length >= 3) return;
+    //     current.push(key);
+    //     ctrl.setValue(current);
+    //     ctrl.markAsDirty();
+    //     ctrl.markAsTouched();
+    //     if (group === 'what') {
+    //         this.whatOptions.push({ key, label: draft, emoji: '✍️', custom: true });
+    //         this.draftWhat = '';
+    //     } else {
+    //         this.expressOptions.push({ key, label: draft, emoji: '✍️', custom: true });
+    //         this.draftExpress = '';
+    //     }
+    // }
 
     public removeTag(group: TagGroup, key: string): void {
         const ctrl = this.form.get(group) as FormControl<string[]>;
