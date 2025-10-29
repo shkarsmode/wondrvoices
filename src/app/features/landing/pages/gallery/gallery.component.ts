@@ -57,7 +57,20 @@ export class GalleryComponent implements OnInit {
     private readonly venueLogos: Record<string, string> = {
         // normalized key
         'sarasota art museum': 'assets/img/sarasota1.webp',
-        'clay center of st. petersburg': 'https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium'
+        'clay center of st. petersburg': 'https://6788f567b4309c4670f2.cdn6.editmysite.com/uploads/b/6788f567b4309c4670f2b7c145c4fb914c292f426dae61fa6fa451ad1b125f8e/logo_CC_retang_1738098796.png?width=2400&optimize=medium',
+        'blue raven full moon market': 'assets/img/blue-raven.webp',
+        'bo diddley plaza': 'assets/img/bo.webp',
+        'wonderworks gulfport': 'assets/img/wonderworks.webp',
+        'the dog bar': 'assets/img/dog-bar.webp',
+        'pinellas technical college': 'assets/img/ptc.webp',
+        'hill city tap house': 'assets/img/hill-city.webp',
+        'gulfport food forest': 'assets/img/food-forest.webp',
+        'gulfport farmers market': 'assets/img/farmers-market.webp',
+        'gulfport art walk': 'assets/img/art-walk.webp',
+        'daystar life': 'assets/img/daystar.webp',
+        'davita st petersburg south dialysis': 'assets/img/davita.webp',
+        'cohatch': 'assets/img/cohatch.webp',
+        'brooksville farmers market': 'assets/img/brooksville.webp',
     };
     private readonly venueColors: Record<string, string> = {
         'sarasota art museum': '#e02986',
