@@ -72,11 +72,7 @@ export class GalleryComponent implements OnInit {
         'cohatch': 'assets/img/cohatch.webp',
         'brooksville farmers market': 'assets/img/brooksville.webp',
     };
-    private readonly venueColors: Record<string, string> = {
-        'sarasota art museum': '#e02986',
-        'clay center of st. petersburg': '#000'
-    };
-
+    
     // Track latest updatedAt among current items
     public lastUpdated = signal<Date | null>(null);
 
@@ -526,15 +522,7 @@ export class GalleryComponent implements OnInit {
         return (value || '').trim().toLowerCase();
     }
 
-    private applyBrandColor(): void {
-        if (typeof document === 'undefined') return;
-        const key = this.normalizeVenueKey(this.venueDisplayName() || this.filters().creditTo || '');
-        const color = this.venueColors[key] || '#C8BFC1';
-        document.documentElement.style.setProperty('--brand', color);
-    }
-
     private afterVenueContextChanged(): void {
-        this.applyBrandColor();
         // show skeleton until data arrives
         this.isMiniHeaderVisible.set(false);
     }
