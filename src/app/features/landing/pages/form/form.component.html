@@ -268,7 +268,7 @@
                                 <input
                                     [attr.maxlength]="maxMap.location"
                                     autocomplete="off"
-                                    formControlName="location"
+                                    formControlName="creditTo"
                                     name="loc"
                                     placeholder=" "
                                     (blur)="onLocationBlur()"
@@ -276,15 +276,18 @@
                                     aria-haspopup="listbox"
                                     [attr.aria-expanded]="locOpen()"
                                     #refLocation />
-                                <label [class.focused]="form.get('location')?.value">Сity *</label>
-                                <span class="counter">{{ getLen('location') }}/{{ maxMap.location }}</span>
-                                <button class="loc-btn" type="button" (click)="useMyLocation()">📍</button>
+                                <label [class.focused]="form.get('creditTo')?.value">Where is this card coming from *</label>
+                                <!-- <span class="counter">{{ getLen('location') }}/{{ maxMap.location }}</span> -->
+                                <!-- <button class="loc-btn" type="button" (click)="useMyLocation()">📍</button> -->
 
                                 @if (locOpen() && (locSuggestions().length || locLoading())) {
                                     <ul class="ac-list" role="listbox">
                                         @if (locLoading()) { <li class="loading">Searching...</li> }
                                         @for (s of locSuggestions(); track $index) {
-                                            <li class="ac-item" (mousedown)="selectLocation(s)" role="option">
+                                            <li
+                                                class="ac-item"
+                                                (mousedown)="selectLocation(s)"
+                                                role="option">
                                                 {{ s.display_place }}
                                                 <span>{{ s.display_address }}</span>
                                             </li>
@@ -292,35 +295,60 @@
                                     </ul>
                                 }
 
-                                @if (form.hasError('locationNotSelected') && form.get('location')?.touched) {
+                                <!-- @if (form.hasError('locationNotSelected') && form.get('creditTo')?.touched) {
                                     <small class="error">Please pick a city from the list.</small>
-                                }
+                                } -->
                             </div>
                         </div>
 
-                        @if (form.get('location')?.value && (form.get('lat')?.value && form.get('lng')?.value) && !hasLocation()) {
-                            <div class="form-group">
+                        @if (locationSelected()) {
+                            <div class="form-group location-selected">
+                                <span>
+                                    {{ form.get('location')?.value }}
+                                </span>
+                                <span 
+                                    (click)="
+                                        form.get('location')?.setValue(''); 
+                                        locationSelected.set(false);
+                                        form.get('creditTo')?.setValue(''); 
+                                    ">
+                                    <span class="material-symbols-outlined md">close</span>
+                                </span>
+                            </div>
+                            <!-- <div class="form-group">
                                 <div class="input-wrapper with-counter">
-                                    <w-autocomplete
-                                        [initial]=""
+                                    <input
                                         [maxLength]="maxMap.creditTo"
-                                        name="creditTo"
-                                        #refCreditTo
-                                        emptyHint="Type to search creditTo"
-                                        field="creditTo"
-                                        formControlName="creditTo"
+                                        name="location"
+                                        field="location"
+                                        formControlName="location"
                                         placeholder=""
                                         status="all" />
-                                    <label [class.focused]="form.get('creditTo')?.value || refCreditTo.isFocused">Credit to</label>
-                                    <span class="counter">{{ getLen('creditTo') }}/{{ maxMap.creditTo }}</span>
+                                    <label [class.focused]="form.get('location')?.value">Location</label>
+                                
                                 </div>
-                            </div>
+                            </div> -->
                         }
                     </section>
                 </form>
                 <div class="nav">
-                    <button class="button submit-btn ghost" (click)="goBack()" type="button">← Back</button>
-                    <button class="button submit-btn primary" (click)="goNext()" [disabled]="!form.get('lat')?.value || !form.get('lng')?.value || !form.get('creditTo')?.value" type="button">Next →</button>
+                    <button
+                        class="button submit-btn ghost"
+                        (click)="goBack()"
+                        type="button">
+                        ← Back
+                    </button>
+                    <button
+                        class="button submit-btn primary"
+                        [disabled]="
+                            !form.get('lat')?.value || 
+                            !form.get('lng')?.value || 
+                            !form.get('creditTo')?.value
+                        "
+                        (click)="goNext()"
+                        type="button">
+                        Next →
+                    </button>
                 </div>
             }
 

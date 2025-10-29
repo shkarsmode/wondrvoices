@@ -7,7 +7,7 @@ export function locationSelectedValidator(): ValidatorFn {
         const lat = group.get('lat')?.value;
         const lng = group.get('lng')?.value;
 
-        if (location && (lat === null || lat === undefined || lng === null || lng === undefined)) {
+        if ((lat === null || lat === undefined || lng === null || lng === undefined)) {
             return { locationNotSelected: true };
         }
         return null;

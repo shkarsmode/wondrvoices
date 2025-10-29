@@ -1055,3 +1055,12 @@ h4 {
         }
     }
 }
+
+.location-selected {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 5px;
+
+    cursor: pointer;
+}

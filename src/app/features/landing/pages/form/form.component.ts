@@ -145,13 +145,13 @@ export class FormComponent {
     }
 
     async ngOnInit(): Promise<void> {
-        const locCtrl = this.form.get('location') as FormControl<string>;
+        const locCtrl = this.form.get('creditTo') as FormControl<string>;
         this.subs.add(
             locCtrl.valueChanges.pipe(
                 tap(() => {
-                    if (!this.locSelectInProgress) {
-                        this.form.patchValue({ lat: null, lng: null }, { emitEvent: false });
-                    }
+                    // if (!this.locSelectInProgress) {
+                    //     this.form.patchValue({ lat: null, lng: null }, { emitEvent: false });
+                    // }
                 }),
                 map(v => (v || '').trim()),
                 tap(v => this.locOpen.set(!!v)),
@@ -747,11 +747,15 @@ export class FormComponent {
     public selectLocation(s: LocationIqSuggestion): void {
         this.locSelectInProgress = true;
         const label = this.getLocationName(s);
-        this.form.patchValue({ location: label, lat: Number(s.lat), lng: Number(s.lon) }, { emitEvent: false });
+        this.form.patchValue({ location: s.display_address, lat: Number(s.lat), lng: Number(s.lon) }, { emitEvent: false });
         this.setCreditToFromAutoComplete(s);
         this.locOpen.set(false);
         queueMicrotask(() => this.locSelectInProgress = false);
+        this.locationSelected.set(true);
+        console.log(this.form);
     }
+
+    public locationSelected = signal(false);
 
     private setCreditToFromAutoComplete(r: LocationIqSuggestion): void {
         const norm = (s: string) => s.trim().toLowerCase();
