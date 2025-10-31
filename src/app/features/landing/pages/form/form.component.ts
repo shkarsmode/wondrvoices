@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, debounceTime, distinctUntilChanged, filter, first, firstValueFrom, map, of, Subscription, switchMap, tap } from 'rxjs';
 import { LocationIqService, LocationIqSuggestion, LocationIqSuggestionAddress } from 'src/app/shared/services/location-iq.service';
@@ -66,6 +66,12 @@ export class FormComponent {
         const i = this.activeIndex();
         return list.length > 0 && typeof list[i] === 'number' ? list[i] : 0;
     });
+    public submittedEffect = effect(() => {
+        if (this.submitted()) {
+            localStorage.setItem('name', this.form.value.name);
+            localStorage.setItem('email', this.form.value.email);
+        }
+    })
 
     public maxMap = { location: 100, creditTo: 50, name: 50, email: 50 };
 
@@ -129,19 +135,32 @@ export class FormComponent {
     constructor() {
         if (typeof window !== 'undefined') {
             this.isMultipleUpload = Number(localStorage?.getItem('dev')) === 1;
+            this.form = this.fb.group({
+                name: [
+                    localStorage.getItem('name') || '', 
+                    [
+                        Validators.required, 
+                        Validators.minLength(2), 
+                        Validators.maxLength(this.maxMap.name)
+                    ]],
+                email: [
+                    localStorage.getItem('email') || '', 
+                    [
+                        Validators.required, 
+                        Validators.email, 
+                        Validators.maxLength(this.maxMap.email)
+                    ]
+                ],
+                location: ['', [Validators.required]],
+                lat: [null as number | null],
+                lng: [null as number | null],
+                creditTo: ['', [Validators.required, Validators.maxLength(this.maxMap.creditTo)]],
+                what: this.fb.control<string[]>([], []),
+                express: this.fb.control<string[]>([], []),
+                note: [''],
+                img: [null],
+            }, { validators: [locationSelectedValidator()] });
         }
-        this.form = this.fb.group({
-            name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(this.maxMap.name)]],
-            email: ['', [Validators.required, Validators.email, Validators.maxLength(this.maxMap.email)]],
-            location: ['', [Validators.required]],
-            lat: [null as number | null],
-            lng: [null as number | null],
-            creditTo: ['', [Validators.required, Validators.maxLength(this.maxMap.creditTo)]],
-            what: this.fb.control<string[]>([], []),
-            express: this.fb.control<string[]>([], []),
-            note: [''],
-            img: [null],
-        }, { validators: [locationSelectedValidator()] });
     }
 
     async ngOnInit(): Promise<void> {
