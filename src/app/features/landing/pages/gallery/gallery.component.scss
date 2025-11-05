@@ -912,6 +912,18 @@
         }
 
 
+        .menu {
+            opacity: 0;
+        }
+
+        input {
+            color: white;
+
+            &::-webkit-search-cancel-button {
+                opacity: 0;
+            }
+        }
+        
 
     }
 }
