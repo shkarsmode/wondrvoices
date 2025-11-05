@@ -1110,6 +1110,7 @@
     font-size: 14px;
     position: relative;
     z-index: 1;
+    margin: 10px 0 20px 0;
 
     &:hover {
         text-decoration: underline;
@@ -1124,9 +1125,6 @@
         top: -20px;
     }
 
-    @media screen and (max-width: 768px) {
-        margin-bottom: 0px;
-    }
 }
 
 .filters-content {
