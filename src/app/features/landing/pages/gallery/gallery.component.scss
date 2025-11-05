@@ -984,6 +984,18 @@
         border-left: 1px solid rgba(255, 255, 255, 0.08);
         border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
+
+    @media screen and (max-width: 420px) {
+        position: fixed;
+        right: 20px;
+        left: unset;
+        top: unset;
+        margin-top: 10px;
+
+        &::after {
+            content: unset;
+        }
+    }
 }
 
 @keyframes share-popover-in {
@@ -1356,13 +1368,13 @@
     object-position: center;
 }
 
-@media (max-width: 400px) {
-    .share-popover {
-        left: 50%;
-        transform: translateX(-50%);
-        width: min(92vw, 360px);
-    }
-}
+// @media (max-width: 400px) {
+//     .share-popover {
+//         left: 50%;
+//         transform: translateX(-50%);
+//         width: min(92vw, 360px);
+//     }
+// }
 
 .autocomplete-chips {
     display: flex;
