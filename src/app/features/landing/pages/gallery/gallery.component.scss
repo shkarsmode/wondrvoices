@@ -1436,6 +1436,10 @@
 
         transition: all .3s;
 
+        opacity: 0;
+        animation: ships-anim .35s forwards;
+        animation-delay: var(--i);
+
         &:hover {
             background-color: #ffd5b8;
             cursor: pointer;
@@ -1443,4 +1447,16 @@
     }
 
     animation: share-popover-in 140ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes ships-anim {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
