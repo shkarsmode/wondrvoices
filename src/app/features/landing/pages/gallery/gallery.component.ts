@@ -237,6 +237,16 @@ export class GalleryComponent implements OnInit {
 
     @HostListener('document:click', ['$event'])
     onDocumentClick(event: MouseEvent): void {
+        const chips = document.querySelector('.autocomplete-chips') as HTMLDivElement;
+        const autocomplete = document.querySelector('w-autocomplete > div') as HTMLDivElement;
+
+        if (
+            !chips.contains(event.target as HTMLDivElement) && 
+            !autocomplete.contains(event.target as HTMLDivElement)
+        ) {
+            this.onAutocompleteBlur();
+        }
+
         if (!this.isShareOptionsOpen()) return;
 
         const popover = this.sharePopoverRef?.nativeElement;

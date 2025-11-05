@@ -187,45 +187,46 @@
                     [class.short-autocomplete]="!isSearchActive()"
                     (select)="applyTextFilter($event)"
                     (inputChange)="null" 
-                    (click)="onAutocompleteClick()"
-                    (inputBlur)="onAutocompleteBlur()"/>
+                    (click)="onAutocompleteClick()" />
 
                 @if (isSearchActive()) {
                     @if ((voicesService.getPopularSuggestions() | async); as popular) {
                         <div class="autocomplete-chips">
-                            <div
-                                class="autocomplete-chips__chip"
-                                (click)="
-                                    applyTextFilter({ 
-                                        key: 'location', 
-                                        value: popular!.location[0] 
-                                    })
-                                ">
-                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">location_on</span>
-                                {{ popular!.location[0] }}
-                            </div>
-                            <div 
-                                class="autocomplete-chips__chip" 
-                                (click)="
-                                    applyTextFilter({ 
-                                        key: 'creditTo', 
-                                        value: popular!.creditTo[0] 
-                                    })
-                                ">
-                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">favorite</span>
-                                {{ popular!.creditTo[0] }}
-                            </div>
-                            <div 
-                                class="autocomplete-chips__chip"
-                                (click)="
-                                    applyTextFilter({ 
-                                        key: 'tab', 
-                                        value: popular!.tag[0] 
-                                    })
-                                ">
-                                <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">label</span>
-                                {{ popular!.tag[0] }}
-                            </div>
+                            @for (key of [0,1,2]; track key) {
+                                <div
+                                    class="autocomplete-chips__chip"
+                                    (click)="
+                                        applyTextFilter({ 
+                                            key: 'location', 
+                                            value: popular!.location[key] 
+                                        })
+                                    ">
+                                    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">location_on</span>
+                                    {{ popular!.location[key] }}
+                                </div>
+                                <div 
+                                    class="autocomplete-chips__chip" 
+                                    (click)="
+                                        applyTextFilter({ 
+                                            key: 'creditTo', 
+                                            value: popular!.creditTo[key] 
+                                        })
+                                    ">
+                                    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">favorite</span>
+                                    {{ popular!.creditTo[key] }}
+                                </div>
+                                <div 
+                                    class="autocomplete-chips__chip"
+                                    (click)="
+                                        applyTextFilter({ 
+                                            key: 'tab', 
+                                            value: popular!.tag[key] 
+                                        })
+                                    ">
+                                    <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">label</span>
+                                    {{ popular!.tag[key] }}
+                                </div>
+                            }
                         </div>
                     }
                 }
