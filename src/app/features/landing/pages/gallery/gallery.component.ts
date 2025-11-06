@@ -241,8 +241,11 @@ export class GalleryComponent implements OnInit {
         const autocomplete = document.querySelector('w-autocomplete > div') as HTMLDivElement;
 
         if (
+            chips &&
             !chips.contains(event.target as HTMLDivElement) && 
+            autocomplete &&
             !autocomplete.contains(event.target as HTMLDivElement)
+
         ) {
             this.onAutocompleteBlur();
         }

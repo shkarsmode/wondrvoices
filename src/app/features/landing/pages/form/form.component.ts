@@ -35,6 +35,8 @@ type GAddressComponent = { long_name: string; short_name: string; types: string[
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
+const GOOGLE_AUTOCOMPLETE_ATTR = 'data-google-autocomplete';
+
 @Component({
     selector: 'app-form',
     imports: [ReactiveFormsModule, AutocompleteInputComponent],
@@ -136,34 +138,24 @@ export class FormComponent {
         return total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
     });
 
+    public oldInputAutocomplete: HTMLInputElement;
+    public refLocationEffect = effect(() => {
+        if (
+            this.refLocation()
+        ) {
+            // setTimeout(() => {
+                console.log('init initGoogleAutocomplete');
+                this.initGoogleAutocomplete();
+                
+            // }, 5000);
+        } else {
+            this.removeGoogleAutocomplete();
+        }
+    });
+
     constructor() {
         if (typeof window !== 'undefined') {
             this.isMultipleUpload = Number(localStorage?.getItem('dev')) === 1;
-            this.form = this.fb.group({
-                name: [
-                    localStorage.getItem('name') || '', 
-                    [
-                        Validators.required, 
-                        Validators.minLength(2), 
-                        Validators.maxLength(this.maxMap.name)
-                    ]],
-                email: [
-                    localStorage.getItem('email') || '', 
-                    [
-                        Validators.required, 
-                        Validators.email, 
-                        Validators.maxLength(this.maxMap.email)
-                    ]
-                ],
-                location: ['', [Validators.required]],
-                lat: [null as number | null],
-                lng: [null as number | null],
-                creditTo: ['', [Validators.required, Validators.maxLength(this.maxMap.creditTo)]],
-                what: this.fb.control<string[]>([], []),
-                express: this.fb.control<string[]>([], []),
-                note: [''],
-                img: [null],
-            }, { validators: [locationSelectedValidator()] });
         }
     }
 
@@ -186,16 +178,38 @@ export class FormComponent {
         //         tap(() => this.locLoading.set(false))
         //     ).subscribe(list => this.locSuggestions.set(list))
         // );
+
+        this.form = this.fb.group({
+            name: [
+                localStorage.getItem('name') || '', 
+                [
+                    Validators.required, 
+                    Validators.minLength(2), 
+                    Validators.maxLength(this.maxMap.name)
+                ]],
+            email: [
+                localStorage.getItem('email') || '', 
+                [
+                    Validators.required, 
+                    Validators.email, 
+                    Validators.maxLength(this.maxMap.email)
+                ]
+            ],
+            location: ['', [Validators.required]],
+            lat: [null as number | null],
+            lng: [null as number | null],
+            creditTo: ['', [Validators.required, Validators.maxLength(this.maxMap.creditTo)]],
+            what: this.fb.control<string[]>([], []),
+            express: this.fb.control<string[]>([], []),
+            note: [''],
+            img: [null],
+        }, { validators: [locationSelectedValidator()] });
     }
 
     public ngAfterViewInit(): void {
         if (this.isWin && !this.isMobileUA) {
             this.scanButtonRef()!.nativeElement.style.display = 'none';
         }
-    }
-
-    ngOnDestroy(): void {
-        this.subs.unsubscribe();
     }
 
     /** Max 3 across the unified surface, but enforced per-control. */
@@ -645,23 +659,21 @@ export class FormComponent {
     }
 
     chooseStep(step: number): void {
-        switch (step) {
-            case 5:
-                if (!this.form.get('lat')?.value || !this.form.get('lng')?.value || !this.form.get('creditTo')?.value) return;
-            case 4:
-            case 3:
-            case 2:
-                if (this.files().length === 0) return;
+        if (window.location.host !== 'localhost:4200') {
+            switch (step) {
+                case 5:
+                    if (!this.form.get('lat')?.value || !this.form.get('lng')?.value || !this.form.get('creditTo')?.value) return;
+                case 4:
+                case 3:
+                case 2:
+                    if (this.files().length === 0) return;
+            }
         }
         this.previousStep.set(this.step());
         this.step.set(step as Step);
     }
 
     goNext(): void {
-        setTimeout(() => {
-            this.initGoogleAutocomplete();
-            
-        }, 1000);
         if (this.step() === 1 && this.files().length === 0) return;
         if (this.step() === 5) return;
         this.previousStep.set(this.step());
@@ -913,17 +925,25 @@ export class FormComponent {
     }
 
     public refLocation = viewChild<ElementRef<HTMLInputElement>>('refLocation');
+    private gmapsAutocomplete?: any;
+    private gmapsAcListener?: any;
     private initGoogleAutocomplete(): void {
-        console.log(this.refLocation())
         const input: HTMLInputElement | null = (this as any).refLocation()?.nativeElement || null;
         if (!input || !('google' in window)) return;
 
-        const ac = new google.maps.places.Autocomplete(input, {
+        // Prevent double init if view re-renders
+        if (!!input.getAttribute(GOOGLE_AUTOCOMPLETE_ATTR)) return;
+
+        this.gmapsAutocomplete = new google.maps.places.Autocomplete(input, {
             fields: ['place_id', 'name', 'formatted_address', 'geometry', 'address_component', 'types']
         });
 
-        ac.addListener('place_changed', () => {
-            const place = ac.getPlace();
+        input.setAttribute(GOOGLE_AUTOCOMPLETE_ATTR, 'true');
+        this.oldInputAutocomplete = input;
+
+        // Keep the handle to remove later
+        this.gmapsAcListener = this.gmapsAutocomplete.addListener('place_changed', () => {
+            const place = this.gmapsAutocomplete!.getPlace();
             if (!place) return;
 
             const lat = place.geometry?.location?.lat?.() ?? null;
@@ -931,11 +951,7 @@ export class FormComponent {
             const formatted = place.formatted_address || place.name || '';
 
             this.form.patchValue(
-                {
-                    location: formatted,
-                    lat: lat,
-                    lng: lng
-                },
+                { location: formatted, lat, lng },
                 { emitEvent: false }
             );
 
@@ -946,6 +962,13 @@ export class FormComponent {
             this.locationSelected.set(true);
         });
     }
+
+    public ngOnDestroy(): void {
+        this.subs.unsubscribe();
+        this.removeGoogleAutocomplete();
+    }
+
+
 
     // Копия твоей логики, только под Google types:
     private setCreditToFromGoogle(types: string[], placeName: string, addr: { city?: string; state?: string; country?: string; suburb?: string; neighbourhood?: string; county?: string; road?: string; postcode?: string }): void {
@@ -982,17 +1005,36 @@ export class FormComponent {
         this.form.get('creditTo')!.setValue(creditTo);
     }
 
-    private toAddress(components: GAddressComponent[] = []): { city?: string; state?: string; country?: string; suburb?: string; neighbourhood?: string; county?: string; road?: string; postcode?: string } {
-        const get = (type: string) => components.find(c => c.types.includes(type))?.long_name;
-        return {
-            road: get('route'),
-            suburb: get('sublocality'),
-            neighbourhood: get('neighborhood'),
-            city: get('locality') || get('postal_town'),
-            county: get('administrative_area_level_2'),
-            state: get('administrative_area_level_1'),
-            postcode: get('postal_code'),
-            country: get('country')
-        };
-}
+    private toAddress(
+        components: GAddressComponent[] = []): 
+            { city?: string; state?: string; country?: string; suburb?: string; neighbourhood?: string; county?: string; road?: string; postcode?: string } {
+            const get = (type: string) => components.find(c => c.types.includes(type))?.long_name;
+            return {
+                road: get('route'),
+                suburb: get('sublocality'),
+                neighbourhood: get('neighborhood'),
+                city: get('locality') || get('postal_town'),
+                county: get('administrative_area_level_2'),
+                state: get('administrative_area_level_1'),
+                postcode: get('postal_code'),
+                country: get('country')
+            };
+    }
+
+    private removeGoogleAutocomplete(): void {
+        if (typeof window === 'undefined') return;
+
+        this.gmapsAcListener?.remove();
+        this.gmapsAcListener = undefined;
+
+        if (this.gmapsAutocomplete && 'event' in google.maps) {
+            google.maps.event.clearInstanceListeners(this.gmapsAutocomplete);
+        }
+        this.gmapsAutocomplete = undefined;
+
+        const input = this.oldInputAutocomplete;
+        input?.removeAttribute(GOOGLE_AUTOCOMPLETE_ATTR);
+
+        document.querySelectorAll('.pac-container').forEach((el) => el.remove());
+    }
 }
