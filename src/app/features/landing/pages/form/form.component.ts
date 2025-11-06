@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { catchError, debounceTime, distinctUntilChanged, filter, first, firstValueFrom, map, of, Subscription, switchMap, tap } from 'rxjs';
-import { LocationIqService, LocationIqSuggestion, LocationIqSuggestionAddress } from 'src/app/shared/services/location-iq.service';
+import { first, firstValueFrom, Subscription } from 'rxjs';
+import { LocationIqSuggestion, LocationIqSuggestionAddress } from 'src/app/shared/services/location-iq.service';
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { ToastService } from 'src/app/shared/toast/toast.service';
 import { WINDOW } from 'src/app/shared/tokens/window.token';
@@ -15,6 +15,7 @@ import { AutocompleteInputComponent } from '../../components/autocomplete-input/
 
 type TagGroup = 'what' | 'express' | 'from';
 type TagDest = 'what' | 'express';
+declare const google: any;
 interface MergedTagOption {
     key: string;
     label: string;
@@ -29,6 +30,8 @@ interface TagOption {
     emoji: string;
     custom?: boolean;
 }
+
+type GAddressComponent = { long_name: string; short_name: string; types: string[] };
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -85,8 +88,9 @@ export class FormComponent {
     public voicesService: VoicesService = inject(VoicesService);
     private readonly scrollToService: ScrollToService = inject(ScrollToService);
 
-    private locationIq = inject(LocationIqService);
+    // private locationIq = inject(LocationIqService);
     private subs = new Subscription();
+    
 
     public locOpen = signal(false);
     public locLoading = signal(false);
@@ -164,24 +168,24 @@ export class FormComponent {
     }
 
     async ngOnInit(): Promise<void> {
-        const locCtrl = this.form.get('creditTo') as FormControl<string>;
-        this.subs.add(
-            locCtrl.valueChanges.pipe(
-                tap(() => {
-                    // if (!this.locSelectInProgress) {
-                    //     this.form.patchValue({ lat: null, lng: null }, { emitEvent: false });
-                    // }
-                }),
-                map(v => (v || '').trim()),
-                tap(v => this.locOpen.set(!!v)),
-                filter(v => v.length >= 2),
-                debounceTime(250),
-                distinctUntilChanged(),
-                tap(() => this.locLoading.set(true)),
-                switchMap(q => this.locationIq.searchCities(q).pipe(catchError(() => of([])))),
-                tap(() => this.locLoading.set(false))
-            ).subscribe(list => this.locSuggestions.set(list))
-        );
+        // const locCtrl = this.form.get('creditTo') as FormControl<string>;
+        // this.subs.add(
+        //     locCtrl.valueChanges.pipe(
+        //         tap(() => {
+        //             // if (!this.locSelectInProgress) {
+        //             //     this.form.patchValue({ lat: null, lng: null }, { emitEvent: false });
+        //             // }
+        //         }),
+        //         map(v => (v || '').trim()),
+        //         tap(v => this.locOpen.set(!!v)),
+        //         filter(v => v.length >= 2),
+        //         debounceTime(250),
+        //         distinctUntilChanged(),
+        //         tap(() => this.locLoading.set(true)),
+        //         switchMap(q => this.locationIq.searchCities(q).pipe(catchError(() => of([])))),
+        //         tap(() => this.locLoading.set(false))
+        //     ).subscribe(list => this.locSuggestions.set(list))
+        // );
     }
 
     public ngAfterViewInit(): void {
@@ -654,6 +658,10 @@ export class FormComponent {
     }
 
     goNext(): void {
+        setTimeout(() => {
+            this.initGoogleAutocomplete();
+            
+        }, 1000);
         if (this.step() === 1 && this.files().length === 0) return;
         if (this.step() === 5) return;
         this.previousStep.set(this.step());
@@ -903,4 +911,93 @@ export class FormComponent {
 
         return rxMobile.test(ua) || isIPadOS || isIPadUA;
     }
+
+    public refLocation = viewChild<ElementRef<HTMLInputElement>>('refLocation');
+    private initGoogleAutocomplete(): void {
+        console.log(this.refLocation())
+        const input: HTMLInputElement | null = (this as any).refLocation()?.nativeElement || null;
+        if (!input || !('google' in window)) return;
+
+        // Вешаем нативный Google Autocomplete
+        const ac = new google.maps.places.Autocomplete(input, {
+            // Если нужны только города: types: ['(cities)']
+            // Иначе оставляем общий поиск (города + заведения)
+            fields: ['place_id', 'name', 'formatted_address', 'geometry', 'address_component', 'types']
+        });
+
+        ac.addListener('place_changed', () => {
+            const place = ac.getPlace();
+            if (!place) return;
+
+            const lat = place.geometry?.location?.lat?.() ?? null;
+            const lng = place.geometry?.location?.lng?.() ?? null;
+            const formatted = place.formatted_address || place.name || '';
+
+            this.form.patchValue(
+                {
+                    location: formatted,
+                    lat: lat,
+                    lng: lng
+                },
+                { emitEvent: false }
+            );
+
+            // creditTo = название заведения (если это не просто город/страна)
+            const addr = this.toAddress(place.address_components || []);
+            this.setCreditToFromGoogle(place.types || [], place.name || '', addr);
+
+            // Закрыть свои кастомные подсказки
+            this.locOpen.set(false);
+            this.locationSelected.set(true);
+        });
+    }
+
+    // Копия твоей логики, только под Google types:
+    private setCreditToFromGoogle(types: string[], placeName: string, addr: { city?: string; state?: string; country?: string; suburb?: string; neighbourhood?: string; county?: string; road?: string; postcode?: string }): void {
+        const placeLike = new Set([
+            'locality',
+            'administrative_area_level_1',
+            'administrative_area_level_2',
+            'country',
+            'sublocality',
+            'postal_town'
+        ]);
+        const isPlace = (types || []).some(t => placeLike.has(t));
+        let creditTo = '';
+
+        if (!isPlace && placeName) {
+            const normalized = placeName.trim().toLowerCase();
+            const topo = [
+                addr?.city,
+                addr?.state,
+                addr?.country,
+                addr?.suburb,
+                addr?.neighbourhood,
+                addr?.county,
+                addr?.road,
+                addr?.postcode
+            ]
+                .filter(Boolean)
+                .map(v => String(v).trim().toLowerCase());
+
+            creditTo = topo.includes(normalized) ? '' : placeName;
+        }
+
+        this.hasLocation.set(!!creditTo);
+        this.form.get('creditTo')!.setValue(creditTo);
+    }
+
+    private toAddress(components: GAddressComponent[] = []): { city?: string; state?: string; country?: string; suburb?: string; neighbourhood?: string; county?: string; road?: string; postcode?: string } {
+        const get = (type: string) => components.find(c => c.types.includes(type))?.long_name;
+        return {
+            road: get('route'),
+            suburb: get('sublocality'),
+            neighbourhood: get('neighborhood'),
+            city: get('locality') || get('postal_town'),
+            county: get('administrative_area_level_2'),
+            state: get('administrative_area_level_1'),
+            postcode: get('postal_code'),
+            country: get('country')
+        };
+}
 }
