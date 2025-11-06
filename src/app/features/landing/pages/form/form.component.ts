@@ -918,10 +918,7 @@ export class FormComponent {
         const input: HTMLInputElement | null = (this as any).refLocation()?.nativeElement || null;
         if (!input || !('google' in window)) return;
 
-        // Вешаем нативный Google Autocomplete
         const ac = new google.maps.places.Autocomplete(input, {
-            // Если нужны только города: types: ['(cities)']
-            // Иначе оставляем общий поиск (города + заведения)
             fields: ['place_id', 'name', 'formatted_address', 'geometry', 'address_component', 'types']
         });
 
@@ -942,11 +939,9 @@ export class FormComponent {
                 { emitEvent: false }
             );
 
-            // creditTo = название заведения (если это не просто город/страна)
             const addr = this.toAddress(place.address_components || []);
             this.setCreditToFromGoogle(place.types || [], place.name || '', addr);
 
-            // Закрыть свои кастомные подсказки
             this.locOpen.set(false);
             this.locationSelected.set(true);
         });
