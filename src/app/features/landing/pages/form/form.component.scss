@@ -55,6 +55,10 @@ $form-accent: #ffbfae;
                     border-radius: $form-radius;
                     font-size: 1rem;
                     transition: border 0.3s;
+
+                    &:read-only {
+                        background: #f2f2f2;
+                    }
     
                     &:focus {
                         outline: none;
@@ -1067,4 +1071,49 @@ h4 {
     gap: 5px;
 
     cursor: pointer;
+}
+
+.custom-credit-to-field {
+    animation: showCustomCreditToFieldAnim .3s ease forwards;
+    // overflow: hidden;
+}
+
+.custom-credit-to-field-hide {
+    animation: hideCustomCreditToFieldAnim .3s ease forwards;
+    // overflow: hidden;
+}
+
+@keyframes showCustomCreditToFieldAnim {
+    from {
+        opacity: 0;
+        height: 0;
+    }
+
+    to {
+        opacity: 1;
+        height: 54px;
+    }
+}
+
+@keyframes hideCustomCreditToFieldAnim {
+    from {
+        opacity: 1;
+        height: 54px;
+    }
+    to {
+        opacity: 0;
+        height: 0;
+    }
+
+}
+
+.location-close {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    cursor: pointer;
+
+    &:hover {
+        scale: 1.1;
+    }
 }

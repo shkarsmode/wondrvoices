@@ -1069,7 +1069,7 @@ export class FormComponent {
 
     public onCustomCreditToChange(value: string): void {
         this.form.get('creditTo')?.setValue(value);
-        this.form.get('customCreditTo')?.setValue(value);
+        // this.form.get('customCreditTo')?.setValue(value);
     }
 
     private removeGoogleAutocomplete(): void {

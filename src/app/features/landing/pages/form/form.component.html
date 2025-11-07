@@ -265,27 +265,42 @@
 
                         <div
                             class="form-group"
-                            [style.display]="locationSelected() ? 'none' : 'block'">
+                            >
                             <div class="input-wrapper with-counter">
                                 <input
                                     [attr.maxlength]="maxMap.location"
                                     autocomplete="off"
-                                    formControlName="creditTo"
+                                    formControlName="location"
                                     name="loc"
                                     placeholder=" "
                                     aria-autocomplete="list"
                                     aria-haspopup="listbox"
-                                    #refLocation />
-                                <label [class.focused]="form.get('creditTo')?.value">Where is this card coming from *</label>
+                                    #refLocation 
+                                    [readOnly]="locationSelected()"
+                                    [disabled]="locationSelected()">
+                                <label [class.focused]="form.get('location')?.value">Where is this card coming from *</label>
+
+                                @if (locationSelected()) {
+                                    <span 
+                                        class="location-close"
+                                        (click)="
+                                            form.get('location')?.setValue(''); 
+                                            locationSelected.set(false);
+                                            form.get('creditTo')?.setValue(''); 
+                                        ">
+                                        <span class="material-symbols-outlined md">close</span>
+                                    </span>
+                                }
                             </div>
                         </div>
+                        
                         <div
                             class="form-group"
-                            [style.display]="!locationSelected() ? 'none' : 'block'">
+                            [class.custom-credit-to-field]="locationSelected()"
+                            [class.custom-credit-to-field-hide]="!locationSelected()">
                             <div class="input-wrapper with-counter">
-
                                 <w-autocomplete
-                                    placeholder="Enter your custom credit to"
+                                    placeholder="Enter your custom credit to *"
                                     emptyHint="Type to search"
                                     [formControlName]="'customCreditTo'"
                                     [class.short-autocomplete]="true"
@@ -293,8 +308,9 @@
                                     (inputChange)="onCustomCreditToChange($event)" />
                             </div>  
                         </div>
+                        
 
-                        @if (locationSelected()) {
+                        <!-- @if (locationSelected()) {
                             <div class="form-group location-selected">
                                 <span>
                                     {{ form.get('location')?.value }}
@@ -308,20 +324,7 @@
                                     <span class="material-symbols-outlined md">close</span>
                                 </span>
                             </div>
-                            <!-- <div class="form-group">
-                                <div class="input-wrapper with-counter">
-                                    <input
-                                        [maxLength]="maxMap.creditTo"
-                                        name="location"
-                                        field="location"
-                                        formControlName="location"
-                                        placeholder=""
-                                        status="all" />
-                                    <label [class.focused]="form.get('location')?.value">Location</label>
-                                
-                                </div>
-                            </div> -->
-                        }
+                        } -->
                     </section>
                 </form>
                 <div class="nav">

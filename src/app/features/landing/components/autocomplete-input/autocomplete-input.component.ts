@@ -43,7 +43,7 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
 
     <input
         #inp
-        [type]="loading() ? 'text' : 'search'"
+        [type]="'text'"
         [attr.placeholder]="' '"
         [attr.autocomplete]="autocomplete"
         [attr.name]="name"
@@ -59,6 +59,16 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
         [attr.aria-haspopup]="'listbox'"
         #inputRef />
         <label [class.focused]="inputRef?.value">{{ placeholder }}</label>
+
+        @if (inputRef.value) {
+            <span 
+                class="close"
+                (click)="
+                    onInput(''); 
+                ">
+                <span class="material-symbols-outlined md">close</span>
+            </span>
+        }
 
     @if (loading()) {
         <div class="input-indicator" aria-hidden="true">
@@ -204,6 +214,21 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
 :host { display: flex; width: 100%; }
 .auto { position: relative; width: 100%; max-width: 100%; }
 
+.close {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    cursor: pointer;
+    
+    span {
+        font-size: 24px !important;
+    }
+
+    &:hover {
+        scale: 1.1;
+    }
+}
+
 label {
     position: absolute;
     top: 50%;
@@ -262,7 +287,6 @@ input {
 input:focus {
     outline: none;
     border-color: #4dabf7;
-    box-shadow: 0 6px 24px rgba(77, 171, 247, 0.18), 0 0 0 3px rgba(77, 171, 247, 0.14);
 }
 input:disabled { background: #f1f3f5; cursor: not-allowed; }
 
