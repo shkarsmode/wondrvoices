@@ -44,7 +44,7 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
     <input
         #inp
         [type]="loading() ? 'text' : 'search'"
-        [attr.placeholder]="loading() ? (value().trim().length ? 'Searching “' + value().trim() + '”…' : 'Searching…') : placeholder"
+        [attr.placeholder]="' '"
         [attr.autocomplete]="autocomplete"
         [attr.name]="name"
         [maxLength]="maxLength"
@@ -56,7 +56,9 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
         [style.padding-left]="isAllInfo ? '34px' : '0.75rem'"
         [attr.aria-expanded]="open()"
         [attr.aria-autocomplete]="'list'"
-        [attr.aria-haspopup]="'listbox'" />
+        [attr.aria-haspopup]="'listbox'"
+        #inputRef />
+        <label [class.focused]="inputRef?.value">{{ placeholder }}</label>
 
     @if (loading()) {
         <div class="input-indicator" aria-hidden="true">
@@ -201,6 +203,29 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
     styles: [`
 :host { display: flex; width: 100%; }
 .auto { position: relative; width: 100%; max-width: 100%; }
+
+label {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: #888;
+    transition: all 0.2s ease;
+    pointer-events: none;
+
+    @media screen and (max-width: 500px) {
+        font-size: 14px;
+    }
+}
+
+input:focus+label,
+input:active+label,
+.focused {
+    top: 11px;
+    left: 0.9rem;
+    font-size: 0.75rem;
+    color: #ffbfae;
+}
 
 /* ===== Material Symbols (Outlined) base ===== */
 .material-symbols-outlined {
@@ -489,7 +514,7 @@ export class AutocompleteInputComponent implements ControlValueAccessor, OnInit 
                             next: list => {
                                 this.cache.set(cacheKey, list);
                                 // const value = list[this.field];
-                                this.suggestionsSpecific.set([]);
+                                this.suggestionsSpecific.set(list[this.field as 'creditTo']);
                                 this.loading.set(false);
                             },
                             error: () => {
@@ -587,10 +612,19 @@ export class AutocompleteInputComponent implements ControlValueAccessor, OnInit 
         }, 120);
     }
     pick(optionText: string, type: 'location' | 'creditTo' | 'tab'): void {
+        optionText = this.isAllInfo ? optionText : this.capitalizeEachWord(optionText);
         this.setValue(this.isAllInfo ? '' : optionText, true);
         this.select.emit({ key: type, value: (optionText ?? '').trim() });
         this.open.set(false);
         this.inputRef?.nativeElement.focus();
+    }
+    private capitalizeEachWord(str: string): string {
+        if (typeof str !== 'string' || str.length === 0) {
+            return str;
+        }
+        return str.split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
     }
     onKeydown(evt: KeyboardEvent): void {
         if (evt.key === 'Escape') {

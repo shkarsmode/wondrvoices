@@ -8,6 +8,7 @@ import { WINDOW } from 'src/app/shared/tokens/window.token';
 import { locationSelectedValidator } from 'src/app/shared/validators/location-selected.validator';
 import { environment } from 'src/environments/environment';
 import { CloudinaryService } from '../../../../shared/services/cloudinary.service';
+import { formatAdministrativeLine, parseAdministrativeAddress, ParsedAdministrativeAddress } from '../../../../shared/services/google-parser.helper';
 import { VoicesService } from '../../../../shared/services/voices.service';
 import { ImageUrlResponseDto } from '../../../../shared/types/imageUrlResponse.dto';
 import { CreateVoiceRequest } from '../../../../shared/types/voices';
@@ -94,7 +95,7 @@ export class FormComponent {
     private subs = new Subscription();
     
 
-    public locOpen = signal(false);
+    // public locOpen = signal(false);
     public locLoading = signal(false);
     public locSuggestions = signal<LocationIqSuggestion[]>([]);
     private locSelectInProgress = false;
@@ -196,6 +197,7 @@ export class FormComponent {
                 ]
             ],
             location: ['', [Validators.required]],
+            customCreditTo: ['', [Validators.required]],
             lat: [null as number | null],
             lng: [null as number | null],
             creditTo: ['', [Validators.required, Validators.maxLength(this.maxMap.creditTo)]],
@@ -779,20 +781,20 @@ export class FormComponent {
 
     public useMyLocation(): void { if (!('geolocation' in navigator)) return; navigator.geolocation.getCurrentPosition(pos => { const { latitude, longitude } = pos.coords; this.form.patchValue({ lat: latitude, lng: longitude }); }); }
 
-    public onLocationBlur(): void { setTimeout(() => this.locOpen.set(false), 150); }
+    // public onLocationBlur(): void { setTimeout(() => this.locOpen.set(false), 150); }
 
     public isSelected(group: TagGroup, key: string): boolean { const arr = this.form.get(group) as FormControl<string[]>; const v = arr.value ?? []; return v.includes(key); }
 
-    public selectLocation(s: LocationIqSuggestion): void {
-        this.locSelectInProgress = true;
-        const label = this.getLocationName(s);
-        this.form.patchValue({ location: s.display_address, lat: Number(s.lat), lng: Number(s.lon) }, { emitEvent: false });
-        this.setCreditToFromAutoComplete(s);
-        this.locOpen.set(false);
-        queueMicrotask(() => this.locSelectInProgress = false);
-        this.locationSelected.set(true);
-        console.log(this.form);
-    }
+    // public selectLocation(s: LocationIqSuggestion): void {
+    //     this.locSelectInProgress = true;
+    //     const label = this.getLocationName(s);
+    //     this.form.patchValue({ location: s.display_address, lat: Number(s.lat), lng: Number(s.lon) }, { emitEvent: false });
+    //     this.setCreditToFromAutoComplete(s);
+    //     this.locOpen.set(false);
+    //     queueMicrotask(() => this.locSelectInProgress = false);
+    //     this.locationSelected.set(true);
+    //     console.log(this.form);
+    // }
 
     public locationSelected = signal(false);
 
@@ -823,6 +825,7 @@ export class FormComponent {
         const credit_to = isPoiLike && !isPlaceLike && venue ? venue : '';
         this.hasLocation.set(!!credit_to);
         this.form.get('creditTo')!.setValue(credit_to);
+        this.form.get('customCreditTo')!.setValue(credit_to);
     }
 
     public getLocationName(s: LocationIqSuggestion): string {
@@ -945,20 +948,41 @@ export class FormComponent {
         this.gmapsAcListener = this.gmapsAutocomplete.addListener('place_changed', () => {
             const place = this.gmapsAutocomplete!.getPlace();
             if (!place) return;
-
-            const lat = place.geometry?.location?.lat?.() ?? null;
-            const lng = place.geometry?.location?.lng?.() ?? null;
-            const formatted = place.formatted_address || place.name || '';
-
+        
+            const lat: number | null = place.geometry?.location?.lat?.() ?? null;
+            const lng: number | null = place.geometry?.location?.lng?.() ?? null;
+        
+            const components: GAddressComponent[] = place.address_components || [];
+            const parsed: ParsedAdministrativeAddress = parseAdministrativeAddress(components);
+        
+            const adminFormatted: string = formatAdministrativeLine(parsed);
+            const fallbackFormatted: string = place.formatted_address || place.name || '';
+        
+            // Use our admin line if it's non-empty; otherwise fallback
+            const finalFormatted: string = adminFormatted || fallbackFormatted;
+        
+            // If you also want to keep the raw Google formatted for debugging/logging:
+            // const rawGoogleFormatted = fallbackFormatted;
+        
             this.form.patchValue(
-                { location: formatted, lat, lng },
+                {
+                    location: finalFormatted,
+                    lat: lat,
+                    lng: lng
+                },
                 { emitEvent: false }
             );
-
-            const addr = this.toAddress(place.address_components || []);
-            this.setCreditToFromGoogle(place.types || [], place.name || '', addr);
-
-            this.locOpen.set(false);
+        
+            // If your downstream logic needs structured pieces:
+            // this.form.patchValue({
+            //     city: parsed.city ?? null,
+            //     state: parsed.state ?? null,
+            //     country: parsed.country ?? null,
+            //     countryCode: parsed.countryCode ?? null,
+            // });
+        
+            this.setCreditToFromGoogle(place.types || [], place.name || '', parsed);
+            // this.locOpen.set(false);
             this.locationSelected.set(true);
         });
     }
@@ -1003,6 +1027,7 @@ export class FormComponent {
 
         this.hasLocation.set(!!creditTo);
         this.form.get('creditTo')!.setValue(creditTo);
+        this.form.get('customCreditTo')!.setValue(creditTo);
     }
 
     private toAddress(
@@ -1019,6 +1044,32 @@ export class FormComponent {
                 postcode: get('postal_code'),
                 country: get('country')
             };
+    }
+
+    // public onCustomLocationInput(event: Event): void {
+    //     const val = (event.target as HTMLInputElement).value;
+    //     this.hasLocation.set(!!val);
+    //     this.form.get('creditTo')!.setValue(val);
+    //     this.form.get('customCreditTo')!.setValue(val);
+
+    //     this.voicesService.getSuggestAllIndex()
+    //         .pipe(first())
+    //         .subscribe(suggestions =>{
+    //             console.log(suggestions.creditTo);
+    //         });
+    // }
+
+    public applyTextFilter(
+        selected: { key: 'location' | 'creditTo' | 'tab'; value: string }
+    ): void {
+        const value = selected.value;
+        this.form.get('creditTo')?.setValue(value);
+        this.form.get('customCreditTo')?.setValue(value);
+    }
+
+    public onCustomCreditToChange(value: string): void {
+        this.form.get('creditTo')?.setValue(value);
+        this.form.get('customCreditTo')?.setValue(value);
     }
 
     private removeGoogleAutocomplete(): void {

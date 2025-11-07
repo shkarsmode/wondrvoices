@@ -263,7 +263,9 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
+                        <div
+                            class="form-group"
+                            [style.display]="locationSelected() ? 'none' : 'block'">
                             <div class="input-wrapper with-counter">
                                 <input
                                     [attr.maxlength]="maxMap.location"
@@ -271,34 +273,25 @@
                                     formControlName="creditTo"
                                     name="loc"
                                     placeholder=" "
-                                    (blur)="onLocationBlur()"
                                     aria-autocomplete="list"
                                     aria-haspopup="listbox"
-                                    [attr.aria-expanded]="locOpen()"
                                     #refLocation />
                                 <label [class.focused]="form.get('creditTo')?.value">Where is this card coming from *</label>
-                                <!-- <span class="counter">{{ getLen('location') }}/{{ maxMap.location }}</span> -->
-                                <!-- <button class="loc-btn" type="button" (click)="useMyLocation()">📍</button> -->
-
-                                @if (locOpen() && (locSuggestions().length || locLoading())) {
-                                    <ul class="ac-list" role="listbox">
-                                        @if (locLoading()) { <li class="loading">Searching...</li> }
-                                        @for (s of locSuggestions(); track $index) {
-                                            <li
-                                                class="ac-item"
-                                                (mousedown)="selectLocation(s)"
-                                                role="option">
-                                                {{ s.display_place }}
-                                                <span>{{ s.display_address }}</span>
-                                            </li>
-                                        }
-                                    </ul>
-                                }
-
-                                <!-- @if (form.hasError('locationNotSelected') && form.get('creditTo')?.touched) {
-                                    <small class="error">Please pick a city from the list.</small>
-                                } -->
                             </div>
+                        </div>
+                        <div
+                            class="form-group"
+                            [style.display]="!locationSelected() ? 'none' : 'block'">
+                            <div class="input-wrapper with-counter">
+
+                                <w-autocomplete
+                                    placeholder="Enter your custom credit to"
+                                    emptyHint="Type to search"
+                                    [formControlName]="'customCreditTo'"
+                                    [class.short-autocomplete]="true"
+                                    (select)="applyTextFilter($event)"
+                                    (inputChange)="onCustomCreditToChange($event)" />
+                            </div>  
                         </div>
 
                         @if (locationSelected()) {
