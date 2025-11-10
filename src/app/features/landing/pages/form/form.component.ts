@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { first, firstValueFrom, Subscription } from 'rxjs';
-import { LocationIqSuggestion, LocationIqSuggestionAddress } from 'src/app/shared/services/location-iq.service';
+import { first, firstValueFrom } from 'rxjs';
+import { LocationIqSuggestion } from 'src/app/shared/services/location-iq.service';
 import { ScrollToService } from 'src/app/shared/services/scroll-to.service';
 import { ToastService } from 'src/app/shared/toast/toast.service';
 import { WINDOW } from 'src/app/shared/tokens/window.token';
@@ -52,7 +52,6 @@ export class FormComponent {
     public submitted = signal(false);
     public isLoading = signal(false);
     public isDragOver = signal(false);
-    public hasLocation = signal(false);
 
     /* multi-upload state */
     public isMultipleUpload = false;
@@ -92,13 +91,11 @@ export class FormComponent {
     private readonly scrollToService: ScrollToService = inject(ScrollToService);
 
     // private locationIq = inject(LocationIqService);
-    private subs = new Subscription();
     
 
     // public locOpen = signal(false);
     public locLoading = signal(false);
     public locSuggestions = signal<LocationIqSuggestion[]>([]);
-    private locSelectInProgress = false;
     public gsLoading = signal(false);
     private GS_LICENSE_KEY = environment.geniusscansdkToken;
 
@@ -123,9 +120,6 @@ export class FormComponent {
         location: 'address-level2',
         creditTo: 'organization'
     };
-    public inputModeMap: Record<string, string> = { email: 'email' };
-    public typeMap: Record<string, string> = { email: 'email' };
-    public autocapitalizeMap: Record<string, string> = { firstName: 'words' };
 
     /* Statuses */
     public perItemStatus = signal<Array<'pending' | 'uploading' | 'uploaded' | 'creating' | 'done' | 'failed'>>([]);
@@ -144,11 +138,7 @@ export class FormComponent {
         if (
             this.refLocation()
         ) {
-            // setTimeout(() => {
-                console.log('init initGoogleAutocomplete');
-                this.initGoogleAutocomplete();
-                
-            // }, 5000);
+            this.initGoogleAutocomplete();
         } else {
             this.removeGoogleAutocomplete();
         }
@@ -162,24 +152,6 @@ export class FormComponent {
 
     async ngOnInit(): Promise<void> {
         if (!this.isWin) return;
-        // const locCtrl = this.form.get('creditTo') as FormControl<string>;
-        // this.subs.add(
-        //     locCtrl.valueChanges.pipe(
-        //         tap(() => {
-        //             // if (!this.locSelectInProgress) {
-        //             //     this.form.patchValue({ lat: null, lng: null }, { emitEvent: false });
-        //             // }
-        //         }),
-        //         map(v => (v || '').trim()),
-        //         tap(v => this.locOpen.set(!!v)),
-        //         filter(v => v.length >= 2),
-        //         debounceTime(250),
-        //         distinctUntilChanged(),
-        //         tap(() => this.locLoading.set(true)),
-        //         switchMap(q => this.locationIq.searchCities(q).pipe(catchError(() => of([])))),
-        //         tap(() => this.locLoading.set(false))
-        //     ).subscribe(list => this.locSuggestions.set(list))
-        // );
 
         this.form = this.fb.group({
             name: [
@@ -331,7 +303,6 @@ export class FormComponent {
 
     public setActiveIndex(index: number): void {
         this.activeIndex.set(index);
-        queueMicrotask(() => this.recomputeImgNaturalSize());
     }
 
     private ingestFiles(list: File[]): void {
@@ -354,7 +325,6 @@ export class FormComponent {
         }
 
         this.syncFormImg();
-        this.recomputeImgNaturalSize();
         this.syncPerItemStatuses();
     }
 
@@ -410,9 +380,6 @@ export class FormComponent {
         this.naturalH.set(img.naturalHeight);
     }
 
-    private recomputeImgNaturalSize(): void {
-        /* no-op placeholder; natural size will update on next <img> load */
-    }
 
     /* ————— Submit ————— */
 
@@ -446,7 +413,6 @@ export class FormComponent {
 
     private async uploadSingleAndCreateVoice(): Promise<void> {
         try {
-            // single тоже будет иметь массив из одного элемента для унификации
             this.perItemStatus.set(['uploading']);
             const idx = this.activeIndex();
             const original = this.files()[idx];
@@ -599,60 +565,6 @@ export class FormComponent {
     public draftWhat = '';
     public draftExpress = '';
 
-    private slugifyLabel(label: string): string {
-        return (label || '').trim().toLowerCase().normalize('NFKD')
-            .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
-    }
-
-    // private findOptionByKey(group: TagGroup, key: string): TagOption | undefined {
-    //     const list = group === 'what' ? this.whatOptions : group === 'express' ? this.expressOptions : this.fromOptions;
-    //     return list.find(o => o.key === key);
-    // }
-
-    // public resolveLabel(group: TagGroup, key: string): string {
-    //     return this.findOptionByKey(group, key)?.label ?? key;
-    // }
-
-    // public canAddDraft(group: 'what' | 'express'): boolean {
-    //     const draft = group === 'what' ? this.draftWhat : this.draftExpress;
-    //     const v = (draft || '').trim();
-    //     if (v.length < 2 || v.length > 24) return false;
-    //     if (!/^[\p{Letter}\p{Number}\s-]+$/u.test(v)) return false;
-    //     const ctrl = this.form.get(group) as FormControl<string[]>;
-    //     const selected = ctrl.value ?? [];
-    //     if (selected.length >= 3) return false;
-    //     const norm = v.toLowerCase();
-    //     const duplicateByLabel = selected.some(k => this.resolveLabel(group, k).toLowerCase() === norm);
-    //     if (duplicateByLabel) return false;
-    //     const slug = this.slugifyLabel(v);
-    //     const existsInOptions = !!this.findOptionByKey('what', slug) || !!this.findOptionByKey('express', slug);
-    //     if (existsInOptions) return false;
-    //     return true;
-    // }
-
-    // public addCustomTag(group: 'what' | 'express'): void {
-    //     if (!this.canAddDraft(group)) return;
-    //     const draft = (group === 'what' ? this.draftWhat : this.draftExpress).trim();
-    //     const key = draft;
-    //     const ctrl = this.form.get(group) as FormControl<string[]>;
-    //     const current = (ctrl.value ?? []).slice();
-    //     if (current.length >= 3) return;
-    //     current.push(key);
-    //     ctrl.setValue(current);
-    //     ctrl.markAsDirty();
-    //     ctrl.markAsTouched();
-    //     if (group === 'what') {
-    //         this.whatOptions.push({ key, label: draft, emoji: '✍️', custom: true });
-    //         this.draftWhat = '';
-    //     } else {
-    //         this.expressOptions.push({ key, label: draft, emoji: '✍️', custom: true });
-    //         this.draftExpress = '';
-    //     }
-    // }
-
     public removeTag(group: TagGroup, key: string): void {
         const ctrl = this.form.get(group) as FormControl<string[]>;
         const current = (ctrl.value ?? []).filter(k => k !== key);
@@ -762,8 +674,6 @@ export class FormComponent {
         }
     }
 
-    // private setFile(file: File) { this.form.patchValue({ img: file }); const reader = new FileReader(); reader.onload = () => this.previewUrl.set(reader.result as string); reader.readAsDataURL(file); this.rotationDeg.set(0); }
-
     public disableChip(group: TagGroup, key: string): boolean {
         const selected = (this.form.get(group)?.value as string[]) ?? [];
         return selected.length >= 3 && !selected.includes(key);
@@ -780,54 +690,11 @@ export class FormComponent {
         ctrl.markAsTouched();
     }
 
-    public useMyLocation(): void { if (!('geolocation' in navigator)) return; navigator.geolocation.getCurrentPosition(pos => { const { latitude, longitude } = pos.coords; this.form.patchValue({ lat: latitude, lng: longitude }); }); }
-
     // public onLocationBlur(): void { setTimeout(() => this.locOpen.set(false), 150); }
 
     public isSelected(group: TagGroup, key: string): boolean { const arr = this.form.get(group) as FormControl<string[]>; const v = arr.value ?? []; return v.includes(key); }
 
-    // public selectLocation(s: LocationIqSuggestion): void {
-    //     this.locSelectInProgress = true;
-    //     const label = this.getLocationName(s);
-    //     this.form.patchValue({ location: s.display_address, lat: Number(s.lat), lng: Number(s.lon) }, { emitEvent: false });
-    //     this.setCreditToFromAutoComplete(s);
-    //     this.locOpen.set(false);
-    //     queueMicrotask(() => this.locSelectInProgress = false);
-    //     this.locationSelected.set(true);
-    //     console.log(this.form);
-    // }
-
     public locationSelected = signal(false);
-
-    private setCreditToFromAutoComplete(r: LocationIqSuggestion): void {
-        const norm = (s: string) => s.trim().toLowerCase();
-        const PLACE_TYPES = new Set(['country', 'state', 'region', 'province', 'state_district', 'district', 'county', 'city', 'town', 'village', 'hamlet', 'suburb', 'neighbourhood', 'quarter', 'residential', 'island', 'archipelago', 'continent', 'municipality', 'locality']);
-        const POI_CLASSES = new Set(['amenity', 'shop', 'tourism', 'leisure', 'aeroway', 'railway', 'man_made', 'office', 'healthcare', 'historic', 'natural', 'sport']);
-        const POI_HIGHWAY_TYPES = new Set(['bus_stop', 'tram_stop', 'station', 'platform', 'rest_area', 'services']);
-
-        const cls = (r.class ?? '').toLowerCase();
-        const typ = (r.type ?? '').toLowerCase();
-
-        const isPlaceLike = PLACE_TYPES.has(typ) || cls === 'place';
-        const isPoiLike = POI_CLASSES.has(cls) || (cls === 'highway' && POI_HIGHWAY_TYPES.has(typ));
-
-        let venue = r.address?.name || '';
-        if (!venue && r.display_place) {
-            const i = r.display_place.indexOf(',');
-            if (i > 0) venue = r.display_place.slice(0, i).trim();
-        }
-        if (venue) {
-            const addr: LocationIqSuggestionAddress | undefined = r.address;
-            if (!addr) return;
-            const topo = [addr.city, addr.state, addr.country, addr.suburb, addr.neighbourhood, addr.county, addr.road, addr.postcode]
-                .filter(Boolean).map(v => norm(String(v)));
-            if (topo.includes(norm(venue))) venue = '';
-        }
-        const credit_to = isPoiLike && !isPlaceLike && venue ? venue : '';
-        this.hasLocation.set(!!credit_to);
-        this.form.get('creditTo')!.setValue(credit_to);
-        this.form.get('customCreditTo')!.setValue(credit_to);
-    }
 
     public getLocationName(s: LocationIqSuggestion): string {
         return s.display_name;
@@ -989,10 +856,8 @@ export class FormComponent {
     }
 
     public ngOnDestroy(): void {
-        this.subs.unsubscribe();
         this.removeGoogleAutocomplete();
     }
-
 
 
     // Копия твоей логики, только под Google types:
@@ -1026,39 +891,9 @@ export class FormComponent {
             creditTo = topo.includes(normalized) ? '' : placeName;
         }
 
-        this.hasLocation.set(!!creditTo);
         this.form.get('creditTo')!.setValue(creditTo);
         this.form.get('customCreditTo')!.setValue(creditTo);
     }
-
-    private toAddress(
-        components: GAddressComponent[] = []): 
-            { city?: string; state?: string; country?: string; suburb?: string; neighbourhood?: string; county?: string; road?: string; postcode?: string } {
-            const get = (type: string) => components.find(c => c.types.includes(type))?.long_name;
-            return {
-                road: get('route'),
-                suburb: get('sublocality'),
-                neighbourhood: get('neighborhood'),
-                city: get('locality') || get('postal_town'),
-                county: get('administrative_area_level_2'),
-                state: get('administrative_area_level_1'),
-                postcode: get('postal_code'),
-                country: get('country')
-            };
-    }
-
-    // public onCustomLocationInput(event: Event): void {
-    //     const val = (event.target as HTMLInputElement).value;
-    //     this.hasLocation.set(!!val);
-    //     this.form.get('creditTo')!.setValue(val);
-    //     this.form.get('customCreditTo')!.setValue(val);
-
-    //     this.voicesService.getSuggestAllIndex()
-    //         .pipe(first())
-    //         .subscribe(suggestions =>{
-    //             console.log(suggestions.creditTo);
-    //         });
-    // }
 
     public applyTextFilter(
         selected: { key: 'location' | 'creditTo' | 'tab'; value: string }
