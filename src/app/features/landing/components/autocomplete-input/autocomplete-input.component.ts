@@ -197,11 +197,11 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
         }
     }
 
-    @if (open() && !loading() && !isAllInfo && !suggestionsSpecific().length) {
+    <!-- @if (open() && !loading() && !isAllInfo && !suggestionsSpecific().length) {
         <div class="empty">
             @if (!value().length) { {{ emptyHint }} } @else { Not found }
         </div>
-    }
+    } -->
 </div>
 
 <div class="preload" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;">
@@ -506,16 +506,16 @@ export class AutocompleteInputComponent implements ControlValueAccessor, OnInit 
                     return;
                 }
 
-                if (this.cache.has(cacheKey)) {
-                    this.loading.set(false);
-                    const cached = this.cache.get(cacheKey)!;
-                    if (this.isAllInfo) {
-                        this.suggestionsAll.set(cached as any);
-                    } else {
-                        this.suggestionsSpecific.set([]);
-                    }
-                    return;
-                }
+                // if (this.cache.has(cacheKey)) {
+                //     this.loading.set(false);
+                //     const cached = this.cache.get(cacheKey)!;
+                //     if (this.isAllInfo) {
+                //         this.suggestionsAll.set(cached as any);
+                //     } else {
+                //         // this.suggestionsSpecific.set([]);
+                //     }
+                //     return;
+                // }
 
                 this.loading.set(true);
 

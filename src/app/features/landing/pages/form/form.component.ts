@@ -161,6 +161,7 @@ export class FormComponent {
     }
 
     async ngOnInit(): Promise<void> {
+        if (!this.isWin) return;
         // const locCtrl = this.form.get('creditTo') as FormControl<string>;
         // this.subs.add(
         //     locCtrl.valueChanges.pipe(
