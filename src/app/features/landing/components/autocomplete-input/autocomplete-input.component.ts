@@ -58,17 +58,17 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
         [attr.aria-autocomplete]="'list'"
         [attr.aria-haspopup]="'listbox'"
         #inputRef />
-        <label [class.focused]="inputRef?.value">{{ placeholder }}</label>
+    <label [class.focused]="inputRef?.value" [class.moved]="isAllInfo">{{ placeholder }}</label>
 
-        @if (inputRef.value) {
-            <span 
-                class="close"
-                (click)="
-                    onInput(''); 
-                ">
-                <span class="material-symbols-outlined md">close</span>
-            </span>
-        }
+    @if (inputRef.value) {
+        <span 
+            class="close"
+            (click)="
+                onInput(''); 
+            ">
+            <span class="material-symbols-outlined md">close</span>
+        </span>
+    }
 
     @if (loading()) {
         <div class="input-indicator" aria-hidden="true">
@@ -229,6 +229,7 @@ import { VoiceStatus } from 'src/app/shared/types/voices';
     }
 }
 
+
 label {
     position: absolute;
     top: 50%;
@@ -237,9 +238,22 @@ label {
     color: #888;
     transition: all 0.2s ease;
     pointer-events: none;
+    width: max-content;
+
+    &.moved {
+        left: 2.5rem !important;
+    }
 
     @media screen and (max-width: 500px) {
         font-size: 14px;
+    }
+}
+
+::ng-deep .short-autocomplete {
+    label {
+        opacity: 0;
+        transition: all .4s;
+        width: max-content;
     }
 }
 
@@ -250,6 +264,11 @@ input:active+label,
     left: 0.9rem;
     font-size: 0.75rem;
     color: #ffbfae;
+
+    &.moved {
+        top: 8px;
+        font-size: 0.65rem
+    }
 }
 
 /* ===== Material Symbols (Outlined) base ===== */
