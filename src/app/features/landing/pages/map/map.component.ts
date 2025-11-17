@@ -118,10 +118,28 @@ export class MapComponent implements AfterViewInit {
     }
 
     private async loadVoices() {
-        this.voicesSvc
-            .getApprovedVoices(250, { page: 0 })
-            .pipe(first())
-            .subscribe(({ items }) => this.voices.set(items));
+        let page = 0;
+        let done = false;
+    
+        while (!done) {
+            // @ts-ignore
+            const { items, total } = await this.voicesSvc
+                .getApprovedVoices(100, { page })
+                .pipe(first())
+                .toPromise();
+    
+            if (!items.length) {
+                done = true;
+                continue;
+            }
+    
+            this.voices.set([...this.voices(), ...items]);
+    
+            page++;
+            if ((page - 1) * 100 >= total) {
+                done = true;
+            }
+        }
     }
 
     private refreshLayers() {

@@ -1,33 +1,113 @@
-<section class="map-wrapper" aria-label="WondrVoices Map">
-    <header class="toolbar">
-        <div class="filters">
-            <label>
-                <span>City</span>
-                <select (change)="setCity(($any($event.target).value)||null)">
-                    <option [value]="''">All</option>
-                    @for (c of distinctCities(); track c) {
-                        <option [selected]="c === queryCity()" [value]="c">{{ c }}</option>
-                    }
-                </select>
-            </label>
-            <label>
-                <span>Credit to</span>
-                <select (change)="setCredit(($any($event.target).value)||null)">
-                    <option [value]="''">All</option>
-                    @for (p of distinctCredits(); track p) {
-                        <option [selected]="p === queryCredit()" [value]="p">{{ p }}</option>
-                    }
-                </select>
-            </label>
-            <button class="clear" (click)="clearFilters()" [disabled]="!queryCity() && !queryCredit()">Clear</button>
+<section
+    class="map-wrapper"
+    aria-label="WondrVoices map">
+    <header class="map-toolbar">
+        <div class="map-toolbar__left">
+            <h2 class="map-title">
+                Voices map
+            </h2>
+            <p class="map-subtitle">
+                Explore where WondrVoices were recorded, filter by city and credit.
+            </p>
         </div>
-        <div class="meta">
-            <span>{{ filtered().length }} voices</span>
-            @if (!mapReady()) {
-                <span class="loading">Loading map…</span>
+
+        <div class="map-toolbar__right">
+            <div class="map-meta">
+                <span class="map-meta__count">
+                    {{ filtered().length }} voices
+                </span>
+
+                @if (!mapReady()) {
+                    <span class="map-meta__loading">
+                        Loading map…
+                    </span>
+                }
+            </div>
+
+            <div class="map-filters">
+                <label class="map-filter">
+                    <span class="map-filter__label">
+                        City
+                    </span>
+                    <select
+                        class="map-filter__control"
+                        (change)="setCity(($any($event.target).value)||null)">
+                        <option [value]="''">
+                            All
+                        </option>
+                        @for (c of distinctCities(); track c) {
+                            <option
+                                [value]="c"
+                                [selected]="c === queryCity()">
+                                {{ c }}
+                            </option>
+                        }
+                    </select>
+                </label>
+
+                <label class="map-filter">
+                    <span class="map-filter__label">
+                        Credit to
+                    </span>
+                    <select
+                        class="map-filter__control"
+                        (change)="setCredit(($any($event.target).value)||null)">
+                        <option [value]="''">
+                            All
+                        </option>
+                        @for (p of distinctCredits(); track p) {
+                            <option
+                                [value]="p"
+                                [selected]="p === queryCredit()">
+                                {{ p }}
+                            </option>
+                        }
+                    </select>
+                </label>
+
+                <button
+                    class="map-clear-btn"
+                    [disabled]="!queryCity() && !queryCredit()"
+                    (click)="clearFilters()">
+                    Clear filters
+                </button>
+            </div>
+
+            @if (queryCity() || queryCredit()) {
+                <div class="map-active-filters">
+                    @if (queryCity()) {
+                        <button
+                            class="map-chip"
+                            (click)="setCity(null)">
+                            <span class="map-chip__label">
+                                City: {{ queryCity() }}
+                            </span>
+                            <span class="map-chip__close">
+                                ×
+                            </span>
+                        </button>
+                    }
+
+                    @if (queryCredit()) {
+                        <button
+                            class="map-chip"
+                            (click)="setCredit(null)">
+                            <span class="map-chip__label">
+                                Credit: {{ queryCredit() }}
+                            </span>
+                            <span class="map-chip__close">
+                                ×
+                            </span>
+                        </button>
+                    }
+                </div>
             }
         </div>
     </header>
 
-    <div #map class="map"></div>
+    <div
+        #map
+        class="map"
+        [class.map--loading]="!mapReady()">
+    </div>
 </section>
