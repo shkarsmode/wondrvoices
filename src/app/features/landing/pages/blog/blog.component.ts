@@ -95,7 +95,7 @@ export class BlogComponent implements OnInit {
                 setTimeout(() => {
                     this.tabs.set([
                         'All',
-                        ...Array.from(new Set(this.posts().map(post => post.tag)))
+                        // TODO: recomment it ...Array.from(new Set(this.posts().map(post => post.tag)))
                     ]);
                     this.isLoading.set(false);
                     this.changeDetectionRef.detectChanges();

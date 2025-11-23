@@ -19,7 +19,7 @@
     <div class="content">
         @for (post of filteredPosts(); track post.id) {
             <div class="blog-card" [routerLink]="['/blogs', post.id]">
-                <span class="tag">{{ post.tag }}</span>
+                <!-- TODO: recomment <span class="tag">{{ post.tag }}</span> -->
                 <h3>{{ post.header }}</h3>
                 <p>{{ post.subHeader }}</p>
                 <a [routerLink]="['/blogs', post.id]">Read our story →</a>
