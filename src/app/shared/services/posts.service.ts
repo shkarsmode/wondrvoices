@@ -22,7 +22,7 @@ export class PostsService {
         postponed: boolean = false
     ): Observable<AllPostsResponseDto> {
         return this.http.get<AllPostsResponseDto>(
-            `${this.basePathApi}/${this.postsPath}/all?limit=${limit}&page=${page}&postponed=${postponed}&withTag=true` 
+            `${this.basePathApi}/${this.postsPath}/all?limit=${limit}&page=${page}&postponed=${postponed}&isWondrvoices=true` 
         );
     }
 
