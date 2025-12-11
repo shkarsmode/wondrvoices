@@ -182,6 +182,7 @@ export class FormComponent {
     }
 
     public ngAfterViewInit(): void {
+        return;
         if (this.isWin && !this.isMobileUA) {
             this.scanButtonRef()!.nativeElement.style.display = 'none';
         }

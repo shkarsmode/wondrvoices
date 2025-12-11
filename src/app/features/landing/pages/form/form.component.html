@@ -1,4 +1,4 @@
-@if (!submitted()) {
+<!-- @if (!submitted()) {
     <div class="wizard">
         <div class="steps">
             <div class="dot" [class.active]="step()===1" (click)="chooseStep(1)">1</div>
@@ -192,13 +192,6 @@
                                         [disabled]="!canAddDraftUnified('what')">
                                         Add
                                     </button>
-                                    <!-- <button
-                                        class="btn add"
-                                        type="button"
-                                        (click)="addCustomUnified('express')"
-                                        [disabled]="!canAddDraftUnified('express')">
-                                        Add to “Describe”
-                                    </button> -->
                                 </div>
                             </div>
                         }
@@ -308,23 +301,6 @@
                                     (inputChange)="onCustomCreditToChange($event)" />
                             </div>  
                         </div>
-                        
-
-                        <!-- @if (locationSelected()) {
-                            <div class="form-group location-selected">
-                                <span>
-                                    {{ form.get('location')?.value }}
-                                </span>
-                                <span 
-                                    (click)="
-                                        form.get('location')?.setValue(''); 
-                                        locationSelected.set(false);
-                                        form.get('creditTo')?.setValue(''); 
-                                    ">
-                                    <span class="material-symbols-outlined md">close</span>
-                                </span>
-                            </div>
-                        } -->
                     </section>
                 </form>
                 <div class="nav">
@@ -448,7 +424,43 @@
             Submit Another →
         </button>
     </div>
-}
+} -->
+
+
+<div class="submit-cards-blocked">
+    <h1>Submit cards from our mobile app</h1>
+
+    <p>
+        For now, submitting new cards is only available in the WondrVoices mobile app.  
+        The app gives you a smoother experience to scan, crop, and upload your drawings
+        or handwritten messages in just a few taps.
+    </p>
+
+    <p>
+        Download the app, create or log into your account, and tap
+        <strong>“Submit a card”</strong> to share your voice.
+    </p>
+
+    <div class="submit-cards-blocked__stores wrap-buttons">
+        <a
+            href="https://play.google.com/store/apps/details?id=com.fwollo.wondrdrop"
+            target="_blank"
+            rel="noopener noreferrer">
+            <img src="assets/img/google.webp" alt="Get it on Google Play">
+        </a>
+        <a
+            href="https://apps.apple.com/us/app/wondrvoices-share-kindness/id6748359471"
+            target="_blank"
+            rel="noopener noreferrer">
+            <img src="assets/img/app-store.webp" alt="Download on the App Store">
+        </a>
+    </div>
+
+    <p class="submit-cards-blocked__hint">
+        Already submitted a card from the app?
+        Your voice will appear on the map once it is reviewed.
+    </p>
+</div>
 
 <div class="preload" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;">
     <span class="material-symbols-outlined sm opt-ico" aria-hidden="true">rotate_right</span>

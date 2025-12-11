@@ -118,28 +118,46 @@ export class MapComponent implements AfterViewInit {
     }
 
     private async loadVoices() {
-        let page = 0;
-        let done = false;
+        if (typeof window === 'undefined') {
+            return;
+        }
     
-        while (!done) {
-            // @ts-ignore
-            const { items, total } = await this.voicesSvc
-                .getApprovedVoices(100, { page })
+        const limit = 100;
+        let page = 1;
+        const allVoices: IVoice[] = [];
+    
+        console.log('[Map] loading voices...');
+    
+        while (true) {
+            const response = await this.voicesSvc
+                .getApprovedVoices(limit, { page })
                 .pipe(first())
                 .toPromise();
+
+            const items = response?.items;
+            if (!items) {
+                break;
+            }
+    
+            console.log('[Map] page', page, 'items:', items.length);
     
             if (!items.length) {
-                done = true;
-                continue;
+                break;
             }
     
-            this.voices.set([...this.voices(), ...items]);
+            allVoices.push(...items);
+    
+            // если вернулось меньше limit — значит это последняя страница
+            if (items.length < limit) {
+                break;
+            }
     
             page++;
-            if ((page - 1) * 100 >= total) {
-                done = true;
-            }
         }
+    
+        console.log('[Map] total voices loaded:', allVoices.length);
+    
+        this.voices.set(allVoices);
     }
 
     private refreshLayers() {
