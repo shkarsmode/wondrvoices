@@ -172,7 +172,7 @@ export class GalleryComponent implements OnInit {
         const total = this.totalCount();
         const image = this.brandLogoUrl() || fallbackFirstImage || null;
     
-        const metaTitle = `${venue} • ${total > 0 ? total + ' cards • ' : ''}Wondrvoices`;
+        const metaTitle = `${venue} • Wondrvoices`;
         const metaDesc = `Explore cards from ${venue}. Curated messages and art from our community.`;
     
         this.title.setTitle(metaTitle);
