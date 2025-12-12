@@ -57,7 +57,7 @@ export class VoicesService {
             return of({ items: this.cache[stringifiedExtra], total: this.cache[stringifiedExtra].length });
         }
         return this.http.get<VoicesListResponse>(
-            `${this.basePathApi}/${this.path}${approvedUrl}?timestamp=${Date.now()}`,
+            `${this.basePathApi}/${this.path}${approvedUrl}`,
             { params }
         ).pipe(
             tap(({ items }) => {
