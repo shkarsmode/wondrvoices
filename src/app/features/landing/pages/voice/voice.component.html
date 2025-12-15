@@ -2,12 +2,21 @@
     <div class="card-details">
         <button class="back-btn" (click)="history.back()">← Back</button>
 
-        <div class="image">
+        <div
+            class="image"
+            (mouseenter)="onImageHoverStart()"
+            (mouseleave)="onImageHoverEnd()"
+            (mousemove)="onImageMouseMove($event)">
             <img
+                [class.is-zoomed]="isImageZoomed()"
+                [class.is-left]="!isImageZoomed()"
                 [style.viewTransitionName]="'img-voice-' + card()!.id"
+                [style.--zoom-origin-x]="zoomOriginX() + '%'"
+                [style.--zoom-origin-y]="zoomOriginY() + '%'"
                 [src]="card()!.img"
                 alt="Card image">
         </div>
+
 
         <div class="content">
             <div class="wrap-category" [style.viewTransitionName]="'img-tag-' + card()!.id">

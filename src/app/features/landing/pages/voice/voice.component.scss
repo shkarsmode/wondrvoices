@@ -150,13 +150,22 @@
         height: auto;
         border-radius: 12px;
         object-fit: cover;
-        transition: transform 0.4s ease;
 
-        &:hover {
-            transform: scale(1.05);
-        }
+        transform-origin: var(--zoom-origin-x, 50%) var(--zoom-origin-y, 50%);
+        transform: scale(1);
+        transition: transform 500ms ease;
+        will-change: transform;
+    }
+
+    img.is-zoomed {
+        transform: scale(1.45);
+    }
+
+    img.is-left {
+        transition: all .6s;
     }
 }
+
 
 @media (max-width: 768px) {
     .card-details {

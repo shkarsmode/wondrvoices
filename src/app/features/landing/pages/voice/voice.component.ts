@@ -166,4 +166,50 @@ export class VoiceComponent implements OnInit {
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
         this.meta.updateTag({ property: 'og:url', content: this.buildCanonicalVoiceUrl(this.card()!.id) });
     }
+
+    public isImageZoomed = signal<boolean>(false);
+    public zoomOriginX = signal<number>(50);
+    public zoomOriginY = signal<number>(50);
+
+    private imageMoveRafId: number | null = null;
+
+    public onImageHoverStart(): void {
+        this.isImageZoomed.set(true);
+    }
+
+    public onImageHoverEnd(): void {
+        this.isImageZoomed.set(false);
+        this.zoomOriginX.set(50);
+        this.zoomOriginY.set(50);
+
+        if (this.imageMoveRafId !== null) {
+            cancelAnimationFrame(this.imageMoveRafId);
+            this.imageMoveRafId = null;
+        }
+    }
+
+    public onImageMouseMove(event: MouseEvent): void {
+        if (!this.isImageZoomed()) return;
+
+        const container = event.currentTarget as HTMLElement | null;
+        if (!container) return;
+
+        if (this.imageMoveRafId !== null) {
+            cancelAnimationFrame(this.imageMoveRafId);
+        }
+
+        this.imageMoveRafId = requestAnimationFrame(() => {
+            const rect = container.getBoundingClientRect();
+            const rawX = ((event.clientX - rect.left) / rect.width) * 100;
+            const rawY = ((event.clientY - rect.top) / rect.height) * 100;
+
+            this.zoomOriginX.set(this.clamp(rawX, 0, 100));
+            this.zoomOriginY.set(this.clamp(rawY, 0, 100));
+        });
+    }
+
+    private clamp(value: number, min: number, max: number): number {
+        return Math.min(max, Math.max(min, value));
+    }
+
 }
