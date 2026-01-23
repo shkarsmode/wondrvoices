@@ -1,6 +1,8 @@
 <div class="request-support">
     <div class="header-section">
-        <div class="icon-circle">🤝</div>
+        <div class="icon-circle">
+            <span class="material-symbols-outlined">volunteer_activism</span>
+        </div>
         <h1>Request Support From Our Community</h1>
         <p class="subtitle">
             If you or a loved one is facing cancer, a rare disease, or other serious illness, you deserve support.
@@ -12,11 +14,11 @@
             <div class="progress-info">
                 <span>Step {{ currentStep() }} of {{ totalSteps }}</span>
                 <span class="time-remaining" *ngIf="timeRemaining() > 0">
-                    <span class="icon">⏱️</span>
+                    <span class="material-symbols-outlined icon">schedule</span>
                     ~{{ timeRemaining() }} min remaining
                 </span>
                 <span class="complete-text" *ngIf="timeRemaining() === 0">
-                    <span class="icon">✓</span>
+                    <span class="material-symbols-outlined icon">check_circle</span>
                     Complete!
                 </span>
             </div>
@@ -30,7 +32,7 @@
                     [class.completed]="currentStep() > step"
                     [class.active]="currentStep() === step">
                     <div class="step-circle">
-                        <span *ngIf="currentStep() > step">✓</span>
+                        <span class="material-symbols-outlined" *ngIf="currentStep() > step">check</span>
                         <span *ngIf="currentStep() <= step">{{ step }}</span>
                     </div>
                 </div>
@@ -175,7 +177,7 @@
                     class="comfort-zone-btn"
                     [class.selected]="isZoneSelected(zone.id)"
                     (click)="toggleComfortZone(zone.id)">
-                    <span class="zone-icon">{{ zone.icon }}</span>
+                    <span class="material-symbols-outlined zone-icon">{{ zone.icon }}</span>
                     <span class="zone-label">{{ zone.label }}</span>
                 </button>
             </div>
@@ -205,14 +207,16 @@
     <!-- Step 3: Verify Your Email -->
     <div class="step-content" *ngIf="currentStep() === 3">
         <div class="card verification-card">
-            <div class="icon-circle-small">🛡️</div>
+            <div class="icon-circle-small">
+                <span class="material-symbols-outlined">verified_user</span>
+            </div>
             <h2>Verify Your Email</h2>
             <p class="step-description">
                 To prevent spam and ensure real requests, please verify your email address.
             </p>
 
             <div class="email-display">
-                <span class="icon">✉️</span>
+                <span class="material-symbols-outlined icon">mail</span>
                 {{ step1Form.value.email }}
                 <button type="button" class="change-btn" (click)="currentStep.set(1)">Change</button>
             </div>
@@ -252,7 +256,9 @@
     <!-- Step 4: Success -->
     <div class="step-content" *ngIf="currentStep() === 4">
         <div class="card success-card">
-            <div class="icon-circle-success">✓</div>
+            <div class="icon-circle-success">
+                <span class="material-symbols-outlined">check_circle</span>
+            </div>
             <h2>Request Submitted Successfully!</h2>
             <p class="success-message">Your unique Request ID is:</p>
 
@@ -264,9 +270,9 @@
             <div class="next-steps">
                 <h3>What happens next?</h3>
                 <ul>
-                    <li>✓ Our caring community will create personalized messages for you</li>
-                    <li>✓ Messages will be matched to your comfort zones</li>
-                    <li>✓ You'll receive notifications when new messages arrive</li>
+                    <li><span class="material-symbols-outlined">check</span> Our caring community will create personalized messages for you</li>
+                    <li><span class="material-symbols-outlined">check</span> Messages will be matched to your comfort zones</li>
+                    <li><span class="material-symbols-outlined">check</span> You'll receive notifications when new messages arrive</li>
                 </ul>
             </div>
 

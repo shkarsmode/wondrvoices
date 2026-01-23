@@ -19,15 +19,15 @@ export class BrowseRequestsComponent implements OnInit {
     selectedFilter = signal<FilterCategory>(FilterCategory.All);
 
     filters = [
-        { id: FilterCategory.All, label: 'All', icon: '🌟' },
-        { id: FilterCategory.Humor, label: 'Humor', icon: '😊' },
-        { id: FilterCategory.Prayers, label: 'Prayers', icon: '🙏' },
-        { id: FilterCategory.Nature, label: 'Nature', icon: '🌿' },
-        { id: FilterCategory.Poems, label: 'Poems', icon: '✍️' },
-        { id: FilterCategory.Art, label: 'Art', icon: '🎨' },
-        { id: FilterCategory.Encouragement, label: 'Encouragement', icon: '👍' },
-        { id: FilterCategory.Hope, label: 'Hope', icon: '✨' },
-        { id: FilterCategory.Mindfulness, label: 'Min', icon: '🧘' }
+        { id: FilterCategory.All, label: 'All', icon: 'star' },
+        { id: FilterCategory.Humor, label: 'Humor', icon: 'sentiment_satisfied' },
+        { id: FilterCategory.Prayers, label: 'Prayers', icon: 'volunteer_activism' },
+        { id: FilterCategory.Nature, label: 'Nature', icon: 'park' },
+        { id: FilterCategory.Poems, label: 'Poems', icon: 'edit_note' },
+        { id: FilterCategory.Art, label: 'Art', icon: 'palette' },
+        { id: FilterCategory.Encouragement, label: 'Encouragement', icon: 'thumb_up' },
+        { id: FilterCategory.Hope, label: 'Hope', icon: 'auto_awesome' },
+        { id: FilterCategory.Mindfulness, label: 'Min', icon: 'self_improvement' }
     ];
 
     constructor(private requestsService: RequestsService) {}
@@ -77,17 +77,17 @@ export class BrowseRequestsComponent implements OnInit {
 
     getComfortZoneIcon(zone: string): string {
         const icons: Record<string, string> = {
-            'encouragement': '👍',
-            'prayers': '🙏',
-            'hope': '✨',
-            'poems': '✍️',
-            'nature': '🌿',
-            'mindfulness': '🧘',
-            'art': '🎨',
-            'humor': '😊',
-            'other': '💭'
+            'encouragement': 'thumb_up',
+            'prayers': 'volunteer_activism',
+            'hope': 'auto_awesome',
+            'poems': 'edit_note',
+            'nature': 'park',
+            'mindfulness': 'self_improvement',
+            'art': 'palette',
+            'humor': 'sentiment_satisfied',
+            'other': 'forum'
         };
-        return icons[zone] || '💭';
+        return icons[zone] || 'forum';
     }
 
     getComfortZoneLabel(zone: string): string {

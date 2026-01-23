@@ -4,32 +4,34 @@
     </div>
 
     <div class="header-card" *ngIf="request() as req">
-        <div class="badge">💚</div>
+        <div class="badge">
+            <span class="material-symbols-outlined">favorite</span>
+        </div>
         <div class="header-main">
             <div class="title-row">
                 <h1>{{ getDisplayName() }}</h1>
-                <span class="request-id">{{ req.id }}</span>
             </div>
             <div class="meta-row">
-                <span>👤 Age {{ req.age }}</span>
-                <span>📍 {{ req.location }}</span>
-                <span>🕒 {{ getTimeAgo(req.createdAt) }}</span>
+                <span><span class="material-symbols-outlined">person</span> Age {{ req.age }}</span>
+                <span><span class="material-symbols-outlined">location_on</span> {{ req.location }}</span>
+                <span><span class="material-symbols-outlined">schedule</span> {{ getTimeAgo(req.createdAt) }}</span>
             </div>
             <div class="hospital" *ngIf="req.hospital">{{ req.hospital }}</div>
             <div class="diagnosis-badge">{{ req.diagnosis }}</div>
             <p class="note">{{ req.additionalNote }}</p>
             <div class="tags">
                 <span class="tag" *ngFor="let zone of req.comfortZones">
-                    {{ getComfortZoneIcon(zone) }} {{ zone | titlecase }}
+                    <span class="material-symbols-outlined">{{ getComfortZoneIcon(zone) }}</span> {{ zone | titlecase }}
                 </span>
             </div>
             <div class="stats">
-                <span>❤️ {{ req.hearts || 0 }}</span>
-                <span>↗️ {{ req.shares || 0 }}</span>
-                <span>💬 {{ req.comments || 0 }}</span>
+                <span><span class="material-symbols-outlined">favorite</span> {{ req.hearts || 0 }}</span>
+                <span><span class="material-symbols-outlined">share</span> {{ req.shares || 0 }}</span>
+                <span><span class="material-symbols-outlined">chat_bubble</span> {{ req.comments || 0 }}</span>
             </div>
         </div>
         <div class="cta">
+            <div class="request-id">{{ req.id }}</div>
             <button class="btn-secondary">Send Love</button>
         </div>
     </div>
@@ -41,10 +43,10 @@
                 <div class="accordion-item" [class.open]="accordionOpen().message">
                     <button class="accordion-header" (click)="toggleAccordion('message')">
                         <span class="left">
-                            <span class="icon">💬</span>
+                            <span class="material-symbols-outlined icon">chat_bubble</span>
                             <span>Send a message now</span>
                         </span>
-                        <span class="chevron" [class.rotated]="accordionOpen().message">⌃</span>
+                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().message">expand_less</span>
                     </button>
                     <div class="accordion-body" *ngIf="accordionOpen().message">
                         <div class="send-row">
@@ -62,18 +64,18 @@
                 <div class="accordion-item" [class.open]="accordionOpen().social">
                     <button class="accordion-header" (click)="toggleAccordion('social')">
                         <span class="left">
-                            <span class="icon">🔗</span>
+                            <span class="material-symbols-outlined icon">link</span>
                             <span>Share via social media</span>
                         </span>
-                        <span class="chevron" [class.rotated]="accordionOpen().social">⌃</span>
+                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().social">expand_less</span>
                     </button>
                     <div class="accordion-body" *ngIf="accordionOpen().social">
                         <p class="muted">Post a video, photo, or message and tag <strong>@wondrvoices</strong> with <span class="pill">#{{ req.id }}</span></p>
                         <div class="social-row">
-                            <span class="social">📸</span>
-                            <span class="social">📘</span>
-                            <span class="social">🐦</span>
-                            <span class="social">▶️</span>
+                            <span class="social">Instagram</span>
+                            <span class="social">Facebook</span>
+                            <span class="social">Twitter</span>
+                            <span class="social">YouTube</span>
                         </div>
                     </div>
                 </div>
@@ -81,10 +83,10 @@
                 <div class="accordion-item" [class.open]="accordionOpen().upload">
                     <button class="accordion-header" (click)="toggleAccordion('upload')">
                         <span class="left">
-                            <span class="icon">📝</span>
+                            <span class="material-symbols-outlined icon">upload_file</span>
                             <span>Upload handwritten notes or artwork</span>
                         </span>
-                        <span class="chevron" [class.rotated]="accordionOpen().upload">⌃</span>
+                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().upload">expand_less</span>
                     </button>
                     <div class="accordion-body" *ngIf="accordionOpen().upload">
                         <p class="muted">Snap a photo of your handwritten note or artwork and upload it (feature placeholder).</p>
@@ -94,10 +96,10 @@
                 <div class="accordion-item" [class.open]="accordionOpen().mail">
                     <button class="accordion-header" (click)="toggleAccordion('mail')">
                         <span class="left">
-                            <span class="icon">✉️</span>
+                            <span class="material-symbols-outlined icon">mail</span>
                             <span>Send physical mail</span>
                         </span>
-                        <span class="chevron" [class.rotated]="accordionOpen().mail">⌃</span>
+                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().mail">expand_less</span>
                     </button>
                     <div class="accordion-body" *ngIf="accordionOpen().mail">
                         <p class="muted">Send a physical card or letter to:</p>
@@ -110,7 +112,7 @@
             </div>
 
             <div class="share-row">
-                <a>🔗 Share This Request</a>
+                <a><span class="material-symbols-outlined">link</span> Share This Request</a>
             </div>
         </div>
 
@@ -130,7 +132,7 @@
                         <img *ngIf="msg.type === 'image'" [src]="msg.thumbnailUrl" alt="support media">
                         <div class="video-thumb" *ngIf="msg.type === 'video'">
                             <img [src]="msg.thumbnailUrl" alt="video thumb">
-                            <span class="play">▶</span>
+                            <span class="material-symbols-outlined play">play_arrow</span>
                         </div>
                     </div>
                     <div class="message-body">

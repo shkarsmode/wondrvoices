@@ -40,6 +40,10 @@
                 gap: 0.5rem;
                 transition: all 0.2s;
 
+                .material-symbols-outlined.icon {
+                    font-size: 1rem;
+                }
+
                 .icon {
                     font-size: 1.125rem;
                 }
@@ -146,23 +150,23 @@
 
         .requests-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.25rem;
 
             .request-card {
                 background: white;
                 border-radius: 12px;
-                padding: 1.5rem;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                padding: 1.25rem;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
                 position: relative;
                 transition: all 0.2s;
-                border: 2px solid transparent;
+                border: 1px solid transparent;
                 text-decoration: none;
                 color: inherit;
 
                 &:hover {
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    border-color: #cf866e;
+                    border-color: #cf866ea4;
                 }
 
                 &.send-joy {
@@ -217,13 +221,13 @@
 
                 .favorite-btn {
                     position: absolute;
-                    top: 1rem;
-                    right: 1rem;
+                    top: 0.9rem;
+                    right: 0.9rem;
                     background: white;
-                    border: 2px solid #e9ecef;
+                    border: 1.5px solid #e5e8ef;
                     border-radius: 50%;
-                    width: 36px;
-                    height: 36px;
+                    width: 34px;
+                    height: 34px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -237,8 +241,9 @@
 
                     .heart-icon {
                         filter: grayscale(100%);
-                        opacity: 0.5;
+                        opacity: 0.6;
                         transition: all 0.2s;
+                        font-size: 1.1rem;
                     }
 
                     &:hover .heart-icon {
@@ -248,19 +253,19 @@
                 }
 
                 .card-header {
-                    margin-bottom: 1rem;
+                    margin-bottom: 0.8rem;
 
                     .name {
-                        font-size: 1.25rem;
+                        font-size: 1.15rem;
                         font-weight: 600;
                         color: #2d3748;
                         margin-bottom: 0.25rem;
                     }
 
                     .meta {
-                        font-size: 0.875rem;
-                        color: #718096;
-                        margin-bottom: 0.5rem;
+                        font-size: 0.9rem;
+                        color: #5b6778;
+                        margin-bottom: 0.35rem;
                     }
 
                     .location {
@@ -268,32 +273,36 @@
                         color: #4a5568;
                         display: flex;
                         align-items: center;
-                        gap: 0.25rem;
-                        margin-bottom: 0.25rem;
+                        gap: 0.3rem;
+                        margin-bottom: 0.3rem;
+
+                        .material-symbols-outlined.icon {
+                            font-size: 1rem;
+                        }
                     }
 
                     .hospital {
-                        font-size: 0.875rem;
-                        color: #4299e1;
+                        font-size: 0.9rem;
+                        color: #2b6cb0;
                     }
                 }
 
                 .card-body {
-                    margin-bottom: 1rem;
+                    margin-bottom: 0.9rem;
 
                     .diagnosis-badge {
                         display: inline-block;
-                        padding: 0.25rem 0.75rem;
-                        background: #fed7d7;
-                        color: #c53030;
-                        border-radius: 12px;
-                        font-size: 0.75rem;
-                        font-weight: 500;
-                        margin-bottom: 0.75rem;
+                        padding: 0.3rem 0.75rem;
+                        background: #fde7e3;
+                        color: #c2544a;
+                        border-radius: 14px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        margin-bottom: 0.65rem;
                     }
 
                     .message {
-                        font-size: 0.875rem;
+                        font-size: 0.92rem;
                         color: #4a5568;
                         line-height: 1.5;
                     }
@@ -306,22 +315,22 @@
                     .tags {
                         display: flex;
                         flex-wrap: wrap;
-                        gap: 0.5rem;
-                        margin-bottom: 0.75rem;
+                        gap: 0.45rem;
+                        margin-bottom: 0.65rem;
 
                         .tag {
                             display: inline-flex;
                             align-items: center;
-                            gap: 0.25rem;
-                            padding: 0.25rem 0.75rem;
-                            background: #edf2f7;
-                            color: #4a5568;
-                            border-radius: 12px;
-                            font-size: 0.75rem;
+                            gap: 0.35rem;
+                            padding: 0.25rem 0.65rem;
+                            background: #eef6f3;
+                            color: #3f5d52;
+                            border-radius: 999px;
+                            font-size: 0.85rem;
                             font-weight: 500;
 
                             .tag-icon {
-                                font-size: 0.875rem;
+                                font-size: 1rem;
                             }
                         }
                     }
@@ -329,13 +338,29 @@
                     .stats {
                         display: flex;
                         gap: 1rem;
-                        font-size: 0.875rem;
-                        color: #718096;
+                        font-size: 0.9rem;
+                        color: #5b6778;
 
                         .stat {
                             display: flex;
                             align-items: center;
-                            gap: 0.25rem;
+                            gap: 0.35rem;
+
+                            .material-symbols-outlined.icon {
+                                font-size: 1rem;
+                            }
+                        }
+
+                        .stat:nth-child(1) .material-symbols-outlined.icon {
+                            color: #6b7280;
+                        }
+
+                        .stat:nth-child(2) .material-symbols-outlined.icon {
+                            color: #2e9c7c;
+                        }
+
+                        .stat:nth-child(3) .material-symbols-outlined.icon {
+                            color: #d57b45;
                         }
                     }
                 }
@@ -347,10 +372,10 @@
                     background: #cf866e;
                     color: white;
                     border: none;
-                    width: 32px;
-                    height: 32px;
+                    width: 36px;
+                    height: 36px;
                     border-radius: 50%;
-                    font-size: 1.125rem;
+                    font-size: 1.05rem;
                     cursor: pointer;
                     transition: all 0.2s;
 

@@ -59,17 +59,17 @@ export class RequestComponent implements OnInit {
 
     getComfortZoneIcon(zone: string): string {
         const icons: Record<string, string> = {
-            'encouragement': '👍',
-            'prayers': '🙏',
-            'hope': '✨',
-            'poems': '✍️',
-            'nature': '🌿',
-            'mindfulness': '🧘',
-            'art': '🎨',
-            'humor': '😊',
-            'other': '💭'
+            'encouragement': 'thumb_up',
+            'prayers': 'volunteer_activism',
+            'hope': 'auto_awesome',
+            'poems': 'edit_note',
+            'nature': 'park',
+            'mindfulness': 'self_improvement',
+            'art': 'palette',
+            'humor': 'sentiment_satisfied',
+            'other': 'forum'
         };
-        return icons[zone] || '💭';
+        return icons[zone] || 'forum';
     }
 
     getSupportCount(): number {

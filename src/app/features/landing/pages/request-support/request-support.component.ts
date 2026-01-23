@@ -35,15 +35,15 @@ export class RequestSupportComponent {
 
     // Step 2 comfort zones
     comfortZones = [
-        { id: 'encouragement', label: 'Words of Encouragement', icon: '👍' },
-        { id: 'prayers', label: 'Prayers & Blessings', icon: '🙏' },
-        { id: 'hope', label: 'Stories of Hope', icon: '✨' },
-        { id: 'poems', label: 'Poems & Quotes', icon: '✍️' },
-        { id: 'nature', label: 'Nature & Animals', icon: '🌿' },
-        { id: 'mindfulness', label: 'Mindfulness & Calm', icon: '🧘' },
-        { id: 'art', label: 'Art & Drawings', icon: '🎨' },
-        { id: 'humor', label: 'Jokes & Humor', icon: '😊' },
-        { id: 'other', label: 'Other', icon: '💭' }
+        { id: 'encouragement', label: 'Words of Encouragement', icon: 'thumb_up' },
+        { id: 'prayers', label: 'Prayers & Blessings', icon: 'volunteer_activism' },
+        { id: 'hope', label: 'Stories of Hope', icon: 'auto_awesome' },
+        { id: 'poems', label: 'Poems & Quotes', icon: 'edit_note' },
+        { id: 'nature', label: 'Nature & Animals', icon: 'park' },
+        { id: 'mindfulness', label: 'Mindfulness & Calm', icon: 'self_improvement' },
+        { id: 'art', label: 'Art & Drawings', icon: 'palette' },
+        { id: 'humor', label: 'Jokes & Humor', icon: 'sentiment_satisfied' },
+        { id: 'other', label: 'Other', icon: 'forum' }
     ];
 
     selectedComfortZones = signal<string[]>([]);
