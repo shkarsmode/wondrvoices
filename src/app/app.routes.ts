@@ -64,6 +64,21 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/landing/pages/privacy/privacy.component')
                     .then(m => m.PrivacyComponent)
             },
+            {
+                path: 'browse-requests',
+                loadComponent: () => import('./features/landing/pages/browse-requests/browse-requests.component')
+                    .then(m => m.BrowseRequestsComponent)
+            },
+            {
+                path: 'request-support',
+                loadComponent: () => import('./features/landing/pages/request-support/request-support.component')
+                    .then(m => m.RequestSupportComponent)
+            },
+            {
+                path: 'request/:id',
+                loadComponent: () => import('./features/landing/pages/request/request.component')
+                    .then(m => m.RequestComponent)
+            },
             { path: '**', redirectTo: '/blog' }
         ],
     },

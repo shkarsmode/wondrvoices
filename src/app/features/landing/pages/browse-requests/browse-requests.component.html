@@ -1,0 +1,124 @@
+<div class="browse-requests">
+    <div class="hero-section">
+        <h1>People Who Need Your Support</h1>
+        <p class="subtitle">
+            Browse requests from real people going through difficult times. Choose<br>
+            someone to support and send them a personalized message or card.
+        </p>
+        
+        <div class="action-buttons">
+            <button class="btn-outline" routerLink="/request-support">
+                <span class="icon">❤️</span>
+                Request Support
+            </button>
+            <button class="btn-primary">
+                <span class="icon">✉️</span>
+                Send Support
+            </button>
+        </div>
+
+        <div class="view-toggle">
+            <button 
+                [class.active]="viewMode() === 'grid'"
+                (click)="setViewMode('grid')"
+                class="toggle-btn">
+                <span class="icon">▦</span>
+                Grid
+            </button>
+            <button 
+                [class.active]="viewMode() === 'map'"
+                (click)="setViewMode('map')"
+                class="toggle-btn">
+                <span class="icon">🗺️</span>
+                Map
+            </button>
+        </div>
+
+        <div class="filters">
+            <button 
+                *ngFor="let filter of filters"
+                [class.active]="selectedFilter() === filter.id"
+                (click)="setFilter(filter.id)"
+                class="filter-chip">
+                <span class="icon">{{ filter.icon }}</span>
+                {{ filter.label }}
+            </button>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="requests-grid" *ngIf="viewMode() === 'grid'">
+            <a class="request-card send-joy" routerLink="/request-support">
+                <button class="favorite-btn">
+                    <span class="heart-icon">♡</span>
+                </button>
+
+                <div class="card-header">
+                    <p class="pill">Open to all</p>
+                    <h3 class="name">Send Joy to Anyone</h3>
+                    <p class="meta muted">For anyone who needs it</p>
+                </div>
+
+                <div class="card-body">
+                    <p class="message">
+                        Not sure who to support? Send a general message of hope, encouragement, or joy. We'll match it with someone who needs it most.
+                    </p>
+                </div>
+
+                <div class="card-footer">
+                    <button class="send-btn">Send a message →</button>
+                </div>
+            </a>
+
+            <a class="request-card" *ngFor="let request of requests()" [routerLink]="['/request', request.id]">
+                <button class="favorite-btn">
+                    <span class="heart-icon">❤️</span>
+                </button>
+
+                <div class="card-header">
+                    <h3 class="name">{{ getDisplayName(request) }}</h3>
+                    <p class="meta">Age {{ request.age }} • {{ getTimeAgo(request.createdAt) }}</p>
+                    <p class="location">
+                        <span class="icon">📍</span>
+                        {{ request.location }}
+                    </p>
+                    <p class="hospital" *ngIf="request.hospital">{{ request.hospital }}</p>
+                </div>
+
+                <div class="card-body">
+                    <div class="diagnosis-badge">{{ request.diagnosis }}</div>
+                    <p class="message">{{ request.additionalNote }}</p>
+                </div>
+
+                <div class="card-footer">
+                    <div class="tags">
+                        <span class="tag" *ngFor="let zone of request.comfortZones">
+                            <span class="tag-icon">{{ getComfortZoneIcon(zone) }}</span>
+                            {{ getComfortZoneLabel(zone) }}
+                        </span>
+                    </div>
+                    <div class="stats">
+                        <span class="stat">
+                            <span class="icon">❤️</span>
+                            {{ request.hearts || 0 }}
+                        </span>
+                        <span class="stat">
+                            <span class="icon">↗️</span>
+                            {{ request.shares || 0 }}
+                        </span>
+                        <span class="stat">
+                            <span class="icon">💬</span>
+                            {{ request.comments || 0 }}
+                        </span>
+                    </div>
+                </div>
+
+                <button class="view-more-btn">→</button>
+            </a>
+        </div>
+
+        <div class="map-view" *ngIf="viewMode() === 'map'">
+            <p class="map-placeholder">Map view will be implemented here</p>
+        </div>
+    </div>
+</div>
