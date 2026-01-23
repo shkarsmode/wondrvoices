@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
 import { IRequestDetail, ISupportMessage } from '../../../../shared/types/request-support.types';
 
@@ -29,10 +30,12 @@ export class RequestComponent implements OnInit {
         upload: false,
         mail: false
     });
+    liked = signal<Set<string>>(new Set());
 
-    constructor(private route: ActivatedRoute, private requestsService: RequestsService) {}
+    constructor(private route: ActivatedRoute, private requestsService: RequestsService, private likesService: LikesService) {}
 
     ngOnInit(): void {
+        this.liked.set(new Set(this.likesService.getAllLikes()));
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) return;
         this.requestsService.getRequestById(id).subscribe(detail => {
@@ -85,5 +88,23 @@ export class RequestComponent implements OnInit {
     toggleAccordion(section: keyof AccordionState): void {
         const current = this.accordionOpen();
         this.accordionOpen.set({ ...current, [section]: !current[section] });
+    }
+
+    isLiked(requestId: string): boolean {
+        return this.liked().has(requestId);
+    }
+
+    getHeartCount(detail: IRequestDetail): number {
+        const baseHearts = detail.hearts || 0;
+        return this.isLiked(detail.id) ? baseHearts + 1 : baseHearts;
+    }
+
+    toggleSendLove(): void {
+        const current = this.request();
+        if (!current) return;
+
+        this.likesService.toggleLike(current.id);
+        this.liked.set(new Set(this.likesService.getAllLikes()));
+        this.request.set({ ...current });
     }
 }

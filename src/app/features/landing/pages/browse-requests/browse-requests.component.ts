@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
 import { FilterCategory, ISupportRequest } from '../../../../shared/types/request-support.types';
 
@@ -17,6 +18,7 @@ export class BrowseRequestsComponent implements OnInit {
     loading = signal(false);
     viewMode = signal<'grid' | 'map'>('grid');
     selectedFilter = signal<FilterCategory>(FilterCategory.All);
+    liked = signal<Set<string>>(new Set());
 
     filters = [
         { id: FilterCategory.All, label: 'All', icon: 'star' },
@@ -30,9 +32,10 @@ export class BrowseRequestsComponent implements OnInit {
         { id: FilterCategory.Mindfulness, label: 'Min', icon: 'self_improvement' }
     ];
 
-    constructor(private requestsService: RequestsService) {}
+    constructor(private requestsService: RequestsService, private likesService: LikesService) {}
 
     ngOnInit(): void {
+        this.liked.set(new Set(this.likesService.getAllLikes()));
         this.loadRequests();
     }
 
@@ -103,5 +106,25 @@ export class BrowseRequestsComponent implements OnInit {
             'other': 'Other'
         };
         return labels[zone] || zone;
+    }
+
+    isLiked(requestId: string): boolean {
+        return this.liked().has(requestId);
+    }
+
+    getHeartCount(request: ISupportRequest): number {
+        const baseHearts = request.hearts || 0;
+        return this.isLiked(request.id) ? baseHearts + 1 : baseHearts;
+    }
+
+    toggleFavorite(event: Event, request: ISupportRequest): void {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.likesService.toggleLike(request.id);
+        this.liked.set(new Set(this.likesService.getAllLikes()));
+
+        // Trigger change detection for the updated stats
+        this.requests.update(items => items.map(item => item.id === request.id ? { ...item } : item));
     }
 }

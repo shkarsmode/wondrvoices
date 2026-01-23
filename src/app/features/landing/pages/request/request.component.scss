@@ -1,3 +1,9 @@
+@keyframes pop {
+    0% { transform: scale(0.9); }
+    60% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
 .request-page {
     max-width: 1180px;
     margin: 0 auto;
@@ -140,6 +146,16 @@
                         font-size: 1rem;
                         line-height: 1;
                     }
+
+                    &.liked {
+                        color: #d04f4f;
+
+                        .material-symbols-outlined {
+                            color: #d04f4f;
+                            animation: pop 0.25s ease;
+                            font-variation-settings: 'FILL' 1;
+                        }
+                    }
                 }
             }
         }
@@ -172,6 +188,13 @@
                 &:hover {
                     background: #fff4f0;
                     box-shadow: 0 6px 14px rgba(212, 140, 115, 0.18);
+                }
+
+                &.liked {
+                    background: #fff0f0;
+                    border-color: #d9534f;
+                    color: #d9534f;
+                    box-shadow: 0 8px 18px rgba(217, 83, 79, 0.18);
                 }
             }
         }

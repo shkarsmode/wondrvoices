@@ -71,8 +71,10 @@
             </a>
 
             <a class="request-card" *ngFor="let request of requests()" [routerLink]="['/request', request.id]">
-                <button class="favorite-btn">
-                    <span class="material-symbols-outlined heart-icon">favorite_border</span>
+                <button class="favorite-btn" type="button" (click)="toggleFavorite($event, request)" [class.liked]="isLiked(request.id)">
+                    <span class="material-symbols-outlined heart-icon" [class.liked]="isLiked(request.id)">
+                        {{ isLiked(request.id) ? 'favorite' : 'favorite_border' }}
+                    </span>
                 </button>
 
                 <div class="card-header">
@@ -98,9 +100,9 @@
                         </span>
                     </div>
                     <div class="stats">
-                        <span class="stat">
-                            <span class="material-symbols-outlined icon">favorite</span>
-                            {{ request.hearts || 0 }}
+                        <span class="stat" [class.liked]="isLiked(request.id)">
+                            <span class="material-symbols-outlined icon" [class.liked]="isLiked(request.id)">favorite</span>
+                            {{ getHeartCount(request) }}
                         </span>
                         <span class="stat">
                             <span class="material-symbols-outlined icon">share</span>

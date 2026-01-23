@@ -143,6 +143,12 @@
         }
     }
 
+    @keyframes pop {
+        0% { transform: scale(0.9); }
+        60% { transform: scale(1.08); }
+        100% { transform: scale(1); }
+    }
+
     .content-section {
         max-width: 1400px;
         margin: 0 auto;
@@ -234,6 +240,15 @@
                     cursor: pointer;
                     transition: all 0.2s;
 
+                    padding-top: 3px;
+                    padding-left: 1px;
+
+                    &.liked {
+                        border-color: #e86d6d;
+                        background: #fff4f4;
+                        box-shadow: 0 6px 16px rgba(232, 109, 109, 0.18);
+                    }
+
                     &:hover {
                         border-color: #cf866e;
                         transform: scale(1.1);
@@ -244,6 +259,14 @@
                         opacity: 0.6;
                         transition: all 0.2s;
                         font-size: 1.1rem;
+                    }
+
+                    .heart-icon.liked {
+                        color: #e14b4b;
+                        filter: none;
+                        opacity: 1;
+                        animation: pop 0.25s ease;
+                        font-variation-settings: 'FILL' 1;
                     }
 
                     &:hover .heart-icon {
@@ -348,6 +371,16 @@
 
                             .material-symbols-outlined.icon {
                                 font-size: 1rem;
+                            }
+                        }
+
+                        .stat.liked {
+                            color: #d04f4f;
+
+                            .material-symbols-outlined.icon {
+                                color: #d04f4f !important;
+                                font-variation-settings: "FILL" 1 !important;
+                                animation: pop 0.25s ease;
                             }
                         }
 

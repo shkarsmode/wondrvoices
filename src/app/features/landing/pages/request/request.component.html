@@ -25,14 +25,16 @@
                 </span>
             </div>
             <div class="stats">
-                <span><span class="material-symbols-outlined">favorite</span> {{ req.hearts || 0 }}</span>
+                <span [class.liked]="isLiked(req.id)"><span class="material-symbols-outlined" [class.liked]="isLiked(req.id)">favorite</span> {{ getHeartCount(req) }}</span>
                 <span><span class="material-symbols-outlined">share</span> {{ req.shares || 0 }}</span>
                 <span><span class="material-symbols-outlined">chat_bubble</span> {{ req.comments || 0 }}</span>
             </div>
         </div>
         <div class="cta">
             <div class="request-id">{{ req.id }}</div>
-            <button class="btn-secondary">Send Love</button>
+            <button class="btn-secondary" type="button" (click)="toggleSendLove()" [class.liked]="isLiked(req.id)">
+                {{ isLiked(req.id) ? 'Love Sent' : 'Send Love' }}
+            </button>
         </div>
     </div>
 
