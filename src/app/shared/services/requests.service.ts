@@ -157,6 +157,156 @@ export class RequestsService {
                 likes: 12,
                 location: 'New York, NY'
             }
+        ],
+        'WV-1234-5678': [
+            {
+                id: 'm4',
+                fromName: 'Karen S.',
+                type: 'text',
+                message: 'Sending love and strength to you and your family. My brother went through a similar journey last year. The community is here for you! 💙',
+                createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                likes: 8,
+                location: 'Chicago, IL'
+            },
+            {
+                id: 'm5',
+                fromName: 'David Chen',
+                type: 'image',
+                mediaUrl: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=1200&q=80',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=600&q=80',
+                message: 'Painted this flower for you - may it bring hope',
+                createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                likes: 15,
+                location: 'Portland, OR'
+            },
+            {
+                id: 'm6',
+                fromName: 'Anonymous',
+                anonymous: true,
+                type: 'text',
+                message: 'As a cancer survivor myself, I want you to know that you are not alone. Take it one day at a time. You are stronger than you know.',
+                createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                likes: 20,
+                location: 'Miami, FL'
+            },
+            {
+                id: 'm7',
+                fromName: 'Sophie Martinez',
+                type: 'video',
+                mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=600&q=80',
+                message: 'Healing music playlist I made for you',
+                createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+                likes: 11,
+                location: 'London, UK'
+            }
+        ],
+        'WV-9876-1234': [
+            {
+                id: 'm8',
+                fromName: 'Robert K.',
+                type: 'text',
+                message: 'Emma, your positive spirit is inspiring! Keep laughing, keep fighting. We believe in you! 🌟',
+                createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+                likes: 14,
+                location: 'Seattle, WA'
+            },
+            {
+                id: 'm9',
+                fromName: 'Lisa Garcia',
+                type: 'image',
+                mediaUrl: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=600&q=80',
+                message: 'Colorful art to brighten your day! 🎨',
+                createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+                likes: 18,
+                location: 'San Francisco, CA'
+            },
+            {
+                id: 'm10',
+                fromName: 'Tom Wilson',
+                type: 'text',
+                message: 'My daughter Emma beat leukemia 5 years ago. Today she is thriving! Sending all our love and prayers.',
+                createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+                likes: 22,
+                location: 'Denver, CO'
+            }
+        ],
+        'WV-5555-7890': [
+            {
+                id: 'm11',
+                fromName: 'Amanda P.',
+                type: 'text',
+                message: 'Ethan, you are the bravest little warrior! Stay strong buddy. Sending you all the superhero power! 💪🦸',
+                createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+                likes: 25,
+                location: 'Phoenix, AZ'
+            },
+            {
+                id: 'm12',
+                fromName: 'Carlos Ruiz',
+                type: 'video',
+                mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?auto=format&fit=crop&w=600&q=80',
+                message: 'Fun cartoon compilation for Ethan! 🎬',
+                createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+                likes: 19,
+                location: 'Houston, TX'
+            },
+            {
+                id: 'm13',
+                fromName: 'Anonymous',
+                anonymous: true,
+                type: 'image',
+                mediaUrl: 'https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=1200&q=80',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1560264280-88b68371db39?auto=format&fit=crop&w=600&q=80',
+                message: 'Puppies to make you smile! 🐶',
+                createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+                likes: 31,
+                location: 'Vancouver, BC'
+            },
+            {
+                id: 'm14',
+                fromName: 'Sarah Thompson',
+                type: 'text',
+                message: 'Our whole church is praying for Ethan. God bless your family during this journey. ❤️',
+                createdAt: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000),
+                likes: 17,
+                location: 'Atlanta, GA'
+            }
+        ],
+        'WV-3333-4444': [
+            {
+                id: 'm15',
+                fromName: 'Maya Patel',
+                type: 'text',
+                message: 'Lisa, I also have an autoimmune condition. Yoga and meditation have helped me so much. You are not alone in this! 🧘‍♀️',
+                createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+                likes: 16,
+                location: 'Boston, MA'
+            },
+            {
+                id: 'm16',
+                fromName: 'James Lee',
+                type: 'image',
+                mediaUrl: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&w=1200&q=80',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&w=600&q=80',
+                message: 'Peaceful nature scene for calming moments 🌿',
+                createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                likes: 13,
+                location: 'Tokyo, Japan'
+            },
+            {
+                id: 'm17',
+                fromName: 'Rebecca Foster',
+                type: 'video',
+                mediaUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                thumbnailUrl: 'https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=600&q=80',
+                message: 'Guided meditation for healing and peace',
+                createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+                likes: 21,
+                location: 'San Diego, CA'
+            }
         ]
     };
 
