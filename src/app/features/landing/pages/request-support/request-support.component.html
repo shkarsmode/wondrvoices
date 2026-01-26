@@ -5,9 +5,8 @@
         </div>
         <h1>Request Support From Our Community</h1>
         <p class="subtitle">
-            If you or a loved one is facing cancer, a rare disease, or other serious illness, you deserve support.
+            If you or a loved one is facing a difficult journey, you deserve support.
         </p>
-        <p class="privacy-note">Your request stays anonymous. We just need to verify your email/phone to prevent spam.</p>
 
         <!-- Progress bar -->
         <div class="progress-container">
@@ -27,7 +26,7 @@
             </div>
             <div class="progress-steps">
                 <div 
-                    *ngFor="let step of [1, 2, 3, 4]" 
+                    *ngFor="let step of [1, 2, 3, 4, 5, 6]" 
                     class="step-indicator"
                     [class.completed]="currentStep() > step"
                     [class.active]="currentStep() === step">
@@ -40,14 +39,146 @@
         </div>
     </div>
 
-    <!-- Step 1: Tell Us About You -->
-    <div class="step-content" *ngIf="currentStep() === 1">
+    <!-- Step 1: Tell Us Your Story -->
+    <div class="step-content fade-in" *ngIf="currentStep() === 1">
         <div class="card">
-            <h2>Step 1: Tell Us About You</h2>
+            <h2>Tell Us Your Story</h2>
+            <p class="step-description">Let's start with who this journey is for.</p>
 
-            <form [formGroup]="step1Form">
+            <div class="form-group">
+                <label class="question-label">Whose journey is this? <span class="required">*</span></label>
+                <div class="options-grid">
+                    <button 
+                        *ngFor="let journey of journeyTypes"
+                        type="button"
+                        class="option-btn"
+                        [class.selected]="selectedJourneyType() === journey.id"
+                        (click)="selectJourneyType(journey.id)">
+                        <span class="material-symbols-outlined">person</span>
+                        <span>{{ journey.label }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="question-label">What are you going through? <span class="required">*</span></label>
+                <div class="options-grid">
+                    <button 
+                        *ngFor="let condition of conditionOptions"
+                        type="button"
+                        class="option-btn"
+                        [class.selected]="selectedCondition() === condition"
+                        (click)="selectCondition(condition)">
+                        {{ condition }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-continue" (click)="nextStep()">
+                    Continue <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Where in the Journey -->
+    <div class="step-content fade-in" *ngIf="currentStep() === 2">
+        <div class="card">
+            <h2>Where in the Journey?</h2>
+            <p class="step-description">This helps us match your moment with the right kind of support.</p>
+
+            <div class="form-group">
+                <label class="question-label">Select the current moment <span class="required">*</span></label>
+                <div class="options-grid">
+                    <button 
+                        *ngFor="let stage of journeyStageOptions"
+                        type="button"
+                        class="option-btn"
+                        [class.selected]="selectedJourneyStage() === stage.value"
+                        (click)="selectJourneyStage(stage.value)">
+                        {{ stage.label }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="question-label">Additional context (Optional)</label>
+                <p class="help-text">Select any that apply to help us match better support.</p>
+                <div class="tag-group">
+                    <button 
+                        *ngFor="let tag of additionalContextOptions"
+                        type="button"
+                        class="tag-btn"
+                        [class.selected]="isContextTagSelected(tag)"
+                        (click)="toggleContextTag(tag)">
+                        {{ tag }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="previousStep()">
+                    Back
+                </button>
+                <button type="button" class="btn-continue" (click)="nextStep()">
+                    Continue <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: What Brings Comfort -->
+    <div class="step-content fade-in" *ngIf="currentStep() === 3">
+        <div class="card">
+            <h2>What Brings Comfort?</h2>
+            <p class="step-description">Select the types of messages that would brighten your day.</p>
+
+            <div class="form-group">
+                <label class="question-label">Choose comfort zones <span class="required">*</span></label>
+                <div class="comfort-zones-grid">
+                    <button 
+                        *ngFor="let zone of comfortZones"
+                        type="button"
+                        class="comfort-zone-btn"
+                        [class.selected]="isZoneSelected(zone.id)"
+                        (click)="toggleComfortZone(zone.id)">
+                        <span class="material-symbols-outlined zone-icon">{{ zone.icon }}</span>
+                        <span class="zone-label">{{ zone.label }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Anything else to share? (Optional)</label>
+                <textarea 
+                    #additionalNoteInput
+                    placeholder="Share anything else that might help us connect with the right messages..."
+                    class="form-textarea"
+                    rows="4"
+                    (input)="step3Form.patchValue({ additionalNote: additionalNoteInput.value })"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="previousStep()">
+                    Back
+                </button>
+                <button type="button" class="btn-continue" (click)="nextStep()">
+                    Continue <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Just a Few Details -->
+    <div class="step-content fade-in" *ngIf="currentStep() === 4">
+        <div class="card">
+            <h2>Just a Few Details</h2>
+            <p class="step-description">Help supporters personalize their messages.</p>
+
+            <form [formGroup]="step4Form">
                 <div class="form-group">
-                    <label>First Name (Optional)</label>
+                    <label>Your First Name (Optional)</label>
                     <input 
                         type="text" 
                         formControlName="firstName"
@@ -56,41 +187,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Privacy Choice</label>
-                    <div class="radio-group">
-                        <label class="radio-option" [class.selected]="step1Form.value.privacyChoice === 'share'">
-                            <input type="radio" formControlName="privacyChoice" value="share">
-                            <div class="radio-content">
-                                <strong>Share my first name</strong>
-                                <p>People will see your first name, age, and location</p>
-                            </div>
-                        </label>
-                        <label class="radio-option" [class.selected]="step1Form.value.privacyChoice === 'anonymous'">
-                            <input type="radio" formControlName="privacyChoice" value="anonymous">
-                            <div class="radio-content">
-                                <strong>Stay completely anonymous</strong>
-                                <p>People will only see your age and location (no name)</p>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="privacy-info">
-                    Either way, your email/phone stays private and only your Request ID is used for tracking.
-                </div>
-
-                <div class="form-group">
-                    <label>Email for Verification *</label>
+                    <label>Email for Verification <span class="required">*</span></label>
                     <input 
                         type="email" 
                         formControlName="email"
                         placeholder="your@email.com"
                         class="form-input">
-                    <small class="help-text">We'll send a verification code to confirm you're real. Never shown publicly.</small>
+                    <small class="help-text">We'll send a verification code. Never shown publicly.</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Age *</label>
+                    <label>Your Age <span class="required">*</span></label>
                     <input 
                         type="number" 
                         formControlName="age"
@@ -99,34 +206,27 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Gender (Optional)</label>
+                    <label>Your Gender (Optional)</label>
                     <div class="gender-buttons">
                         <button 
                             type="button"
                             class="gender-btn"
-                            [class.selected]="step1Form.value.gender === 'male'"
-                            (click)="step1Form.patchValue({ gender: 'male' })">
+                            [class.selected]="step4Form.value.gender === 'male'"
+                            (click)="step4Form.patchValue({ gender: 'male' })">
                             Male
                         </button>
                         <button 
                             type="button"
                             class="gender-btn"
-                            [class.selected]="step1Form.value.gender === 'female'"
-                            (click)="step1Form.patchValue({ gender: 'female' })">
+                            [class.selected]="step4Form.value.gender === 'female'"
+                            (click)="step4Form.patchValue({ gender: 'female' })">
                             Female
-                        </button>
-                        <button 
-                            type="button"
-                            class="gender-btn"
-                            [class.selected]="step1Form.value.gender === 'prefer-not-to-say'"
-                            (click)="step1Form.patchValue({ gender: 'prefer-not-to-say' })">
-                            Prefer not to say
                         </button>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Your Location (City, State) *</label>
+                    <label>Where do you live? (City, State) <span class="required">*</span></label>
                     <input 
                         type="text" 
                         formControlName="location"
@@ -134,63 +234,6 @@
                         class="form-input">
                     <small class="help-text">Helps the community send regionally relevant support.</small>
                 </div>
-
-                <div class="form-group">
-                    <label>What You're Facing *</label>
-                    <select formControlName="diagnosis" class="form-select">
-                        <option value="">Select your diagnosis or situation</option>
-                        <option *ngFor="let option of diagnosisOptions" [value]="option">{{ option }}</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Where Are You in Your Journey? *</label>
-                    <select formControlName="journeyStage" class="form-select">
-                        <option value="">Select where you are right now</option>
-                        <option *ngFor="let option of journeyStageOptions" [value]="option">{{ option }}</option>
-                    </select>
-                    <small class="help-text">This helps us match you with the right kind of support for this moment.</small>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-continue" (click)="nextStep()">
-                        Continue to Comfort Zones →
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Step 2: Your Comfort Zones -->
-    <div class="step-content" *ngIf="currentStep() === 2">
-        <div class="card">
-            <h2>Step 2: Your Comfort Zones</h2>
-            <p class="step-description">
-                <strong>What brings you joy? *</strong><br>
-                Select the types of messages that would brighten your day. We'll match you with supporters who share your vibe.
-            </p>
-
-            <div class="comfort-zones-grid">
-                <button 
-                    *ngFor="let zone of comfortZones"
-                    type="button"
-                    class="comfort-zone-btn"
-                    [class.selected]="isZoneSelected(zone.id)"
-                    (click)="toggleComfortZone(zone.id)">
-                    <span class="material-symbols-outlined zone-icon">{{ zone.icon }}</span>
-                    <span class="zone-label">{{ zone.label }}</span>
-                </button>
-            </div>
-
-            <form [formGroup]="step2Form">
-                <div class="form-group">
-                    <label>A Little More About You (Optional)</label>
-                    <textarea 
-                        formControlName="additionalNote"
-                        placeholder="Share anything else that might help us connect you with the right messages..."
-                        class="form-textarea"
-                        rows="4"></textarea>
-                </div>
             </form>
 
             <div class="form-actions">
@@ -198,87 +241,92 @@
                     Back
                 </button>
                 <button type="button" class="btn-continue" (click)="nextStep()" [disabled]="isSubmitting()">
-                    {{ isSubmitting() ? 'Submitting...' : 'Generate My Request ID →' }}
+                    Verify Email <span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Step 3: Verify Your Email -->
-    <div class="step-content" *ngIf="currentStep() === 3">
-        <div class="card verification-card">
-            <div class="icon-circle-small">
-                <span class="material-symbols-outlined">verified_user</span>
+    <!-- Step 5: Email Verification -->
+    <div class="step-content fade-in" *ngIf="currentStep() === 5">
+        <div class="card">
+            <div class="verification-icon">
+                <span class="material-symbols-outlined">shield</span>
             </div>
             <h2>Verify Your Email</h2>
-            <p class="step-description">
-                To prevent spam and ensure real requests, please verify your email address.
-            </p>
+            <p class="step-description">To prevent spam, please verify your email address.</p>
 
             <div class="email-display">
-                <span class="material-symbols-outlined icon">mail</span>
-                {{ step1Form.value.email }}
-                <button type="button" class="change-btn" (click)="currentStep.set(1)">Change</button>
+                <span class="material-symbols-outlined">mail</span>
+                <span class="email">{{ step4Form.value.email }}</span>
+                <a href="javascript:void(0)" class="change-link" (click)="previousStep()">Change</a>
             </div>
 
-            <p class="verification-instruction">Enter the 6-digit code sent to your email:</p>
+            <div class="form-group">
+                <label>Enter the 6-digit code sent to your email:</label>
+                <div class="code-inputs">
+                    <input 
+                        #codeInput
+                        *ngFor="let digit of [0,1,2,3,4,5]"
+                        type="text" 
+                        inputmode="numeric"
+                        maxlength="1"
+                        class="code-input"
+                        placeholder="0"
+                        autocomplete="off"
+                        [value]="verificationCode()[digit] || ''"
+                        (input)="onCodeInput(digit, $event)"
+                        (keydown)="onCodeKeyDown(digit, $event)"
+                        (paste)="onCodePaste($event)">
+                </div>
+            </div>
 
-            <div class="code-input-container">
-                <input 
-                    *ngFor="let digit of [0,1,2,3,4,5]; let i = index"
-                    type="text"
-                    maxlength="1"
-                    class="code-input"
-                    [value]="verificationCodeInput()[i]"
-                    (input)="onCodeInput(i, $event)"
-                    (keydown)="onCodeKeyDown(i, $event)">
+            <div class="demo-info" *ngIf="demoVerificationCode()">
+                <strong>Demo Mode:</strong> Enter any 6 digits to proceed (e.g., 123456)
             </div>
 
             <div class="resend-section">
-                <p>Didn't receive a code? <button type="button" class="link-btn" (click)="resendCode()">Resend code</button></p>
-            </div>
-
-            <div class="demo-notice" *ngIf="demoVerificationCode()">
-                <strong>Demo Mode:</strong> Enter any 6 digits to proceed (e.g., {{ demoVerificationCode() }})
+                <span>Didn't receive a code?</span>
+                <a href="javascript:void(0)" (click)="resendCode()" class="resend-link">Resend code</a>
             </div>
 
             <div class="form-actions">
                 <button type="button" class="btn-secondary" (click)="previousStep()">
                     Back
                 </button>
-                <button type="button" class="btn-continue" (click)="nextStep()" [disabled]="isSubmitting()">
-                    {{ isSubmitting() ? 'Verifying...' : 'Verify & Submit →' }}
+                <button type="button" class="btn-continue" (click)="verifyEmailCode()" [disabled]="isSubmitting()">
+                    Submit <span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Step 4: Success -->
-    <div class="step-content" *ngIf="currentStep() === 4">
+    <!-- Step 6: Success -->
+    <div class="step-content fade-in" *ngIf="currentStep() === 6">
         <div class="card success-card">
-            <div class="icon-circle-success">
+            <div class="success-icon">
                 <span class="material-symbols-outlined">check_circle</span>
             </div>
-            <h2>Request Submitted Successfully!</h2>
-            <p class="success-message">Your unique Request ID is:</p>
+            <h2>Journey Shared Successfully!</h2>
+            <p class="step-description">Your unique Journey ID is:</p>
 
-            <div class="request-id-box">
-                {{ requestId() }}
+            <div class="journey-id">
+                <strong>{{ requestId() }}</strong>
+                <p>Save this ID to track your personalized notes</p>
             </div>
-            <p class="save-id-note">Save this ID to track your personalized messages</p>
 
-            <div class="next-steps">
+            <div class="what-happens">
                 <h3>What happens next?</h3>
                 <ul>
-                    <li><span class="material-symbols-outlined">check</span> Our caring community will create personalized messages for you</li>
-                    <li><span class="material-symbols-outlined">check</span> Messages will be matched to your comfort zones</li>
-                    <li><span class="material-symbols-outlined">check</span> You'll receive notifications when new messages arrive</li>
+                    <li><span class="material-symbols-outlined">check</span> Our caring community will create personalized notes</li>
+                    <li><span class="material-symbols-outlined">check</span> Notes will be matched to the comfort zones selected</li>
+                    <li><span class="material-symbols-outlined">check</span> You'll receive notifications when new notes arrive</li>
                 </ul>
             </div>
 
             <div class="form-actions">
-                <button type="button" class="btn-primary" (click)="viewGallery()">
-                    View Gallery
+                <button type="button" class="btn-continue" (click)="viewFeed()">
+                    View Feed
                 </button>
                 <button type="button" class="btn-secondary" (click)="backToHome()">
                     Back to Home
@@ -286,19 +334,12 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Toast notification (for demo) -->
-<div class="toast" *ngIf="demoVerificationCode() && currentStep() === 3">
-    <div class="toast-content">
-        <strong>Verification code sent!</strong>
-        <p>A 6-digit code has been sent to {{ step1Form.value.email }}</p>
-    </div>
-</div>
-
-<div class="toast success-toast" *ngIf="currentStep() === 4">
-    <div class="toast-content">
-        <strong>Verified successfully! ✓</strong>
-        <p>Your request is now being processed.</p>
+    <!-- Toast notification (for demo) -->
+    <div class="toast" *ngIf="demoVerificationCode() && currentStep() === 5" [@fadeInOut]>
+        <div class="toast-content">
+            <strong>Verification code sent!</strong>
+            <p>A 6-digit code has been sent to {{ step4Form.value.email }}</p>
+        </div>
     </div>
 </div>

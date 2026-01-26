@@ -46,10 +46,13 @@ export interface CreateSupportRequestDto {
     age: number;
     gender?: 'male' | 'female' | 'prefer-not-to-say';
     location: string;
-    diagnosis: string;
+    journeyType?: string;
+    condition?: string;
+    diagnosis?: string;
     journeyStage: string;
+    contextTags?: string[];
     hospital?: string;
-    isAnonymous: boolean;
+    isAnonymous?: boolean;
     email: string;
     comfortZones: string[];
     additionalNote?: string;
