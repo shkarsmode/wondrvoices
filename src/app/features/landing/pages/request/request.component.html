@@ -1,9 +1,11 @@
-<div class="request-page" *ngIf="!loading(); else loadingTpl">
+@if (!loading()) {
+<div class="request-page">
     <div class="back-link">
-        <a routerLink="/browse-requests">← Back to Requests</a>
+        <a routerLink="/browse-requests">&larr; Back to Requests</a>
     </div>
 
-    <div class="header-card" *ngIf="request() as req">
+    @if (request(); as req) {
+    <div class="header-card">
         <div class="badge">
             <span class="material-symbols-outlined">favorite</span>
         </div>
@@ -16,13 +18,17 @@
                 <span><span class="material-symbols-outlined">location_on</span> {{ req.location }}</span>
                 <span><span class="material-symbols-outlined">schedule</span> {{ getTimeAgo(req.createdAt) }}</span>
             </div>
-            <div class="hospital" *ngIf="req.hospital">{{ req.hospital }}</div>
+            @if (req.hospital) {
+                <div class="hospital">{{ req.hospital }}</div>
+            }
             <div class="diagnosis-badge">{{ req.diagnosis }}</div>
             <p class="note">{{ req.additionalNote }}</p>
             <div class="tags">
-                <span class="tag" *ngFor="let zone of req.comfortZones">
-                    <span class="material-symbols-outlined">{{ getComfortZoneIcon(zone) }}</span> {{ zone | titlecase }}
-                </span>
+                @for (zone of req.comfortZones; track zone) {
+                    <span class="tag">
+                        <span class="material-symbols-outlined">{{ getComfortZoneIcon(zone) }}</span> {{ zone | titlecase }}
+                    </span>
+                }
             </div>
             <div class="stats">
                 <span [class.liked]="isLiked(req.id)"><span class="material-symbols-outlined" [class.liked]="isLiked(req.id)">favorite</span> {{ getHeartCount(req) }}</span>
@@ -38,123 +44,190 @@
         </div>
     </div>
 
-    <div class="support-section" *ngIf="request() as req">
-        <h2>Send your support:</h2>
-        <div class="send-message-card">
-            <div class="accordion">
-                <div class="accordion-item" [class.open]="accordionOpen().message">
-                    <button class="accordion-header" (click)="toggleAccordion('message')">
-                        <span class="left">
-                            <span class="material-symbols-outlined icon">chat_bubble</span>
-                            <span>Send a message now</span>
-                        </span>
-                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().message">expand_less</span>
-                    </button>
-                    <div class="accordion-body" *ngIf="accordionOpen().message">
-                        <div class="send-row">
-                            <div class="inputs">
-                                <textarea rows="3" placeholder="Write your message of support for {{ getDisplayName() }}..."></textarea>
-                                <div class="name-and-button">
-                                    <input type="text" placeholder="Your name (optional)">
-                                    <button class="btn-primary">Send Message</button>
-                                </div>
+    <div class="support-section">
+        <div class="feed-header">
+            <div>
+                <h2>Community Support Feed</h2>
+                <p class="muted">See how the community is showing up for {{ getDisplayName() || 'them' }}</p>
+            </div>
+            <div class="message-count">{{ getSupportCount() }} messages</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active">
+                <span class="material-symbols-outlined">favorite</span>
+                Shared ({{ getSupportCount() }})
+            </button>
+            <button class="tab">
+                <span class="material-symbols-outlined">pending</span>
+                Pending (0)
+            </button>
+        </div>
+
+        <div class="send-card" [class.open]="sendOpen()">
+            <div class="send-header">
+                <div class="title">Send your support to {{ getDisplayName() || 'them' }}</div>
+                <div class="subtitle">Choose how you'd like to show you care</div>
+            </div>
+            <button type="button" class="send-field" (click)="toggleSend()">
+                <div class="left">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                    <div class="text">
+                        <div class="label">Send a message</div>
+                        <div class="hint">Type or upload a photo/video</div>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined caret">{{ sendOpen() ? 'expand_less' : 'expand_more' }}</span>
+            </button>
+
+            @if (sendOpen()) {
+            <div class="send-body">
+                <form class="send-form">
+                    <textarea rows="3" placeholder="Write your message of support for them..."></textarea>
+                    <div class="inline-actions">
+                        <button type="button" class="chip">
+                            <span class="material-symbols-outlined">videocam</span>
+                            Record video
+                        </button>
+                        <button type="button" class="chip">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            Upload file
+                        </button>
+                    </div>
+                    <input type="email" placeholder="Your email *">
+                    <input type="text" placeholder="Your name (optional — leave blank to appear as 'Anonymous')">
+                    <input type="text" placeholder="City you're sending from *">
+                    <button type="button" class="btn-primary full">Send Message</button>
+                </form>
+            </div>
+            }
+
+            <div class="send-actions">
+                <button type="button" class="ghost-btn">
+                    <span class="material-symbols-outlined">smartphone</span>
+                    Use App
+                </button>
+                <button type="button" class="ghost-btn" (click)="openMailModal()">
+                    <span class="material-symbols-outlined">mail</span>
+                    Mail a Card
+                </button>
+            </div>
+        </div>
+
+        <div class="feed-list">
+            @for (msg of req.messages; track msg.id) {
+                <div class="feed-card">
+                    <div class="feed-card-header">
+                        <div class="avatar">{{ getInitials(msg) }}</div>
+                        <div class="meta">
+                            <div class="name-row">
+                                <span class="name">{{ msg.anonymous ? 'Anonymous' : msg.fromName }}</span>
+                                <span class="pill">{{ getMessageTypeLabel(msg) }}</span>
+                            </div>
+                            <div class="meta-row">
+                                @if (msg.location) {
+                                    <span class="location">
+                                        <span class="material-symbols-outlined">location_on</span> {{ msg.location }}
+                                    </span>
+                                    <span class="dot">&bull;</span>
+                                }
+                                <span class="time">{{ getTimeAgo(msg.createdAt) }}</span>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="accordion-item" [class.open]="accordionOpen().social">
-                    <button class="accordion-header" (click)="toggleAccordion('social')">
-                        <span class="left">
-                            <span class="material-symbols-outlined icon">link</span>
-                            <span>Share via social media</span>
-                        </span>
-                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().social">expand_less</span>
-                    </button>
-                    <div class="accordion-body" *ngIf="accordionOpen().social">
-                        <p class="muted">Post a video, photo, or message and tag <strong>@wondrvoices</strong> with <span class="pill">#{{ req.id }}</span></p>
-                        <div class="social-row">
-                            <span class="social">Instagram</span>
-                            <span class="social">Facebook</span>
-                            <span class="social">Twitter</span>
-                            <span class="social">YouTube</span>
+                    <div class="feed-card-body">
+                        @if (msg.type !== 'text' && msg.thumbnailUrl) {
+                            <div class="media">
+                                <img
+                                    [alt]="getMessageTypeLabel(msg)"
+                                    [src]="msg.thumbnailUrl"
+                                    loading="lazy">
+                                @if (msg.type === 'video') {
+                                    <span class="media-badge">
+                                        <span class="material-symbols-outlined">play_arrow</span>
+                                    </span>
+                                }
+                            </div>
+                        }
+                        @if (msg.message) {
+                            <p class="message-text">{{ msg.message }}</p>
+                        }
+                        @if (getPrimaryTag(req); as primaryTag) {
+                            <div class="tags-row">
+                                <span class="tag-pill">
+                                    <span class="material-symbols-outlined">auto_awesome</span>
+                                    {{ formatTag(primaryTag) }}
+                                </span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="feed-card-footer">
+                        <div class="stat">
+                            <span class="material-symbols-outlined">favorite</span>
+                            {{ msg.likes || 0 }}
+                        </div>
+                        <div class="stat share">
+                            <span class="material-symbols-outlined">share</span>
+                            Share
                         </div>
                     </div>
                 </div>
+            }
+        </div>
 
-                <div class="accordion-item" [class.open]="accordionOpen().upload">
-                    <button class="accordion-header" (click)="toggleAccordion('upload')">
-                        <span class="left">
-                            <span class="material-symbols-outlined icon">upload_file</span>
-                            <span>Upload handwritten notes or artwork</span>
-                        </span>
-                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().upload">expand_less</span>
-                    </button>
-                    <div class="accordion-body" *ngIf="accordionOpen().upload">
-                        <p class="muted">Snap a photo of your handwritten note or artwork and upload it (feature placeholder).</p>
-                    </div>
-                </div>
-
-                <div class="accordion-item" [class.open]="accordionOpen().mail">
-                    <button class="accordion-header" (click)="toggleAccordion('mail')">
-                        <span class="left">
-                            <span class="material-symbols-outlined icon">mail</span>
-                            <span>Send physical mail</span>
-                        </span>
-                        <span class="material-symbols-outlined chevron" [class.rotated]="accordionOpen().mail">expand_less</span>
-                    </button>
-                    <div class="accordion-body" *ngIf="accordionOpen().mail">
-                        <p class="muted">Send a physical card or letter to:</p>
-                        <div class="mail-box">
-                            <div class="mail-line"><strong>WondrVoices</strong> | {{ req.id }}</div>
-                            <div class="mail-line">PO Box 40056, St. Pete, FL 33743</div>
+        @if (req.mapMarkers?.length) {
+            <div class="map-section">
+                <h3>Support From Around the World</h3>
+                <p class="muted">See where messages of hope and encouragement have come from for this request</p>
+                <div class="map-frame">
+                    <div class="map-fake">
+                        <div class="map-legend">
+                            <span class="legend-dot primary"></span>
+                            <span class="legend-label">Support markers</span>
                         </div>
+                        <div class="map-placeholder">Map view ({{ req.mapMarkers?.length }} markers)</div>
                     </div>
                 </div>
             </div>
-
-            <div class="share-row">
-                <a><span class="material-symbols-outlined">link</span> Share This Request</a>
-            </div>
-        </div>
-
-        <div class="amplify-card">
-            <div class="title">Help amplify this request</div>
-            <p>Real support takes a community. Your contribution helps us connect more people with the care they need and keeps requests like this visible to potential supporters.</p>
-            <button class="chip-btn">Chip In</button>
-        </div>
-
-        <div class="community">
-            <h3>Community Support</h3>
-            <p class="muted">{{ getSupportCount() }} messages</p>
-            <div class="messages-grid">
-                <div class="message-card" *ngFor="let msg of req.messages">
-                    <div class="media" *ngIf="msg.type !== 'text'">
-                        <span class="media-label">{{ getMediaLabel(msg) }}</span>
-                        <img *ngIf="msg.type === 'image'" [src]="msg.thumbnailUrl" alt="support media">
-                        <div class="video-thumb" *ngIf="msg.type === 'video'">
-                            <img [src]="msg.thumbnailUrl" alt="video thumb">
-                            <span class="material-symbols-outlined play">play_arrow</span>
-                        </div>
+        }
+        @if (mailModalOpen()) {
+        <div class="modal-backdrop">
+            <div class="modal">
+                <div class="modal-header">
+                    <div class="title">
+                        <span class="material-symbols-outlined">mail</span>
+                        Mail a Physical Card
                     </div>
-                    <div class="message-body">
-                        <p class="message-text">{{ msg.message }}</p>
-                        <p class="from">From: {{ msg.anonymous ? 'Anonymous' : msg.fromName }}</p>
+                    <button type="button" class="close" (click)="closeMailModal()">✕</button>
+                </div>
+
+                <p class="muted">Send a handwritten card or letter to brighten someone's day.</p>
+
+                <div class="address-box">
+                    <div class="address-label">Mail your card to:</div>
+                    <div class="address-lines">
+                        <div class="line">WondrVoices</div>
+                        <div class="line">ID: {{ request()?.id }}</div>
+                        <div class="line">PO Box 40056</div>
+                        <div class="line">St. Pete, FL 33743</div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="map-section" *ngIf="req.mapMarkers?.length">
-            <h3>Support From Around the World</h3>
-            <p class="muted">See where messages of hope and encouragement have come from for this request</p>
-            <div class="map-placeholder">
-                Map view (mock) — markers: {{ req.mapMarkers?.length }}
+                <button type="button" class="btn-primary full" (click)="copyMailAddress()">
+                    <span class="material-symbols-outlined">content_copy</span>
+                    Copy Address
+                </button>
+
+                <p class="footnote">Important: Include the Request ID on your envelope so we can route it to the right person. Cards are reviewed by our moderation team before delivery.</p>
             </div>
         </div>
+        }
     </div>
+    }
 </div>
-
-<ng-template #loadingTpl>
-    <div class="loading">Loading request...</div>
-</ng-template>
+}
+@else {
+<div class="loading">Loading request...</div>
+}

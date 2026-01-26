@@ -126,9 +126,9 @@ export class RequestsService {
             {
                 id: 'm1',
                 fromName: 'Jennifer',
-                type: 'image',
+                type: 'text',
                 mediaUrl: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1200&q=80',
-                thumbnailUrl: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=600&q=80',
+                thumbnailUrl: undefined,
                 message: 'Stay strong, Sarah. Thinking of you.',
                 createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
                 likes: 8,

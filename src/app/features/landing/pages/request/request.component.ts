@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LikesService } from '../../../../shared/services/likes.service';
@@ -15,7 +15,7 @@ type AccordionState = {
 @Component({
     selector: 'app-request-page',
     standalone: true,
-    imports: [CommonModule, RouterLink],
+    imports: [CommonModule, RouterLink, NgIf, NgFor],
     templateUrl: './request.component.html',
     styleUrl: './request.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,6 +31,8 @@ export class RequestComponent implements OnInit {
         mail: false
     });
     liked = signal<Set<string>>(new Set());
+    sendOpen = signal(true);
+    mailModalOpen = signal(false);
 
     constructor(private route: ActivatedRoute, private requestsService: RequestsService, private likesService: LikesService) {}
 
@@ -106,5 +108,66 @@ export class RequestComponent implements OnInit {
         this.likesService.toggleLike(current.id);
         this.liked.set(new Set(this.likesService.getAllLikes()));
         this.request.set({ ...current });
+    }
+
+    toggleSend(): void {
+        this.sendOpen.update(v => !v);
+    }
+
+    openMailModal(): void {
+        this.mailModalOpen.set(true);
+    }
+
+    closeMailModal(): void {
+        this.mailModalOpen.set(false);
+    }
+
+    copyMailAddress(): void {
+        const req = this.request();
+        const text = `WondrVoices\nID: ${req?.id || ''}\nPO Box 40056\nSt. Pete, FL 33743`;
+        if (navigator?.clipboard?.writeText) {
+            navigator.clipboard.writeText(text).then(() => alert('Address copied')).catch(() => this.fallbackCopy(text));
+        } else {
+            this.fallbackCopy(text);
+        }
+    }
+
+    private fallbackCopy(text: string): void {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Address copied');
+    }
+
+    getInitials(message: ISupportMessage): string {
+        const name = message.anonymous ? 'Anonymous' : message.fromName || 'User';
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) {
+            return parts[0].slice(0, 2).toUpperCase();
+        }
+        return `${(parts[0][0] || '').toUpperCase()}${(parts[1][0] || '').toUpperCase()}`;
+    }
+
+    getMessageTypeLabel(message: ISupportMessage): string {
+        if (message.type === 'image') return 'Artwork';
+        if (message.type === 'video') return 'Video';
+        return 'Message';
+    }
+
+    getPrimaryTag(detail?: IRequestDetail): string | undefined {
+        return detail?.tags?.[0] || detail?.comfortZones?.[0];
+    }
+
+    formatTag(tag?: string): string {
+        if (!tag) return '';
+        return tag
+            .replace(/[-_]/g, ' ')
+            .split(' ')
+            .filter(Boolean)
+            .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ');
     }
 }
