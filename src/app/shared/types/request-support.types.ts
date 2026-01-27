@@ -84,6 +84,15 @@ export enum ComfortZoneType {
 
 export enum FilterCategory {
     All = 'all',
+    Cancer = 'cancer',
+    YoungAdult = 'young-adult',
+    ParentWithKids = 'parent-with-kids',
+    PediatricCancer = 'pediatric-cancer',
+    CancerReturned = 'cancer-returned',
+    EndOfLife = 'end-of-life',
+    RareDisease = 'rare-disease',
+    Caregiver = 'caregiver',
+    Grieving = 'grieving',
     Humor = 'humor',
     Prayers = 'prayers',
     Nature = 'nature',

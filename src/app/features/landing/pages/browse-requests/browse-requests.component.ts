@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
@@ -21,6 +21,10 @@ export class BrowseRequestsComponent implements OnInit {
     selectedFilter = signal<FilterCategory>(FilterCategory.All);
     liked = signal<Set<string>>(new Set());
     selectedSort = signal<'newest' | 'oldest' | 'most-support' | 'least-support'>('newest');
+    selectedZone = signal<string>('all');
+    
+    zoneDropdownOpen = false;
+    sortDropdownOpen = false;
 
     sortOptions = [
         { id: 'newest', label: 'Newest First' },
@@ -29,16 +33,30 @@ export class BrowseRequestsComponent implements OnInit {
         { id: 'least-support', label: 'Least Support' }
     ];
 
+    comfortZones = [
+        { id: 'all', label: 'All Zones', icon: 'favorite' },
+        { id: 'humor', label: 'Humor', icon: 'sentiment_satisfied' },
+        { id: 'prayers', label: 'Prayers', icon: 'volunteer_activism' },
+        { id: 'nature', label: 'Nature', icon: 'park' },
+        { id: 'poems', label: 'Poems', icon: 'edit_note' },
+        { id: 'art', label: 'Art', icon: 'palette' },
+        { id: 'encouragement', label: 'Encouragement', icon: 'thumb_up' },
+        { id: 'hope', label: 'Hope', icon: 'auto_awesome' },
+        { id: 'mindfulness', label: 'Mindfulness', icon: 'self_improvement' },
+        { id: 'other', label: 'Other', icon: 'chat_bubble' }
+    ];
+
     filters = [
-        { id: FilterCategory.All, label: 'All', icon: 'star' },
-        { id: FilterCategory.Humor, label: 'Humor', icon: 'sentiment_satisfied' },
-        { id: FilterCategory.Prayers, label: 'Prayers', icon: 'volunteer_activism' },
-        { id: FilterCategory.Nature, label: 'Nature', icon: 'park' },
-        { id: FilterCategory.Poems, label: 'Poems', icon: 'edit_note' },
-        { id: FilterCategory.Art, label: 'Art', icon: 'palette' },
-        { id: FilterCategory.Encouragement, label: 'Encouragement', icon: 'thumb_up' },
-        { id: FilterCategory.Hope, label: 'Hope', icon: 'auto_awesome' },
-        { id: FilterCategory.Mindfulness, label: 'Min', icon: 'self_improvement' }
+        { id: FilterCategory.All, label: 'All Situations', icon: 'filter_list' },
+        { id: FilterCategory.Cancer, label: 'Cancer (Adult)', icon: 'person' },
+        { id: FilterCategory.YoungAdult, label: 'Young Adult (18-39)', icon: 'directions_run' },
+        { id: FilterCategory.ParentWithKids, label: 'Parent with Kids', icon: 'family_restroom' },
+        { id: FilterCategory.PediatricCancer, label: 'Pediatric Cancer', icon: 'child_care' },
+        { id: FilterCategory.CancerReturned, label: 'Cancer Returned', icon: 'autorenew' },
+        { id: FilterCategory.EndOfLife, label: 'End-of-Life', icon: 'favorite' },
+        { id: FilterCategory.RareDisease, label: 'Rare Disease', icon: 'favorite' },
+        { id: FilterCategory.Caregiver, label: "I'm a Caregiver", icon: 'volunteer_activism' },
+        { id: FilterCategory.Grieving, label: 'Grieving', icon: 'favorite' }
     ];
 
     sortedRequests = computed(() => {
@@ -91,6 +109,52 @@ export class BrowseRequestsComponent implements OnInit {
 
     setSort(sort: 'newest' | 'oldest' | 'most-support' | 'least-support'): void {
         this.selectedSort.set(sort);
+    }
+
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.dropdown')) {
+            this.zoneDropdownOpen = false;
+            this.sortDropdownOpen = false;
+        }
+    }
+
+    toggleZoneDropdown(): void {
+        this.zoneDropdownOpen = !this.zoneDropdownOpen;
+        this.sortDropdownOpen = false;
+    }
+
+    toggleSortDropdown(): void {
+        this.sortDropdownOpen = !this.sortDropdownOpen;
+        this.zoneDropdownOpen = false;
+    }
+
+    selectZone(zoneId: string): void {
+        this.selectedZone.set(zoneId);
+        this.zoneDropdownOpen = false;
+    }
+
+    selectSort(sortId: string): void {
+        this.selectedSort.set(sortId as any);
+        this.sortDropdownOpen = false;
+    }
+
+    getSelectedZoneLabel(): string {
+        const zone = this.comfortZones.find(z => z.id === this.selectedZone());
+        return zone?.label || 'All Zones';
+    }
+
+    getSelectedSortLabel(): string {
+        const sort = this.sortOptions.find(s => s.id === this.selectedSort());
+        return sort?.label || 'Newest First';
+    }
+
+    getDiagnosisIcon(diagnosis: string): string {
+        if (diagnosis?.toLowerCase().includes('cancer') || diagnosis?.toLowerCase().includes('pediatric')) {
+            return 'child_care';
+        }
+        return 'medical_services';
     }
 
     getDisplayName(request: ISupportRequest): string {

@@ -1,9 +1,8 @@
 <div class="browse-requests">
     <section class="hero">
-        <p class="eyebrow">Browse Journeys</p>
         <h1>Journeys Seeking Support</h1>
         <p class="subtitle">
-            These are real people facing cancer, rare diseases, and life-threatening illness.
+            These are real people facing cancer, rare diseases, and life-threatening illness.<br>
             Each journey is waiting for your words of encouragement.
         </p>
     </section>
@@ -22,25 +21,44 @@
         </div>
 
         <div class="control-row">
-            <label class="control">
-                <span class="label">
-                    <span class="material-symbols-outlined">favorite</span>
-                    <!-- Comfort Zone -->
-                </span>
-                <select [value]="selectedFilter()" (change)="setFilter($any($event.target).value)">
-                    <option *ngFor="let filter of filters" [value]="filter.id">{{ filter.label === 'All' ? 'All Zones' : filter.label }}</option>
-                </select>
-            </label>
+            <div class="dropdown" [class.open]="zoneDropdownOpen">
+                <button type="button" class="dropdown-toggle" (click)="toggleZoneDropdown()">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                    <span>{{ getSelectedZoneLabel() }}</span>
+                    <span class="material-symbols-outlined caret">expand_more</span>
+                </button>
+                <div class="dropdown-menu" *ngIf="zoneDropdownOpen">
+                    <button 
+                        *ngFor="let zone of comfortZones" 
+                        type="button" 
+                        class="dropdown-item"
+                        [class.selected]="selectedZone() === zone.id"
+                        (click)="selectZone(zone.id)">
+                        <span class="material-symbols-outlined">{{ zone.icon }}</span>
+                        <span>{{ zone.label }}</span>
+                        <span class="material-symbols-outlined check" *ngIf="selectedZone() === zone.id">check</span>
+                    </button>
+                </div>
+            </div>
 
-            <label class="control">
-                <span class="label">
-                    <span class="material-symbols-outlined">arrow_upward</span>
-                    Sort
-                </span>
-                <select [value]="selectedSort()" (change)="setSort($any($event.target).value)">
-                    <option *ngFor="let option of sortOptions" [value]="option.id">{{ option.label }}</option>
-                </select>
-            </label>
+            <div class="dropdown" [class.open]="sortDropdownOpen">
+                <button type="button" class="dropdown-toggle" (click)="toggleSortDropdown()">
+                    <span class="material-symbols-outlined">swap_vert</span>
+                    <span>{{ getSelectedSortLabel() }}</span>
+                    <span class="material-symbols-outlined caret">expand_more</span>
+                </button>
+                <div class="dropdown-menu" *ngIf="sortDropdownOpen">
+                    <button 
+                        *ngFor="let option of sortOptions" 
+                        type="button" 
+                        class="dropdown-item"
+                        [class.selected]="selectedSort() === option.id"
+                        (click)="selectSort(option.id)">
+                        <span>{{ option.label }}</span>
+                        <span class="material-symbols-outlined check" *ngIf="selectedSort() === option.id">check</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -53,20 +71,14 @@
                     </div>
                     <h3>Send to Anyone</h3>
                     <p>Not sure who to support? Send a message to someone who needs it.</p>
-                    <span class="pill-muted">
-                        <span class="material-symbols-outlined">star</span>
+                    <span class="pill-open">
+                        <span class="material-symbols-outlined">autorenew</span>
                         Always Open
                     </span>
                 </div>
             </a>
 
             <a class="request-card" *ngFor="let request of sortedRequests()" [routerLink]="['/request', request.id]">
-                <button class="favorite-btn" type="button" (click)="toggleFavorite($event, request)" [class.liked]="isLiked(request.id)">
-                    <span class="material-symbols-outlined" [class.filled]="isLiked(request.id)">
-                        {{ isLiked(request.id) ? 'favorite' : 'favorite_border' }}
-                    </span>
-                </button>
-
                 <div class="card-header">
                     <div class="avatar">{{ getDisplayName(request).charAt(0) }}</div>
                     <div class="identity">
@@ -78,29 +90,26 @@
                             <span class="material-symbols-outlined">location_on</span>
                             {{ request.location }}
                         </div>
-                        <div class="badge" *ngIf="request.diagnosis">{{ request.diagnosis }}</div>
                     </div>
+                </div>
+
+                <div class="diagnosis-badge" *ngIf="request.diagnosis">
+                    <span class="material-symbols-outlined">{{ getDiagnosisIcon(request.diagnosis) }}</span>
+                    {{ request.diagnosis }}
                 </div>
 
                 <p class="message">{{ request.additionalNote }}</p>
 
-                <div class="comfort-tags">
-                    <span class="tag" *ngFor="let zone of request.comfortZones">
-                        <span class="material-symbols-outlined">{{ getComfortZoneIcon(zone) }}</span>
-                        {{ getComfortZoneLabel(zone) }}
-                    </span>
-                </div>
-
                 <div class="stats">
-                    <span class="stat" [class.liked]="isLiked(request.id)">
+                    <span class="stat hearts">
                         <span class="material-symbols-outlined">favorite</span>
                         {{ getHeartCount(request) }}
                     </span>
-                    <span class="stat">
-                        <span class="material-symbols-outlined">chat_bubble</span>
+                    <span class="stat messages">
+                        <span class="material-symbols-outlined">mail</span>
                         {{ request.comments || 0 }}
                     </span>
-                    <span class="stat">
+                    <span class="stat time">
                         <span class="material-symbols-outlined">schedule</span>
                         {{ getTimeAgo(request.createdAt) }}
                     </span>
