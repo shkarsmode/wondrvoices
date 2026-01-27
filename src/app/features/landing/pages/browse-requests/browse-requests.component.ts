@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
@@ -14,11 +14,20 @@ import { FilterCategory, ISupportRequest } from '../../../../shared/types/reques
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrowseRequestsComponent implements OnInit {
+    FilterCategory = FilterCategory;
     requests = signal<ISupportRequest[]>([]);
     loading = signal(false);
     viewMode = signal<'grid' | 'map'>('grid');
     selectedFilter = signal<FilterCategory>(FilterCategory.All);
     liked = signal<Set<string>>(new Set());
+    selectedSort = signal<'newest' | 'oldest' | 'most-support' | 'least-support'>('newest');
+
+    sortOptions = [
+        { id: 'newest', label: 'Newest First' },
+        { id: 'oldest', label: 'Oldest First' },
+        { id: 'most-support', label: 'Most Support' },
+        { id: 'least-support', label: 'Least Support' }
+    ];
 
     filters = [
         { id: FilterCategory.All, label: 'All', icon: 'star' },
@@ -31,6 +40,23 @@ export class BrowseRequestsComponent implements OnInit {
         { id: FilterCategory.Hope, label: 'Hope', icon: 'auto_awesome' },
         { id: FilterCategory.Mindfulness, label: 'Min', icon: 'self_improvement' }
     ];
+
+    sortedRequests = computed(() => {
+        const list = [...this.requests()];
+
+        switch (this.selectedSort()) {
+            case 'newest':
+                return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            case 'oldest':
+                return list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            case 'most-support':
+                return list.sort((a, b) => (b.hearts || 0) - (a.hearts || 0));
+            case 'least-support':
+                return list.sort((a, b) => (a.hearts || 0) - (b.hearts || 0));
+            default:
+                return list;
+        }
+    });
 
     constructor(private requestsService: RequestsService, private likesService: LikesService) {}
 
@@ -61,6 +87,10 @@ export class BrowseRequestsComponent implements OnInit {
     setFilter(filter: FilterCategory): void {
         this.selectedFilter.set(filter);
         this.loadRequests();
+    }
+
+    setSort(sort: 'newest' | 'oldest' | 'most-support' | 'least-support'): void {
+        this.selectedSort.set(sort);
     }
 
     getDisplayName(request: ISupportRequest): string {
