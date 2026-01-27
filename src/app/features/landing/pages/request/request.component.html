@@ -1,74 +1,81 @@
 @if (!loading()) {
 <div class="request-page">
     <div class="back-link">
-        <a routerLink="/browse-requests">&larr; Back to Requests</a>
+        <a routerLink="/browse-requests">← Back to Journeys</a>
     </div>
 
     @if (request(); as req) {
     <div class="header-card">
-        <div class="badge">
-            <span class="material-symbols-outlined">favorite</span>
-        </div>
-        <div class="header-main">
-            <div class="title-row">
-                <h1>{{ getDisplayName() }}</h1>
+        <div class="card-top">
+            <div class="badge-icon">
+                <span class="material-symbols-outlined">favorite</span>
             </div>
-            <div class="meta-row">
-                <span><span class="material-symbols-outlined">person</span> Age {{ req.age }}</span>
-                <span><span class="material-symbols-outlined">location_on</span> {{ req.location }}</span>
-                <span><span class="material-symbols-outlined">schedule</span> {{ getTimeAgo(req.createdAt) }}</span>
-            </div>
-            @if (req.hospital) {
-                <div class="hospital">{{ req.hospital }}</div>
-            }
-            <div class="diagnosis-badge">{{ req.diagnosis }}</div>
-            <p class="note">{{ req.additionalNote }}</p>
-            <div class="tags">
-                @for (zone of req.comfortZones; track zone) {
-                    <span class="tag">
-                        <span class="material-symbols-outlined">{{ getComfortZoneIcon(zone) }}</span> {{ zone | titlecase }}
-                    </span>
+            <div class="card-info">
+                <div class="name-row">
+                    <h1>{{ getDisplayName() }}</h1>
+                    <span class="request-id">{{ req.id }}</span>
+                </div>
+                <div class="meta-row">
+                    <span>{{ req.gender ? (req.gender | titlecase) + ', ' : '' }}Age {{ req.age }}</span>
+                    <span class="dot">•</span>
+                    <span>{{ req.location }}</span>
+                    <span class="dot">•</span>
+                    <span>{{ getTimeAgo(req.createdAt) }}</span>
+                </div>
+                @if (req.hospital) {
+                <div class="hospital-row">
+                    <span class="material-symbols-outlined">apartment</span>
+                    <span>{{ req.hospital }}</span>
+                </div>
                 }
-            </div>
-            <div class="stats">
-                <span [class.liked]="isLiked(req.id)"><span class="material-symbols-outlined" [class.liked]="isLiked(req.id)">favorite</span> {{ getHeartCount(req) }}</span>
-                <span><span class="material-symbols-outlined">share</span> {{ req.shares || 0 }}</span>
-                <span><span class="material-symbols-outlined">chat_bubble</span> {{ req.comments || 0 }}</span>
+                <div class="diagnosis-badge">{{ req.diagnosis }}</div>
+                <p class="note">{{ req.additionalNote }}</p>
+                <div class="comfort-block">
+                    <div class="comfort-label">What brings comfort:</div>
+                    <div class="comfort-tags">
+                        @for (zone of req.comfortZones; track zone) {
+                        <span class="comfort-tag">
+                            <span class="material-symbols-outlined">{{ getComfortZoneIcon(zone) }}</span>
+                            {{ zone | titlecase }}
+                        </span>
+                        }
+                    </div>
+                </div>
+                <div class="stats-row">
+                    <span class="stat hearts" [class.liked]="isLiked(req.id)">
+                        <span class="material-symbols-outlined">favorite</span>
+                        {{ getHeartCount(req) }}
+                    </span>
+                    <span class="stat checks">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        {{ req.comments || 0 }}
+                    </span>
+                    <span class="stat time">
+                        <span class="material-symbols-outlined">schedule</span>
+                        0
+                    </span>
+                </div>
             </div>
         </div>
-        <div class="cta">
-            <div class="request-id">{{ req.id }}</div>
-            <button class="btn-secondary" type="button" (click)="toggleSendLove()" [class.liked]="isLiked(req.id)">
-                {{ isLiked(req.id) ? 'Love Sent' : 'Send Love' }}
+        <div class="card-actions">
+            <button class="btn-support" type="button" (click)="toggleSend()">
+                <span class="material-symbols-outlined">favorite</span>
+                Send Support
+            </button>
+            <button class="btn-share" type="button">
+                <span class="material-symbols-outlined">ios_share</span>
+                Share
             </button>
         </div>
     </div>
 
     <div class="support-section">
-        <div class="feed-header">
-            <div>
-                <h2>Community Support Feed</h2>
-                <p class="muted">See how the community is showing up for {{ getDisplayName() || 'them' }}</p>
-            </div>
-            <div class="message-count">{{ getSupportCount() }} messages</div>
-        </div>
-
-        <div class="tabs">
-            <button class="tab active">
-                <span class="material-symbols-outlined">favorite</span>
-                Shared ({{ getSupportCount() }})
-            </button>
-            <button class="tab">
-                <span class="material-symbols-outlined">pending</span>
-                Pending (0)
-            </button>
+        <div class="hope-title">
+            <span class="material-symbols-outlined">favorite</span>
+            Keep the hope flowing
         </div>
 
         <div class="send-card" [class.open]="sendOpen()">
-            <div class="send-header">
-                <div class="title">Send your support to {{ getDisplayName() || 'them' }}</div>
-                <div class="subtitle">Choose how you'd like to show you care</div>
-            </div>
             <button type="button" class="send-field" (click)="toggleSend()">
                 <div class="left">
                     <span class="material-symbols-outlined">chat_bubble</span>
@@ -83,21 +90,25 @@
             @if (sendOpen()) {
             <div class="send-body">
                 <form class="send-form">
-                    <textarea rows="3" placeholder="Write your message of support for them..."></textarea>
+                    <textarea rows="4" placeholder="Write your message of support..."></textarea>
                     <div class="inline-actions">
                         <button type="button" class="chip">
                             <span class="material-symbols-outlined">videocam</span>
                             Record video
                         </button>
                         <button type="button" class="chip">
-                            <span class="material-symbols-outlined">upload_file</span>
+                            <span class="material-symbols-outlined">upload</span>
                             Upload file
                         </button>
                     </div>
                     <input type="email" placeholder="Your email *">
                     <input type="text" placeholder="Your name (optional — leave blank to appear as 'Anonymous')">
+                    <p class="hint-text">e.g. "Sarah from Seattle" or just "Anonymous from Seattle"</p>
                     <input type="text" placeholder="City you're sending from *">
-                    <button type="button" class="btn-primary full">Send Message</button>
+                    <button type="submit" class="btn-send">
+                        <span class="material-symbols-outlined">send</span>
+                        Send Message
+                    </button>
                 </form>
             </div>
             }
@@ -107,10 +118,17 @@
                     <span class="material-symbols-outlined">smartphone</span>
                     Use App
                 </button>
-                <button type="button" class="ghost-btn" (click)="openMailModal()">
+                <button type="button" class="ghost-btn">
                     <span class="material-symbols-outlined">mail</span>
                     Mail a Card
                 </button>
+            </div>
+        </div>
+
+        <div class="feed-header">
+            <div>
+                <h3>Support From Around the World</h3>
+                <p class="muted">where messages of hope and encouragement have come from for this request</p>
             </div>
         </div>
 
@@ -122,21 +140,26 @@
                         <div class="meta">
                             <div class="name-row">
                                 <span class="name">{{ msg.anonymous ? 'Anonymous' : msg.fromName }}</span>
-                                <span class="pill">{{ getMessageTypeLabel(msg) }}</span>
                             </div>
                             <div class="meta-row">
                                 @if (msg.location) {
-                                    <span class="location">
-                                        <span class="material-symbols-outlined">location_on</span> {{ msg.location }}
-                                    </span>
-                                    <span class="dot">&bull;</span>
+                                    <span class="material-symbols-outlined">location_on</span>
+                                    <span>{{ msg.location }}</span>
+                                    <span class="dot">•</span>
                                 }
-                                <span class="time">{{ getTimeAgo(msg.createdAt) }}</span>
+                                <span class="material-symbols-outlined">schedule</span>
+                                <span>{{ getTimeAgo(msg.createdAt) }}</span>
                             </div>
                         </div>
+                        <button class="share-btn" type="button">
+                            <span class="material-symbols-outlined">ios_share</span>
+                        </button>
                     </div>
 
                     <div class="feed-card-body">
+                        @if (msg.message) {
+                            <p class="message-text">"{{ msg.message }}"</p>
+                        }
                         @if (msg.type !== 'text' && msg.thumbnailUrl) {
                             <div class="media">
                                 <img
@@ -150,9 +173,6 @@
                                 }
                             </div>
                         }
-                        @if (msg.message) {
-                            <p class="message-text">{{ msg.message }}</p>
-                        }
                         @if (getPrimaryTag(req); as primaryTag) {
                             <div class="tags-row">
                                 <span class="tag-pill">
@@ -164,34 +184,34 @@
                     </div>
 
                     <div class="feed-card-footer">
-                        <div class="stat">
+                        <div class="stat hearts">
                             <span class="material-symbols-outlined">favorite</span>
                             {{ msg.likes || 0 }}
                         </div>
-                        <div class="stat share">
-                            <span class="material-symbols-outlined">share</span>
+                        <button class="stat share-link" type="button">
+                            <span class="material-symbols-outlined">ios_share</span>
                             Share
-                        </div>
+                        </button>
                     </div>
                 </div>
             }
         </div>
 
-        @if (req.mapMarkers?.length) {
-            <div class="map-section">
-                <h3>Support From Around the World</h3>
-                <p class="muted">See where messages of hope and encouragement have come from for this request</p>
-                <div class="map-frame">
-                    <div class="map-fake">
-                        <div class="map-legend">
-                            <span class="legend-dot primary"></span>
-                            <span class="legend-label">Support markers</span>
-                        </div>
-                        <div class="map-placeholder">Map view ({{ req.mapMarkers?.length }} markers)</div>
+        <div class="map-section">
+            <h3>Support From Around the World</h3>
+            <p class="muted">where messages of hope and encouragement have come from for this request</p>
+            @if (req.mapMarkers?.length) {
+            <div class="map-frame">
+                <div class="map-fake">
+                    <div class="map-legend">
+                        <span class="legend-dot primary"></span>
+                        <span class="legend-label">Support markers</span>
                     </div>
+                    <div class="map-placeholder">Map view ({{ req.mapMarkers?.length }} markers)</div>
                 </div>
             </div>
-        }
+            }
+        </div>
         @if (mailModalOpen()) {
         <div class="modal-backdrop">
             <div class="modal">
