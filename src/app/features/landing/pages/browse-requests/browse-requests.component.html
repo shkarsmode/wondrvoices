@@ -64,16 +64,17 @@
 
     <section class="content">
         <div class="requests-grid" *ngIf="viewMode() === 'grid'">
-            <a class="request-card send-anyone" routerLink="/request-support">
+            <!-- Share Your Journey Card -->
+            <a class="request-card share-journey" routerLink="/request-support">
                 <div class="card-body">
                     <div class="icon-wrap">
                         <span class="material-symbols-outlined">favorite</span>
                     </div>
-                    <h3>Send to Anyone</h3>
-                    <p>Not sure who to support? Send a message to someone who needs it.</p>
-                    <span class="pill-open">
-                        <span class="material-symbols-outlined">autorenew</span>
-                        Always Open
+                    <h3>Share Your Journey</h3>
+                    <p>Going through something difficult? Let us connect you with support.</p>
+                    <span class="pill-cta">
+                        <span class="material-symbols-outlined">favorite</span>
+                        You're Not Alone
                     </span>
                 </div>
             </a>
@@ -112,6 +113,21 @@
                     <span class="stat time">
                         <span class="material-symbols-outlined">schedule</span>
                         {{ getTimeAgo(request.createdAt) }}
+                    </span>
+                </div>
+            </a>
+
+            <!-- Send to Anyone Card -->
+            <a class="request-card send-anyone" routerLink="/request-support">
+                <div class="card-body">
+                    <div class="icon-wrap">
+                        <span class="material-symbols-outlined">public</span>
+                    </div>
+                    <h3>Send to Anyone</h3>
+                    <p>Not sure who to support? Send a message to someone who needs it.</p>
+                    <span class="pill-open">
+                        <span class="material-symbols-outlined">star</span>
+                        Always Open
                     </span>
                 </div>
             </a>

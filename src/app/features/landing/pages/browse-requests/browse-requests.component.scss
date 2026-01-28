@@ -203,20 +203,27 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             text-decoration: none;
             color: inherit;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 
             &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                border-color: #d0d0d0;
             }
 
-            &.send-anyone {
-                border: 2px dashed #e8d4c8;
-                background: linear-gradient(180deg, #fdf8f5 0%, #fff 100%);
+            // Share Your Journey Card
+            &.share-journey {
+                border: 2px dashed #c5d8e8;
+                background: #fff;
                 align-items: center;
                 text-align: center;
                 justify-content: center;
                 min-height: 280px;
+
+                &:hover {
+                    border-color: #9ec4dc;
+                    background: #f8fbfd;
+                }
 
                 .card-body {
                     display: flex;
@@ -229,15 +236,85 @@
                     width: 64px;
                     height: 64px;
                     border-radius: 50%;
-                    background: #fce8de;
+                    background: #e8f4fc;
                     display: flex;
                     align-items: center;
                     justify-content: center;
 
                     .material-symbols-outlined {
                         font-size: 28px;
-                        color: #e07a5f;
+                        color: #6ba3c7;
                         font-variation-settings: 'FILL' 1;
+                    }
+                }
+
+                h3 {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #1a1a1a;
+                    margin: 4px 0 0;
+                }
+
+                p {
+                    color: #666;
+                    line-height: 1.5;
+                    font-size: 14px;
+                    margin: 0;
+                }
+
+                .pill-cta {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    background: #e8f4fc;
+                    color: #5a9bc5;
+                    font-weight: 600;
+                    font-size: 13px;
+                    margin-top: 4px;
+                    border: 1px solid #c5d8e8;
+
+                    .material-symbols-outlined {
+                        font-size: 16px;
+                        font-variation-settings: 'FILL' 1;
+                    }
+                }
+            }
+
+            // Send to Anyone Card
+            &.send-anyone {
+                border: 2px dashed #e0d5cf;
+                background: #fff;
+                align-items: center;
+                text-align: center;
+                justify-content: center;
+                min-height: 280px;
+
+                &:hover {
+                    border-color: #c9b8ad;
+                    background: #fdfbf9;
+                }
+
+                .card-body {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 12px;
+                }
+
+                .icon-wrap {
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 50%;
+                    background: #f5f0ec;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    .material-symbols-outlined {
+                        font-size: 28px;
+                        color: #a89080;
                     }
                 }
 
@@ -261,11 +338,12 @@
                     gap: 6px;
                     padding: 8px 16px;
                     border-radius: 20px;
-                    background: #fce8de;
-                    color: #e07a5f;
+                    background: #f5f0ec;
+                    color: #a89080;
                     font-weight: 600;
                     font-size: 13px;
                     margin-top: 4px;
+                    border: 1px solid #e0d5cf;
 
                     .material-symbols-outlined {
                         font-size: 16px;
