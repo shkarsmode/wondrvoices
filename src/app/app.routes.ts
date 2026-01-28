@@ -79,6 +79,11 @@ export const routes: Routes = [
                 loadComponent: () => import('./features/landing/pages/request/request.component')
                     .then(m => m.RequestComponent)
             },
+            {
+                path: 'send-to-anyone',
+                loadComponent: () => import('./features/landing/pages/send-to-anyone/send-to-anyone.component')
+                    .then(m => m.SendToAnyoneComponent)
+            },
             { path: '**', redirectTo: '/blog' }
         ],
     },

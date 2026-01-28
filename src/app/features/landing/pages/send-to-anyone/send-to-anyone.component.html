@@ -1,0 +1,173 @@
+<div class="send-to-anyone">
+    <a class="back-link" routerLink="/browse-requests">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Back to Journeys
+    </a>
+
+    <div class="hero">
+        <div class="icon-wrap">
+            <span class="material-symbols-outlined">favorite</span>
+        </div>
+        <h1>Send Hope to Anyone</h1>
+        <p class="subtitle">
+            Not sure who to support? Send a general message of hope,<br>
+            encouragement, or joy. We'll match it with someone who needs it most.
+        </p>
+    </div>
+
+    <div class="support-card">
+        <h2>How to send your support</h2>
+
+        <!-- Send a message online -->
+        <div class="option-block" [class.open]="messageFormOpen()">
+            <button type="button" class="option-header" (click)="toggleMessageForm()">
+                <div class="option-icon">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                </div>
+                <div class="option-text">
+                    <div class="option-title">Send a message online</div>
+                    <div class="option-desc">Write a message of hope that will be shared in our community feed.</div>
+                </div>
+                <span class="material-symbols-outlined caret">{{ messageFormOpen() ? 'expand_less' : 'expand_more' }}</span>
+            </button>
+
+            <div class="option-body" *ngIf="messageFormOpen()">
+                <form class="message-form">
+                    <textarea rows="4" placeholder="Write your message of hope, encouragement, or joy..."></textarea>
+                    <div class="inline-actions">
+                        <button type="button" class="chip">
+                            <span class="material-symbols-outlined">videocam</span>
+                            Record video
+                        </button>
+                        <button type="button" class="chip">
+                            <span class="material-symbols-outlined">upload</span>
+                            Upload file
+                        </button>
+                    </div>
+                    <input type="text" placeholder="Your name (optional)">
+                    <input type="text" placeholder="Where is this message from? (e.g., Seattle, WA)">
+                    <button type="submit" class="btn-send">
+                        <span class="material-symbols-outlined">send</span>
+                        Send to Feed
+                    </button>
+                    <p class="form-note">Messages are reviewed before appearing in the public feed.</p>
+                </form>
+            </div>
+        </div>
+
+        <div class="divider"><span>or</span></div>
+
+        <!-- Mail your card or letter -->
+        <div class="option-block">
+            <div class="option-header static">
+                <div class="option-icon">
+                    <span class="material-symbols-outlined">mail</span>
+                </div>
+                <div class="option-text">
+                    <div class="option-title">Mail your card or letter</div>
+                    <div class="option-desc">Send handwritten cards, drawings, or letters to:</div>
+                    <div class="address-block">
+                        <span class="org">WondrVoices</span>
+                        <span>PO Box 40056</span>
+                        <span>St. Pete, FL 33743</span>
+                    </div>
+                </div>
+                <button type="button" class="copy-btn" (click)="copyAddress()">
+                    <span class="material-symbols-outlined">content_copy</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="divider"><span>or</span></div>
+
+        <!-- Upload via mobile app -->
+        <div class="option-block">
+            <div class="option-header static">
+                <div class="option-icon">
+                    <span class="material-symbols-outlined">smartphone</span>
+                </div>
+                <div class="option-text">
+                    <div class="option-title">Upload via mobile app</div>
+                    <div class="option-desc">Download the Wondrvoices app to submit your support digitally. Take a photo of your handwritten card or create one in the app.</div>
+                    <div class="app-buttons">
+                        <a href="#" class="app-btn">
+                            <span class="material-symbols-outlined">apple</span>
+                            App Store
+                        </a>
+                        <a href="#" class="app-btn">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                            Google Play
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"><span>or</span></div>
+
+        <!-- Spread the Word -->
+        <div class="option-block">
+            <div class="option-header static">
+                <div class="option-icon share">
+                    <span class="material-symbols-outlined">share</span>
+                </div>
+                <div class="option-text">
+                    <div class="option-title">Spread the Word</div>
+                    <div class="option-desc">Help others discover WondrVoices and join the movement of spreading hope.</div>
+                    <div class="social-icons">
+                        <a href="#" class="social-btn"><span>𝕏</span></a>
+                        <a href="#" class="social-btn"><span class="material-symbols-outlined">facebook</span></a>
+                        <a href="#" class="social-btn"><span class="material-symbols-outlined">photo_camera</span></a>
+                        <a href="#" class="social-btn"><span>♪</span></a>
+                        <a href="#" class="social-btn"><span class="material-symbols-outlined">work</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <p>Your submission will be added to our gallery and matched with someone who needs encouragement.</p>
+        <a routerLink="/browse-requests" class="btn-outline">Or choose a specific journey to support</a>
+    </div>
+
+    <section class="matched-section">
+        <h2>Messages That Found Their Match</h2>
+        <p class="subtitle">See how general messages of hope have been matched with people who needed them most.</p>
+
+        <div class="matched-grid">
+            <div class="matched-card" *ngFor="let msg of matchedMessages">
+                <div class="matched-image">
+                    <img [src]="msg.image" [alt]="msg.quote" loading="lazy">
+                </div>
+                <div class="matched-quote">
+                    <span class="quote-icon">"</span>
+                    {{ msg.quote }}
+                </div>
+                <div class="matched-meta">
+                    <div class="meta-row">
+                        <span class="label">From:</span>
+                        <span class="value">{{ msg.from }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="label">Matched with:</span>
+                        <span class="value">{{ msg.matchedWith }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="label">Supporting:</span>
+                        <span class="value link">{{ msg.supporting }}</span>
+                    </div>
+                </div>
+                <div class="matched-footer">
+                    <span class="location">
+                        <span class="material-symbols-outlined">location_on</span>
+                        {{ msg.location }}
+                    </span>
+                    <span class="time">Matched {{ msg.matchedAgo }}</span>
+                </div>
+            </div>
+        </div>
+
+        <a routerLink="/gallery" class="btn-outline">View Full Feed</a>
+    </section>
+</div>
