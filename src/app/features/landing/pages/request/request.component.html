@@ -69,11 +69,33 @@
         </div>
     </div>
 
-    <div class="support-section">
-        <div class="hope-title">
-            <span class="material-symbols-outlined">favorite</span>
-            Keep the hope flowing
+    <!-- Keep the Hope Flowing Banner -->
+    <a class="keep-hope-banner" href="#FUNTHRZKBWU">
+        <div class="banner-content">
+            <div class="icon-wrap">
+                <span class="material-symbols-outlined">eco</span>
+            </div>
+            <div class="text">
+                <span class="title">Keep the hope flowing</span>
+                <span class="subtitle">Your support helps more journeys get seen</span>
+            </div>
         </div>
+        <span class="material-symbols-outlined chevron">chevron_right</span>
+    </a>
+
+    <div class="support-section">
+        <!-- <h3 class="section-title">Support their journey</h3>
+
+        <div class="support-buttons">
+            <button type="button" class="btn-use-app">
+                <span class="material-symbols-outlined">smartphone</span>
+                Use App
+            </button>
+            <button type="button" class="btn-mail-card">
+                <span class="material-symbols-outlined">mail</span>
+                Mail a Card
+            </button>
+        </div> -->
 
         <div class="send-card" [class.open]="sendOpen()">
             <button type="button" class="send-field" (click)="toggleSend()">
@@ -112,17 +134,6 @@
                 </form>
             </div>
             }
-
-            <div class="send-actions">
-                <button type="button" class="ghost-btn">
-                    <span class="material-symbols-outlined">smartphone</span>
-                    Use App
-                </button>
-                <button type="button" class="ghost-btn">
-                    <span class="material-symbols-outlined">mail</span>
-                    Mail a Card
-                </button>
-            </div>
         </div>
 
         <div class="feed-header">
