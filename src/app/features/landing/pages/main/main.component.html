@@ -54,45 +54,45 @@
 
 <section class="share-hope">
     <div class="section-title">
-        <h2>
-            Your voice can
-            <span>make <img src="assets/svg/lines-3.svg" alt="Lines" /></span>
-            a difference
-        </h2>
-        <!-- <span>
-            Every card, note, and voice shared here is a small act of kindness that can brighten even the hardest days. Whether it's a child's drawing, a handwritten message, or an encouraging voice, each one reminds patients they are not alone in their fight. Join a growing community of people spreading encouragement to those who need it most.
-        </span> -->
+        <h2>Your Voice Can Make a Difference</h2>
+        <p class="subtitle">
+            Whether you're fighting a serious illness or want to share hope with someone who is,
+            Wondrvoices connects hearts through meaningful moments.
+        </p>
     </div>
 
     <div class="cards">
-        <div class="card" [routerLink]="'/submit'">
-            <img src="assets/svg/submit-a-card.svg" alt="Submit icon" />
-            <div class="card-header">
-                <h3>Share Card</h3>
+        <div class="card">
+            <div class="icon-circle pink">
+                <span class="material-symbols-outlined">favorite</span>
             </div>
+            <h3>Share Card</h3>
             <p>
                 Your message could be the one that makes them feel seen.
             </p>
+            <button class="card-btn pink" [routerLink]="'/browse-requests'">Send Support</button>
         </div>
 
-        <div class="card" [routerLink]="'/spots'">
-            <img src="assets/svg/become.svg" alt="Spot icon" />
-            <div class="card-header">
-                <h3>Wondrspots</h3>
+        <div class="card">
+            <div class="icon-circle teal">
+                <span class="material-symbols-outlined">chat_bubble_outline</span>
             </div>
+            <h3>Share Journey</h3>
             <p>
                 Make your space a place where voices gather.
             </p>
+            <button class="card-btn teal" [routerLink]="'/request-support'">Share Now</button>
         </div>
 
-        <div class="card" [routerLink]="'/get-involved'">
-            <img src="assets/svg/help.svg" alt="Help icon" />
-            <div class="card-header">
-                <h3>Help Us Grow</h3>
+        <div class="card">
+            <div class="icon-circle blue">
+                <span class="material-symbols-outlined">article</span>
             </div>
+            <h3>Help Us Grow</h3>
             <p>
                 Spark connection in your community and beyond.
             </p>
+            <button class="card-btn blue" [routerLink]="'/get-involved'">Learn More</button>
         </div>
     </div>
 </section>
