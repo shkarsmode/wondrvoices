@@ -34,7 +34,7 @@ export class BrowseRequestsComponent implements OnInit {
     ];
 
     comfortZones = [
-        { id: 'all', label: 'All Zones', icon: 'favorite' },
+        { id: 'all', label: 'All Themes', icon: 'favorite' },
         { id: 'humor', label: 'Humor', icon: 'sentiment_satisfied' },
         { id: 'prayers', label: 'Prayers', icon: 'volunteer_activism' },
         { id: 'nature', label: 'Nature', icon: 'park' },
@@ -142,7 +142,7 @@ export class BrowseRequestsComponent implements OnInit {
 
     getSelectedZoneLabel(): string {
         const zone = this.comfortZones.find(z => z.id === this.selectedZone());
-        return zone?.label || 'All Zones';
+        return zone?.label || 'All Themes';
     }
 
     getSelectedSortLabel(): string {
