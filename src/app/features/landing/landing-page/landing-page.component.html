@@ -7,43 +7,60 @@
         class="top-bar is-sticky"
         [class.is-hidden]="hideHeader()"
         [class.header-scrolled]="scrollY() > 3">
-        <div class="logo" [routerLink]="''" (click)="scrollToTop()">
-            <img src="assets/svg/full-logo.svg" alt="Logo" />
-        </div>
+        <div class="header-container">
+            <div class="logo" [routerLink]="''" (click)="scrollToTop()">
+                <img src="assets/svg/full-logo.svg" alt="Logo" />
+            </div>
 
-        <button
-            class="burger"
-            [class.active]="menuOpened()"
-            (click)="toggleMenu($event)"
-            aria-label="Toggle Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
-        <nav
-            [class.open]="menuOpened()"
-            (click)="toggleMenu()">
-            <a [routerLink]="'/'" (click)="scrollToTop()">Home</a>
-            <a [routerLink]="['/gallery']" routerLinkActive="link-active">Gallery</a>
-            <a [routerLink]="['/map']" routerLinkActive="link-active">Map</a>
-            <a [routerLink]="['/spots']" routerLinkActive="link-active">Spots</a>
-            <a [routerLink]="['/get-involved']" routerLinkActive="link-active">Get Involved</a>
-            <a [routerLink]="['/about-us']" routerLinkActive="link-active">About</a>
-            <a [routerLink]="['/blog']" routerLinkActive="link-active">Blog</a>
-
-            <button class="button submit primary" [routerLink]="'/submit'">Submit</button>
-
-            <button class="button submit primary fundraise">
-                <div>
-                    <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 8L1.21875 7.25C0.4375 6.46875 0 5.375 0 4.25C0 1.90625 1.875 0 4.21875 0C5.34375 0 6.4375 0.46875 7.21875 1.25L8 2L8.75 1.25C9.53125 0.46875 10.625 0 11.75 0C14.0938 0 16 1.90625 16 4.25C16 5.375 15.5312 6.46875 14.75 7.25L14 8L8 14L2 8Z" fill="#FFFFFF"></path>
-                    </svg>
-                    Donate
-                </div>
-                <a href="#FUNTHRZKBWU"></a>
+            <button
+                class="burger"
+                [class.active]="menuOpened()"
+                (click)="toggleMenu($event)"
+                aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-        </nav>
+
+            <nav
+                [class.open]="menuOpened()"
+                (click)="toggleMenu()">
+                <div class="nav-links">
+                    <a [routerLink]="'/'" (click)="scrollToTop()">Home</a>
+                    <a [routerLink]="['/browse-requests']" routerLinkActive="link-active">Journeys</a>
+                    <a [routerLink]="['/gallery']" routerLinkActive="link-active">Feed</a>
+                    <a [routerLink]="['/map']" routerLinkActive="link-active">Map</a>
+                    <a [routerLink]="['/spots']" routerLinkActive="link-active">Partners</a>
+                    <a [routerLink]="['/about-us']" routerLinkActive="link-active">About</a>
+                    <a [routerLink]="['/blog']" routerLinkActive="link-active">Blog</a>
+                </div>
+            </nav>
+
+            <div class="header-actions">
+                <div class="nav-icons">
+                    <a [routerLink]="['/browse-requests']" class="nav-icon-btn" aria-label="Browse Journeys" title="Browse Journeys">
+                        <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 14.875L7.8125 13.8C3.15 9.575 0 6.725 0 3.25C0 0.4 2.25 -1.19209e-07 4.5 0C5.74 0 6.93 0.465 7.875 1.275L9 2.25L10.125 1.275C11.07 0.465 12.26 0 13.5 0C15.75 0 18 0.4 18 3.25C18 6.725 14.85 9.575 10.1875 13.8L9 14.875Z" fill="#C78D84"/>
+                        </svg>
+                    </a>
+                    <a [routerLink]="['/request-support']" class="nav-icon-btn" aria-label="Share Your Journey" title="Share Your Journey">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z" stroke="#C78D84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <button class="button submit primary fundraise">
+                    <div>
+                        <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 8L1.21875 7.25C0.4375 6.46875 0 5.375 0 4.25C0 1.90625 1.875 0 4.21875 0C5.34375 0 6.4375 0.46875 7.21875 1.25L8 2L8.75 1.25C9.53125 0.46875 10.625 0 11.75 0C14.0938 0 16 1.90625 16 4.25C16 5.375 15.5312 6.46875 14.75 7.25L14 8L8 14L2 8Z" fill="#FFFFFF"></path>
+                        </svg>
+                        Donate
+                    </div>
+                    <a href="#FUNTHRZKBWU"></a>
+                </button>
+            </div>
+        </div>
     </header>
 </section>
 
