@@ -43,33 +43,53 @@
     <div class="step-content fade-in" *ngIf="currentStep() === 1">
         <div class="card">
             <h2>Tell Us Your Story</h2>
-            <p class="step-description">Let's start with who this journey is for.</p>
+            <p class="step-description">Let's start with understanding what you're going through.</p>
 
+            <!-- Question 1: What are you or your loved one facing? -->
             <div class="form-group">
-                <label class="question-label">Whose journey is this? <span class="required">*</span></label>
+                <label class="question-label">What are you or your loved one facing? <span class="required">*</span></label>
                 <div class="options-grid">
                     <button 
-                        *ngFor="let journey of journeyTypes"
+                        *ngFor="let situation of situationOptions"
                         type="button"
                         class="option-btn"
-                        [class.selected]="selectedJourneyType() === journey.id"
-                        (click)="selectJourneyType(journey.id)">
-                        <span class="material-symbols-outlined">person</span>
-                        <span>{{ journey.label }}</span>
+                        [class.selected]="selectedSituation() === situation.id"
+                        (click)="selectSituation(situation.id)">
+                        {{ situation.label }}
                     </button>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="question-label">What are you going through? <span class="required">*</span></label>
-                <div class="options-grid">
+            <!-- Question 2: Who is going through this? (shown after situation selected, except for grief) -->
+            <div class="form-group" *ngIf="selectedSituation() && !isGriefSituation()">
+                <label class="question-label">Who is going through this? <span class="required">*</span></label>
+                <div class="options-grid support-recipient-grid">
                     <button 
-                        *ngFor="let condition of conditionOptions"
+                        *ngFor="let recipient of supportRecipientOptions"
+                        type="button"
+                        class="option-btn recipient-btn"
+                        [class.selected]="whoNeedsSupport() === recipient.id"
+                        (click)="selectWhoNeedsSupport(recipient.id)">
+                        <span class="material-symbols-outlined">{{ recipient.icon }}</span>
+                        <span>{{ recipient.label }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Relationship question (shown for "A Loved One" or grief situations) -->
+            <div class="form-group" *ngIf="(whoNeedsSupport() === 'someone-i-care-for' && !isGriefSituation()) || isGriefSituation()">
+                <label class="question-label">
+                    {{ isGriefSituation() ? 'What was your relationship to them?' : 'What is your relationship to them?' }}
+                    <span class="required">*</span>
+                </label>
+                <div class="options-grid relationship-grid">
+                    <button 
+                        *ngFor="let relationship of caregiverRelationshipOptions"
                         type="button"
                         class="option-btn"
-                        [class.selected]="selectedCondition() === condition"
-                        (click)="selectCondition(condition)">
-                        {{ condition }}
+                        [class.selected]="caregiverRelationship() === relationship.id"
+                        (click)="selectCaregiverRelationship(relationship.id)">
+                        {{ relationship.label }}
                     </button>
                 </div>
             </div>
@@ -146,6 +166,18 @@
                         <span class="material-symbols-outlined zone-icon">{{ zone.icon }}</span>
                         <span class="zone-label">{{ zone.label }}</span>
                     </button>
+                </div>
+
+                <!-- Custom comfort zone input (shown when "Other" is selected) -->
+                <div class="custom-zone-input" *ngIf="isZoneSelected('other')">
+                    <input 
+                        type="text"
+                        class="form-input"
+                        placeholder="Describe what comforts you..."
+                        [value]="customComfortZone()"
+                        [maxLength]="MAX_CUSTOM_ZONE_LENGTH"
+                        (input)="updateCustomComfortZone($any($event.target).value)">
+                    <span class="char-count">{{ customComfortZone().length }}/{{ MAX_CUSTOM_ZONE_LENGTH }}</span>
                 </div>
             </div>
 

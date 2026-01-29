@@ -46,9 +46,9 @@ export interface CreateSupportRequestDto {
     age: number;
     gender?: 'male' | 'female' | 'prefer-not-to-say';
     location: string;
-    journeyType?: string;
-    condition?: string;
-    diagnosis?: string;
+    situation?: string; // 'cancer', 'loss', 'end-of-life', 'other-illness'
+    whoNeedsSupport?: string; // 'me', 'my-child', 'someone-i-care-for'
+    caregiverRelationship?: string; // 'spouse', 'parent', 'sibling', 'friend', 'other-family', 'other'
     journeyStage: string;
     contextTags?: string[];
     hospital?: string;

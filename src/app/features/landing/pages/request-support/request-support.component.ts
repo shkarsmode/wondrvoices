@@ -36,23 +36,33 @@ export class RequestSupportComponent {
         return times[this.currentStep() - 1];
     });
 
-    // Step 1: Journey type options
-    journeyTypes = [
-        { id: 'me', label: 'Me' },
-        { id: 'child', label: 'My Child' },
-        { id: 'loved-one', label: 'A Loved One' }
+    // Step 1: Situation options (asked first)
+    situationOptions = [
+        { id: 'cancer', label: 'Cancer' },
+        { id: 'loss', label: 'Loss of a loved one' },
+        { id: 'end-of-life', label: 'End of life Care' },
+        { id: 'other-illness', label: 'Other serious illness' }
     ];
-    selectedJourneyType = signal<string>('');
+    selectedSituation = signal<string>('');
 
-    // Step 1: Condition options
-    conditionOptions = [
-        'Cancer',
-        'Rare Disease',
-        'End-of-Life Care',
-        'Grief & Loss',
-        'Other Serious Illness'
+    // Step 1: Who needs support options (asked second)
+    supportRecipientOptions = [
+        { id: 'me', label: 'Me', icon: 'person' },
+        { id: 'my-child', label: 'My Child', icon: 'child_care' },
+        { id: 'someone-i-care-for', label: 'A Loved One', icon: 'people' }
     ];
-    selectedCondition = signal<string>('');
+    whoNeedsSupport = signal<string>('');
+
+    // Caregiver relationship options
+    caregiverRelationshipOptions = [
+        { id: 'spouse', label: 'My spouse / partner' },
+        { id: 'parent', label: 'My parent' },
+        { id: 'sibling', label: 'My sibling' },
+        { id: 'friend', label: 'My friend' },
+        { id: 'other-family', label: 'Other family member' },
+        { id: 'other', label: 'Other' }
+    ];
+    caregiverRelationship = signal<string>('');
 
     // Step 2: Journey stage options
     journeyStageOptions = [
@@ -90,6 +100,8 @@ export class RequestSupportComponent {
         { id: 'other', label: 'Other', icon: 'forum' }
     ];
     selectedComfortZones = signal<string[]>([]);
+    customComfortZone = signal<string>('');
+    readonly MAX_CUSTOM_ZONE_LENGTH = 30;
 
     constructor(
         private fb: FormBuilder,
@@ -97,8 +109,9 @@ export class RequestSupportComponent {
         private router: Router
     ) {
         this.step1Form = this.fb.group({
-            journeyType: ['', Validators.required],
-            condition: ['', Validators.required]
+            situation: ['', Validators.required],
+            whoNeedsSupport: ['', Validators.required],
+            caregiverRelationship: ['']
         });
 
         this.step2Form = this.fb.group({
@@ -122,9 +135,33 @@ export class RequestSupportComponent {
 
     nextStep(): void {
         if (this.currentStep() === 1) {
-            if (!this.selectedJourneyType() || !this.selectedCondition()) {
-                alert('Please select all required options');
+            // Check if grief situation
+            const isGriefSituation = this.selectedSituation() === 'loss';
+            
+            if (!this.selectedSituation()) {
+                alert('Please select what you or your loved one is facing');
                 return;
+            }
+            
+            // For grief, we need relationship but not "who"
+            if (isGriefSituation) {
+                if (!this.caregiverRelationship()) {
+                    alert('Please select your relationship');
+                    return;
+                }
+                // Auto-set "me" for grief situations
+                this.whoNeedsSupport.set('me');
+            } else {
+                if (!this.whoNeedsSupport()) {
+                    alert('Please select who needs support');
+                    return;
+                }
+                if (this.whoNeedsSupport() === 'someone-i-care-for') {
+                    if (!this.caregiverRelationship()) {
+                        alert('Please select your relationship');
+                        return;
+                    }
+                }
             }
         } else if (this.currentStep() === 2) {
             if (!this.selectedJourneyStage()) {
@@ -134,6 +171,11 @@ export class RequestSupportComponent {
         } else if (this.currentStep() === 3) {
             if (this.selectedComfortZones().length === 0) {
                 alert('Please select at least one comfort zone');
+                return;
+            }
+            // If "other" is selected, custom zone text is required
+            if (this.selectedComfortZones().includes('other') && !this.customComfortZone().trim()) {
+                alert('Please describe your custom comfort zone');
                 return;
             }
         } else if (this.currentStep() === 4) {
@@ -157,12 +199,29 @@ export class RequestSupportComponent {
         }
     }
 
-    selectJourneyType(type: string): void {
-        this.selectedJourneyType.set(type);
+    selectSituation(situation: string): void {
+        this.selectedSituation.set(situation);
+        // Reset dependent fields
+        if (situation !== 'loss') {
+            this.whoNeedsSupport.set('');
+        }
+        this.caregiverRelationship.set('');
     }
 
-    selectCondition(condition: string): void {
-        this.selectedCondition.set(condition);
+    selectWhoNeedsSupport(who: string): void {
+        this.whoNeedsSupport.set(who);
+        // Reset relationship if not "someone-i-care-for"
+        if (who !== 'someone-i-care-for') {
+            this.caregiverRelationship.set('');
+        }
+    }
+
+    selectCaregiverRelationship(relationship: string): void {
+        this.caregiverRelationship.set(relationship);
+    }
+
+    isGriefSituation(): boolean {
+        return this.selectedSituation() === 'loss';
     }
 
     selectJourneyStage(stage: string): void {
@@ -193,6 +252,12 @@ export class RequestSupportComponent {
 
     isZoneSelected(zoneId: string): boolean {
         return this.selectedComfortZones().includes(zoneId);
+    }
+
+    updateCustomComfortZone(value: string): void {
+        // Limit to max length
+        const trimmed = value.slice(0, this.MAX_CUSTOM_ZONE_LENGTH);
+        this.customComfortZone.set(trimmed);
     }
 
     onCodeInput(index: number, event: any): void {
@@ -290,8 +355,9 @@ export class RequestSupportComponent {
             age: this.step4Form.value.age,
             gender: this.step4Form.value.gender || undefined,
             location: this.step4Form.value.location,
-            journeyType: this.selectedJourneyType(),
-            condition: this.selectedCondition(),
+            situation: this.selectedSituation(),
+            whoNeedsSupport: this.whoNeedsSupport(),
+            caregiverRelationship: this.caregiverRelationship() || undefined,
             journeyStage: this.selectedJourneyStage(),
             contextTags: this.selectedContextTags(),
             email: this.step4Form.value.email,
