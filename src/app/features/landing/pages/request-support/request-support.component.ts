@@ -369,7 +369,7 @@ export class RequestSupportComponent {
             next: (response) => {
                 this.requestId.set(response.requestId);
                 // Send verification code
-                this.requestsService.sendVerificationCode(this.step4Form.value.email).subscribe({
+                this.requestsService.sendVerificationCode(this.step4Form.value.email, this.requestId()).subscribe({
                     next: (codeResponse) => {
                         if (codeResponse.code) {
                             this.demoVerificationCode.set(codeResponse.code);
@@ -392,7 +392,7 @@ export class RequestSupportComponent {
 
     resendCode(): void {
         const email = this.step4Form.value.email;
-        this.requestsService.sendVerificationCode(email).subscribe({
+        this.requestsService.sendVerificationCode(email, this.requestId()).subscribe({
             next: (codeResponse) => {
                 if (codeResponse.code) {
                     this.demoVerificationCode.set(codeResponse.code);
@@ -415,7 +415,8 @@ export class RequestSupportComponent {
         this.isSubmitting.set(true);
         this.requestsService.verifyEmail({
             email: this.step4Form.value.email,
-            code: code
+            code: code,
+            requestId: this.requestId()
         }).subscribe({
             next: () => {
                 this.isSubmitting.set(false);

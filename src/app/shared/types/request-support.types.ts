@@ -61,6 +61,7 @@ export interface CreateSupportRequestDto {
 export interface VerifyEmailRequest {
     email: string;
     code: string;
+    requestId?: string;
 }
 
 export interface SupportRequestsResponse {

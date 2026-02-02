@@ -86,7 +86,8 @@ export class BrowseRequestsComponent implements OnInit {
     loadRequests(): void {
         this.loading.set(true);
         this.requestsService.getBrowseRequests({ 
-            category: this.selectedFilter() 
+            category: this.selectedFilter(),
+            comfortZone: this.selectedZone(),
         }).subscribe({
             next: (response) => {
                 this.requests.set(response.items);
@@ -133,6 +134,7 @@ export class BrowseRequestsComponent implements OnInit {
     selectZone(zoneId: string): void {
         this.selectedZone.set(zoneId);
         this.zoneDropdownOpen = false;
+        this.loadRequests();
     }
 
     selectSort(sortId: string): void {
