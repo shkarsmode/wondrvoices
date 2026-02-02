@@ -1,9 +1,10 @@
-import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
-import { IRequestDetail, ISupportMessage } from '../../../../shared/types/request-support.types';
+import { CreateSupportMessageDto, IRequestDetail, ISupportMessage } from '../../../../shared/types/request-support.types';
 
 type AccordionState = {
     message: boolean;
@@ -15,7 +16,7 @@ type AccordionState = {
 @Component({
     selector: 'app-request-page',
     standalone: true,
-    imports: [CommonModule, RouterLink, NgIf, NgFor],
+    imports: [CommonModule, RouterLink, FormsModule],
     templateUrl: './request.component.html',
     styleUrl: './request.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -33,6 +34,14 @@ export class RequestComponent implements OnInit {
     liked = signal<Set<string>>(new Set());
     sendOpen = signal(true);
     mailModalOpen = signal(false);
+
+    messageText = '';
+    senderEmail = '';
+    senderName = '';
+    senderLocation = '';
+    sendingMessage = signal(false);
+    uploadingMedia = signal(false);
+    uploadedMediaUrl = signal<string | null>(null);
 
     constructor(private route: ActivatedRoute, private requestsService: RequestsService, private likesService: LikesService) {}
 
@@ -112,6 +121,79 @@ export class RequestComponent implements OnInit {
 
     toggleSend(): void {
         this.sendOpen.update(v => !v);
+    }
+
+    onFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        this.uploadingMedia.set(true);
+        this.requestsService.uploadSupportImage(file).subscribe({
+            next: (response) => {
+                const url = response?.imageUrl?.secure_url || response?.imageUrl?.url || response?.imageUrl?.secureUrl;
+                this.uploadedMediaUrl.set(url || null);
+                this.uploadingMedia.set(false);
+            },
+            error: () => {
+                this.uploadingMedia.set(false);
+                alert('Failed to upload file');
+            }
+        });
+    }
+
+    submitSupportMessage(): void {
+        const req = this.request();
+        if (!req) return;
+
+        const message = this.messageText.trim();
+        const mediaUrl = this.uploadedMediaUrl();
+
+        if (!this.senderEmail.trim() || !this.senderLocation.trim()) {
+            alert('Please provide your email and location');
+            return;
+        }
+
+        if (!message && !mediaUrl) {
+            alert('Please add a message or upload an image');
+            return;
+        }
+
+        const payload: CreateSupportMessageDto = {
+            message: message || undefined,
+            type: mediaUrl ? 'image' : 'text',
+            mediaUrl: mediaUrl || undefined,
+            thumbnailUrl: mediaUrl || undefined,
+            fromName: this.senderName.trim() || undefined,
+            email: this.senderEmail.trim(),
+            location: this.senderLocation.trim(),
+        };
+
+        this.sendingMessage.set(true);
+        this.requestsService.createSupportMessage(req.id, payload).subscribe({
+            next: (created) => {
+                const current = this.request();
+                if (current) {
+                    const nextMessages = [created, ...(current.messages ?? [])];
+                    this.request.set({
+                        ...current,
+                        comments: (current.comments || 0) + 1,
+                        messages: nextMessages,
+                    });
+                }
+                this.messageText = '';
+                this.senderEmail = '';
+                this.senderName = '';
+                this.senderLocation = '';
+                this.uploadedMediaUrl.set(null);
+                this.sendingMessage.set(false);
+                this.sendOpen.set(false);
+            },
+            error: () => {
+                this.sendingMessage.set(false);
+                alert('Failed to send message');
+            }
+        });
     }
 
     openMailModal(): void {

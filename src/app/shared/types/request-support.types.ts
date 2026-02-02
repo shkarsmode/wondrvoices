@@ -35,6 +35,16 @@ export interface ISupportMessage {
     location?: string;
 }
 
+export interface CreateSupportMessageDto {
+    message?: string;
+    type?: 'text' | 'image' | 'video';
+    mediaUrl?: string;
+    thumbnailUrl?: string;
+    fromName?: string;
+    email: string;
+    location: string;
+}
+
 export interface IRequestDetail extends ISupportRequest {
     messages: ISupportMessage[];
     supportCount?: number;

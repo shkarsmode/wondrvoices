@@ -111,23 +111,52 @@
 
             @if (sendOpen()) {
             <div class="send-body">
-                <form class="send-form">
-                    <textarea rows="4" placeholder="Write your message of support..."></textarea>
+                <form class="send-form" (ngSubmit)="submitSupportMessage()">
+                    <textarea
+                        rows="4"
+                        placeholder="Write your message of support..."
+                        name="message"
+                        [(ngModel)]="messageText"></textarea>
                     <div class="inline-actions">
-                        <button type="button" class="chip">
+                        <button type="button" class="chip" disabled>
                             <span class="material-symbols-outlined">videocam</span>
                             Record video
                         </button>
-                        <button type="button" class="chip">
+                        <button type="button" class="chip" (click)="fileInput.click()" [disabled]="uploadingMedia()">
                             <span class="material-symbols-outlined">upload</span>
                             Upload file
                         </button>
+                        <input
+                            #fileInput
+                            type="file"
+                            accept="image/*"
+                            (change)="onFileSelected($event)"
+                            hidden>
                     </div>
-                    <input type="email" placeholder="Your email *">
-                    <input type="text" placeholder="Your name (optional — leave blank to appear as 'Anonymous')">
+                    @if (uploadedMediaUrl()) {
+                        <div class="media-preview">
+                            <img [src]="uploadedMediaUrl()" alt="Uploaded image" loading="lazy">
+                        </div>
+                    }
+                    <input
+                        type="email"
+                        placeholder="Your email *"
+                        name="email"
+                        required
+                        [(ngModel)]="senderEmail">
+                    <input
+                        type="text"
+                        placeholder="Your name (optional — leave blank to appear as 'Anonymous')"
+                        name="name"
+                        [(ngModel)]="senderName">
                     <p class="hint-text">e.g. "Sarah from Seattle" or just "Anonymous from Seattle"</p>
-                    <input type="text" placeholder="City you're sending from *">
-                    <button type="submit" class="btn-send">
+                    <input
+                        type="text"
+                        placeholder="City you're sending from *"
+                        name="location"
+                        required
+                        [(ngModel)]="senderLocation">
+                    <button type="submit" class="btn-send" [disabled]="sendingMessage() || uploadingMedia()">
                         <span class="material-symbols-outlined">send</span>
                         Send Message
                     </button>

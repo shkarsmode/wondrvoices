@@ -1029,6 +1029,19 @@
     color: #4a5568;
 }
 
+.media-preview {
+    margin: 0.75rem 0 0.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #eee;
+
+    img {
+        width: 100%;
+        display: block;
+        object-fit: cover;
+    }
+}
+
 @media (max-width: 768px) {
     .request-page {
         .header-card {
@@ -1039,4 +1052,10 @@
             grid-template-columns: 1fr;
         }
     }
+}
+
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
 }

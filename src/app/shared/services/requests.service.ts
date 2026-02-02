@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateSupportRequestDto, IRequestDetail, SupportRequestsResponse, VerifyEmailRequest } from '../types/request-support.types';
+import { CreateSupportMessageDto, CreateSupportRequestDto, IRequestDetail, ISupportMessage, SupportRequestsResponse, VerifyEmailRequest } from '../types/request-support.types';
 import { BASE_PATH_API } from './variables';
 
 @Injectable({
@@ -42,5 +42,15 @@ export class RequestsService {
 
     verifyEmail(data: VerifyEmailRequest): Observable<{ success: boolean }> {
         return this.http.post<{ success: boolean }>(`${this.basePathApi}/${this.path}/verify/check`, data);
+    }
+
+    createSupportMessage(requestId: string, payload: CreateSupportMessageDto): Observable<ISupportMessage> {
+        return this.http.post<ISupportMessage>(`${this.basePathApi}/${this.path}/${requestId}/messages`, payload);
+    }
+
+    uploadSupportImage(file: File): Observable<{ imageUrl: any }> {
+        const formData = new FormData();
+        formData.append('image', file);
+        return this.http.post<{ imageUrl: any }>(`${this.basePathApi}/images/upload`, formData);
     }
 }
