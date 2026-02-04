@@ -34,6 +34,7 @@ export class RequestComponent implements OnInit {
     liked = signal<Set<string>>(new Set());
     sendOpen = signal(true);
     mailModalOpen = signal(false);
+    successModalOpen = signal(false);
 
     messageText = '';
     senderEmail = '';
@@ -171,16 +172,9 @@ export class RequestComponent implements OnInit {
 
         this.sendingMessage.set(true);
         this.requestsService.createSupportMessage(req.id, payload).subscribe({
-            next: (created) => {
-                const current = this.request();
-                if (current) {
-                    const nextMessages = [created, ...(current.messages ?? [])];
-                    this.request.set({
-                        ...current,
-                        comments: (current.comments || 0) + 1,
-                        messages: nextMessages,
-                    });
-                }
+            next: () => {
+                // Don't add message to list - it needs approval first
+                // Just clear the form and show success modal
                 this.messageText = '';
                 this.senderEmail = '';
                 this.senderName = '';
@@ -188,6 +182,7 @@ export class RequestComponent implements OnInit {
                 this.uploadedMediaUrl.set(null);
                 this.sendingMessage.set(false);
                 this.sendOpen.set(false);
+                this.successModalOpen.set(true);
             },
             error: () => {
                 this.sendingMessage.set(false);
@@ -202,6 +197,29 @@ export class RequestComponent implements OnInit {
 
     closeMailModal(): void {
         this.mailModalOpen.set(false);
+    }
+
+    closeSuccessModal(): void {
+        this.successModalOpen.set(false);
+    }
+
+    shareRequest(): void {
+        const req = this.request();
+        if (!req) return;
+        
+        const url = window.location.href;
+        const text = `Support ${this.getDisplayName()}'s journey on WondrVoices`;
+        
+        if (navigator.share) {
+            navigator.share({ title: text, url }).catch(() => {});
+        } else if (navigator?.clipboard?.writeText) {
+            navigator.clipboard.writeText(url).then(() => alert('Link copied to clipboard!')).catch(() => {});
+        }
+    }
+
+    browseMoreRequests(): void {
+        this.successModalOpen.set(false);
+        window.location.href = '/browse-requests';
     }
 
     copyMailAddress(): void {

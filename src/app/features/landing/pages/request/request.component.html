@@ -284,6 +284,29 @@
             </div>
         </div>
         }
+        @if (successModalOpen()) {
+        <div class="modal-backdrop">
+            <div class="modal success-modal">
+                <button type="button" class="close-btn" (click)="closeSuccessModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+                <div class="success-icon">
+                    <span class="material-symbols-outlined">favorite</span>
+                </div>
+                <h2 class="success-title">Your message is on its way! 💙</h2>
+                <p class="success-text">Thank you for spreading kindness. Your support will be reviewed and delivered to {{ getDisplayName() }} shortly.</p>
+                <button type="button" class="btn-share-request" (click)="shareRequest()">
+                    <span class="material-symbols-outlined">ios_share</span>
+                    Share This Request
+                </button>
+                <button type="button" class="btn-browse-more" (click)="browseMoreRequests()">
+                    <span class="material-symbols-outlined">forum</span>
+                    Support More Journeys
+                </button>
+                <button type="button" class="btn-close-text" (click)="closeSuccessModal()">Close</button>
+            </div>
+        </div>
+        }
     </div>
     }
 </div>
