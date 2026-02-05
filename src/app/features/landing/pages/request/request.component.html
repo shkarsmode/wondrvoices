@@ -5,8 +5,9 @@
     </div>
 
     @if (request(); as req) {
-    <div class="header-card">
-        <div class="card-top">
+    <!-- Main Request Card -->
+    <div class="request-card">
+        <div class="card-content">
             <div class="badge-icon">
                 <span class="material-symbols-outlined">favorite</span>
             </div>
@@ -16,20 +17,21 @@
                     <span class="request-id">{{ req.id }}</span>
                 </div>
                 <div class="meta-row">
+                    <span class="material-symbols-outlined">person</span>
                     <span>{{ req.gender ? (req.gender | titlecase) + ', ' : '' }}Age {{ req.age }}</span>
-                    <span class="dot">•</span>
+                    <span class="material-symbols-outlined location-icon">location_on</span>
                     <span>{{ req.location }}</span>
-                    <span class="dot">•</span>
+                    <span class="material-symbols-outlined">calendar_today</span>
                     <span>{{ getTimeAgo(req.createdAt) }}</span>
                 </div>
                 @if (req.hospital) {
-                <div class="hospital-row">
+                <a class="hospital-link" href="javascript:void(0)">
                     <span class="material-symbols-outlined">apartment</span>
-                    <span>{{ req.hospital }}</span>
-                </div>
+                    {{ req.hospital }}
+                </a>
                 }
                 <div class="diagnosis-badge">{{ req.diagnosis }}</div>
-                <p class="note">{{ req.additionalNote }}</p>
+                <p class="additional-note">{{ req.additionalNote }}</p>
                 <div class="comfort-block">
                     <div class="comfort-label">What brings comfort:</div>
                     <div class="comfort-tags">
@@ -42,35 +44,25 @@
                     </div>
                 </div>
                 <div class="stats-row">
-                    <span class="stat hearts" [class.liked]="isLiked(req.id)">
+                    <span class="stat hearts" [class.liked]="isLiked(req.id)" (click)="toggleSendLove()">
                         <span class="material-symbols-outlined">favorite</span>
                         {{ getHeartCount(req) }}
                     </span>
-                    <span class="stat checks">
-                        <span class="material-symbols-outlined">check_circle</span>
+                    <span class="stat messages">
+                        <span class="material-symbols-outlined">mail</span>
                         {{ req.comments || 0 }}
                     </span>
-                    <span class="stat time">
-                        <span class="material-symbols-outlined">schedule</span>
-                        0
-                    </span>
+                    <button class="share-btn" type="button" (click)="shareRequest()">
+                        <span class="material-symbols-outlined">ios_share</span>
+                        Share
+                    </button>
                 </div>
             </div>
-        </div>
-        <div class="card-actions">
-            <button class="btn-support" type="button" (click)="toggleSend()">
-                <span class="material-symbols-outlined">favorite</span>
-                Send Support
-            </button>
-            <button class="btn-share" type="button">
-                <span class="material-symbols-outlined">ios_share</span>
-                Share
-            </button>
         </div>
     </div>
 
     <!-- Keep the Hope Flowing Banner -->
-    <a class="keep-hope-banner" href="#FUNTHRZKBWU">
+    <a class="keep-hope-banner" routerLink="/get-involved">
         <div class="banner-content">
             <div class="icon-wrap">
                 <span class="material-symbols-outlined">eco</span>
@@ -83,48 +75,158 @@
         <span class="material-symbols-outlined chevron">chevron_right</span>
     </a>
 
-    <div class="support-section">
-        <!-- <h3 class="section-title">Support their journey</h3>
-
+    <!-- Support Their Journey Section -->
+    <div class="support-journey-section">
+        <h3 class="section-title">Support their journey</h3>
         <div class="support-buttons">
-            <button type="button" class="btn-use-app">
+            <button type="button" class="btn-use-app" (click)="openAppModal()">
                 <span class="material-symbols-outlined">smartphone</span>
                 Use App
             </button>
-            <button type="button" class="btn-mail-card">
+            <button type="button" class="btn-mail-card" (click)="openMailModal()">
                 <span class="material-symbols-outlined">mail</span>
                 Mail a Card
             </button>
-        </div> -->
+        </div>
+    </div>
 
-        <div class="send-card" [class.open]="sendOpen()">
-            <button type="button" class="send-field" (click)="toggleSend()">
-                <div class="left">
-                    <span class="material-symbols-outlined">chat_bubble</span>
-                    <div class="text">
-                        <div class="label">Send a message</div>
-                        <div class="hint">Type or upload a photo/video</div>
+    <!-- Support From Around the World - Only shows if there are messages -->
+    @if (req.messages && req.messages.length > 0) {
+    <div class="world-support-section">
+        <!-- <h3 class="section-title">Support From Around the World</h3>
+        <p class="section-subtitle">where messages of hope and encouragement have come from for this request</p>
+        
+        @if (req.mapMarkers?.length) {
+        <div class="map-container">
+            <div class="map-placeholder">
+                <div class="map-legend">
+                    <span class="legend-dot"></span>
+                    <span class="legend-label">Support markers</span>
+                </div>
+                <div class="map-content">
+                    Map view ({{ req.mapMarkers?.length }} markers)
+                </div>
+            </div>
+        </div>
+        } -->
+
+        <!-- Messages Feed -->
+        <div class="messages-feed">
+            @for (msg of req.messages; track msg.id) {
+            <div class="message-card">
+                <div class="message-header">
+                    <div class="avatar">{{ getInitials(msg) }}</div>
+                    <div class="meta">
+                        <div class="sender-name">{{ msg.anonymous ? 'Anonymous' : msg.fromName }}</div>
+                        <div class="sender-meta">
+                            @if (msg.location) {
+                            <span class="material-symbols-outlined">location_on</span>
+                            <span>{{ msg.location }}</span>
+                            <span class="dot">•</span>
+                            }
+                            <span class="material-symbols-outlined">schedule</span>
+                            <span>{{ getTimeAgo(msg.createdAt) }}</span>
+                        </div>
                     </div>
                 </div>
-                <span class="material-symbols-outlined caret">{{ sendOpen() ? 'expand_less' : 'expand_more' }}</span>
-            </button>
 
-            @if (sendOpen()) {
-            <div class="send-body">
-                <form class="send-form" (ngSubmit)="submitSupportMessage()">
-                    <textarea
-                        rows="4"
-                        placeholder="Write your message of support..."
-                        name="message"
-                        [(ngModel)]="messageText"></textarea>
-                    <div class="inline-actions">
-                        <button type="button" class="chip" disabled>
-                            <span class="material-symbols-outlined">videocam</span>
-                            Record video
-                        </button>
-                        <button type="button" class="chip" (click)="fileInput.click()" [disabled]="uploadingMedia()">
-                            <span class="material-symbols-outlined">upload</span>
-                            Upload file
+                <div class="message-body">
+                    @if (msg.message) {
+                    <p class="message-text">"{{ msg.message }}"</p>
+                    }
+                    @if (msg.type !== 'text' && msg.thumbnailUrl) {
+                    <div class="message-media">
+                        <img [src]="msg.thumbnailUrl" [alt]="getMessageTypeLabel(msg)" loading="lazy">
+                        @if (msg.type === 'video') {
+                        <span class="media-badge">
+                            <span class="material-symbols-outlined">play_arrow</span>
+                        </span>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <div class="message-footer">
+                    <div class="stat hearts">
+                        <span class="material-symbols-outlined">favorite</span>
+                        {{ msg.likes || 0 }}
+                    </div>
+                    <button class="share-link" type="button">
+                        <span class="material-symbols-outlined">ios_share</span>
+                        Share
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+    <!-- Use App Modal -->
+    @if (appModalOpen()) {
+    <div class="modal-backdrop" (click)="closeAppModal()">
+        <div class="modal app-modal" (click)="$event.stopPropagation()">
+            <button type="button" class="close-btn" (click)="closeAppModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="modal-header">
+                <span class="material-symbols-outlined">smartphone</span>
+                <h2>Use the WondrVoices App</h2>
+            </div>
+            <p class="modal-description">Scan handwritten notes or artwork to send a truly personal message.</p>
+            <div class="qr-code">
+                <img src="assets/img/qr.webp" alt="QR Code to download WondrVoices App">
+            </div>
+            <p class="qr-hint">Scan this QR code with your phone to download the app</p>
+            <div class="store-buttons">
+                <a href="https://apps.apple.com/app/wondrvoices" target="_blank" class="store-btn app-store">
+                    Download on App Store
+                </a>
+                <a href="https://play.google.com/store/apps/details?id=com.wondrvoices" target="_blank" class="store-btn google-play">
+                    Get it on Google Play
+                </a>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Mail a Card / Send Message Modal -->
+    @if (mailModalOpen()) {
+    <div class="modal-backdrop" (click)="closeMailModal()">
+        <div class="modal mail-modal" (click)="$event.stopPropagation()">
+            <button type="button" class="close-btn" (click)="closeMailModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2 class="modal-title">Send a Message</h2>
+            
+            <form class="mail-form" (ngSubmit)="submitSupportMessage()">
+                <div class="form-group">
+                    <label>Your message</label>
+                    <div class="textarea-wrapper">
+                        <textarea
+                            rows="5"
+                            placeholder="Write your message of support..."
+                            name="message"
+                            maxlength="1000"
+                            [(ngModel)]="messageText"></textarea>
+                        <span class="char-count">{{ messageText.length }}/1000</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Attach an image <span class="optional">(optional)</span></label>
+                    <div class="upload-area">
+                        @if (uploadedMediaUrl()) {
+                        <div class="uploaded-preview">
+                            <img [src]="uploadedMediaUrl()" alt="Uploaded image">
+                            <button type="button" class="remove-image" (click)="removeUploadedImage()">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        } @else {
+                        <button type="button" class="upload-btn" (click)="fileInput.click()" [disabled]="uploadingMedia()">
+                            <span class="material-symbols-outlined">image</span>
+                            {{ uploadingMedia() ? 'Uploading...' : 'Upload image' }}
                         </button>
                         <input
                             #fileInput
@@ -132,185 +234,112 @@
                             accept="image/*"
                             (change)="onFileSelected($event)"
                             hidden>
+                        }
                     </div>
-                    @if (uploadedMediaUrl()) {
-                        <div class="media-preview">
-                            <img [src]="uploadedMediaUrl()" alt="Uploaded image" loading="lazy">
-                        </div>
-                    }
+                </div>
+
+                <div class="form-divider">
+                    <span>Tell us about yourself</span>
+                </div>
+
+                <div class="form-group">
+                    <label>First name <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        placeholder="Your first name"
+                        name="name"
+                        required
+                        [(ngModel)]="senderName">
+                </div>
+
+                <div class="form-group">
+                    <label>Email <span class="required">*</span></label>
                     <input
                         type="email"
-                        placeholder="Your email *"
+                        placeholder="Your email address"
                         name="email"
                         required
                         [(ngModel)]="senderEmail">
-                    <input
-                        type="text"
-                        placeholder="Your name (optional — leave blank to appear as 'Anonymous')"
-                        name="name"
-                        [(ngModel)]="senderName">
-                    <p class="hint-text">e.g. "Sarah from Seattle" or just "Anonymous from Seattle"</p>
-                    <input
-                        type="text"
-                        placeholder="City you're sending from *"
-                        name="location"
-                        required
-                        [(ngModel)]="senderLocation">
-                    <button type="submit" class="btn-send" [disabled]="sendingMessage() || uploadingMedia()">
-                        <span class="material-symbols-outlined">send</span>
-                        Send Message
-                    </button>
-                </form>
-            </div>
-            }
-        </div>
+                </div>
 
-        <div class="feed-header">
-            <div>
-                <h3>Support From Around the World</h3>
-                <p class="muted">where messages of hope and encouragement have come from for this request</p>
-            </div>
-        </div>
-
-        <div class="feed-list">
-            @for (msg of req.messages; track msg.id) {
-                <div class="feed-card">
-                    <div class="feed-card-header">
-                        <div class="avatar">{{ getInitials(msg) }}</div>
-                        <div class="meta">
-                            <div class="name-row">
-                                <span class="name">{{ msg.anonymous ? 'Anonymous' : msg.fromName }}</span>
-                            </div>
-                            <div class="meta-row">
-                                @if (msg.location) {
-                                    <span class="material-symbols-outlined">location_on</span>
-                                    <span>{{ msg.location }}</span>
-                                    <span class="dot">•</span>
-                                }
-                                <span class="material-symbols-outlined">schedule</span>
-                                <span>{{ getTimeAgo(msg.createdAt) }}</span>
-                            </div>
-                        </div>
-                        <button class="share-btn" type="button">
-                            <span class="material-symbols-outlined">ios_share</span>
-                        </button>
-                    </div>
-
-                    <div class="feed-card-body">
-                        @if (msg.message) {
-                            <p class="message-text">"{{ msg.message }}"</p>
-                        }
-                        @if (msg.type !== 'text' && msg.thumbnailUrl) {
-                            <div class="media">
-                                <img
-                                    [alt]="getMessageTypeLabel(msg)"
-                                    [src]="msg.thumbnailUrl"
-                                    loading="lazy">
-                                @if (msg.type === 'video') {
-                                    <span class="media-badge">
-                                        <span class="material-symbols-outlined">play_arrow</span>
-                                    </span>
-                                }
-                            </div>
-                        }
-                        @if (getPrimaryTag(req); as primaryTag) {
-                            <div class="tags-row">
-                                <span class="tag-pill">
-                                    <span class="material-symbols-outlined">auto_awesome</span>
-                                    {{ formatTag(primaryTag) }}
-                                </span>
-                            </div>
+                <div class="form-group">
+                    <label>Community / Organization <span class="optional">(optional)</span></label>
+                    <div class="autocomplete-wrapper">
+                        <input
+                            type="text"
+                            placeholder="Start typing to search..."
+                            name="organization"
+                            [(ngModel)]="senderOrganization"
+                            (input)="onOrganizationInput($event)"
+                            (focus)="showOrganizationDropdown()"
+                            (blur)="hideOrganizationDropdownDelayed()">
+                        @if (organizationDropdownOpen() && filteredOrganizations().length > 0) {
+                        <ul class="autocomplete-dropdown">
+                            @for (org of filteredOrganizations(); track org) {
+                            <li (mousedown)="selectOrganization(org)">{{ org }}</li>
+                            }
+                        </ul>
                         }
                     </div>
-
-                    <div class="feed-card-footer">
-                        <div class="stat hearts">
-                            <span class="material-symbols-outlined">favorite</span>
-                            {{ msg.likes || 0 }}
-                        </div>
-                        <button class="stat share-link" type="button">
-                            <span class="material-symbols-outlined">ios_share</span>
-                            Share
-                        </button>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <div class="map-section">
-            <h3>Support From Around the World</h3>
-            <p class="muted">where messages of hope and encouragement have come from for this request</p>
-            @if (req.mapMarkers?.length) {
-            <div class="map-frame">
-                <div class="map-fake">
-                    <div class="map-legend">
-                        <span class="legend-dot primary"></span>
-                        <span class="legend-label">Support markers</span>
-                    </div>
-                    <div class="map-placeholder">Map view ({{ req.mapMarkers?.length }} markers)</div>
-                </div>
-            </div>
-            }
-        </div>
-        @if (mailModalOpen()) {
-        <div class="modal-backdrop">
-            <div class="modal">
-                <div class="modal-header">
-                    <div class="title">
-                        <span class="material-symbols-outlined">mail</span>
-                        Mail a Physical Card
-                    </div>
-                    <button type="button" class="close" (click)="closeMailModal()">✕</button>
                 </div>
 
-                <p class="muted">Send a handwritten card or letter to brighten someone's day.</p>
-
-                <div class="address-box">
-                    <div class="address-label">Mail your card to:</div>
-                    <div class="address-lines">
-                        <div class="line">WondrVoices</div>
-                        <div class="line">ID: {{ request()?.id }}</div>
-                        <div class="line">PO Box 40056</div>
-                        <div class="line">St. Pete, FL 33743</div>
+                <div class="form-group">
+                    <label>City @if (senderOrganization) {<span class="required">*</span>} @else {<span class="optional">(optional)</span>}</label>
+                    <div class="autocomplete-wrapper">
+                        <input
+                            type="text"
+                            placeholder="Start typing to search..."
+                            name="city"
+                            [required]="!!senderOrganization"
+                            [(ngModel)]="senderCity"
+                            (input)="onCityInput($event)"
+                            (focus)="showCityDropdown()"
+                            (blur)="hideCityDropdownDelayed()">
+                        @if (cityDropdownOpen() && filteredCities().length > 0) {
+                        <ul class="autocomplete-dropdown">
+                            @for (city of filteredCities(); track city) {
+                            <li (mousedown)="selectCity(city)">{{ city }}</li>
+                            }
+                        </ul>
+                        }
                     </div>
                 </div>
 
-                <button type="button" class="btn-primary full" (click)="copyMailAddress()">
-                    <span class="material-symbols-outlined">content_copy</span>
-                    Copy Address
+                <button type="submit" class="btn-send-message" [disabled]="sendingMessage() || uploadingMedia()">
+                    <span class="material-symbols-outlined">send</span>
+                    Send Message
                 </button>
-
-                <p class="footnote">Important: Include the Request ID on your envelope so we can route it to the right person. Cards are reviewed by our moderation team before delivery.</p>
-            </div>
+            </form>
         </div>
-        }
-        @if (successModalOpen()) {
-        <div class="modal-backdrop">
-            <div class="modal success-modal">
-                <button type="button" class="close-btn" (click)="closeSuccessModal()">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-                <div class="success-icon">
-                    <span class="material-symbols-outlined">favorite</span>
-                </div>
-                <h2 class="success-title">Your message is on its way! 💙</h2>
-                <p class="success-text">Thank you for spreading kindness. Your support will be reviewed and delivered to {{ getDisplayName() }} shortly.</p>
-                <button type="button" class="btn-share-request" (click)="shareRequest()">
-                    <span class="material-symbols-outlined">ios_share</span>
-                    Share This Request
-                </button>
-                <button type="button" class="btn-browse-more" (click)="browseMoreRequests()">
-                    <span class="material-symbols-outlined">forum</span>
-                    Support More Journeys
-                </button>
-                <button type="button" class="btn-close-text" (click)="closeSuccessModal()">Close</button>
-            </div>
-        </div>
-        }
     </div>
     }
+
+    <!-- Success Modal -->
+    @if (successModalOpen()) {
+    <div class="modal-backdrop" (click)="closeSuccessModal()">
+        <div class="modal success-modal" (click)="$event.stopPropagation()">
+            <button type="button" class="close-btn" (click)="closeSuccessModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="success-icon">
+                <span class="material-symbols-outlined">favorite</span>
+            </div>
+            <h2 class="success-title">Your message is on its way! 💙</h2>
+            <p class="success-text">Thank you for spreading kindness. Your support will be reviewed and delivered to {{ getDisplayName() }} shortly.</p>
+            <button type="button" class="btn-share-request" (click)="shareRequest()">
+                <span class="material-symbols-outlined">ios_share</span>
+                Share This Request
+            </button>
+            <button type="button" class="btn-browse-more" (click)="browseMoreRequests()">
+                <span class="material-symbols-outlined">forum</span>
+                Support More Journeys
+            </button>
+            <button type="button" class="btn-close-text" (click)="closeSuccessModal()">Close</button>
+        </div>
+    </div>
+    }
+    }
 </div>
-}
-@else {
+} @else {
 <div class="loading">Loading request...</div>
 }

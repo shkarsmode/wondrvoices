@@ -6,13 +6,6 @@ import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
 import { CreateSupportMessageDto, IRequestDetail, ISupportMessage } from '../../../../shared/types/request-support.types';
 
-type AccordionState = {
-    message: boolean;
-    social: boolean;
-    upload: boolean;
-    mail: boolean;
-};
-
 @Component({
     selector: 'app-request-page',
     standalone: true,
@@ -25,26 +18,89 @@ type AccordionState = {
 export class RequestComponent implements OnInit {
     request = signal<IRequestDetail | undefined>(undefined);
     loading = signal(true);
-    accordionOpen = signal<AccordionState>({
-        message: true,
-        social: false,
-        upload: false,
-        mail: false
-    });
     liked = signal<Set<string>>(new Set());
-    sendOpen = signal(true);
+    
+    // Modal states
+    appModalOpen = signal(false);
     mailModalOpen = signal(false);
     successModalOpen = signal(false);
 
+    // Form fields
     messageText = '';
-    senderEmail = '';
     senderName = '';
-    senderLocation = '';
+    senderEmail = '';
+    senderOrganization = '';
+    senderCity = '';
+    
+    // Upload state
     sendingMessage = signal(false);
     uploadingMedia = signal(false);
     uploadedMediaUrl = signal<string | null>(null);
 
-    constructor(private route: ActivatedRoute, private requestsService: RequestsService, private likesService: LikesService) {}
+    // Autocomplete states
+    organizationDropdownOpen = signal(false);
+    cityDropdownOpen = signal(false);
+    filteredOrganizations = signal<string[]>([]);
+    filteredCities = signal<string[]>([]);
+
+    // Predefined organizations list
+    private organizations: string[] = [
+        'American Cancer Society',
+        'St. Jude Children\'s Research Hospital',
+        'Seattle Children\'s Hospital',
+        'Ronald McDonald House Charities',
+        'Leukemia & Lymphoma Society',
+        'Make-A-Wish Foundation',
+        'Dana-Farber Cancer Institute',
+        'MD Anderson Cancer Center',
+        'Memorial Sloan Kettering',
+        'Children\'s Hospital of Philadelphia',
+        'Boston Children\'s Hospital',
+        'Texas Children\'s Hospital',
+        'Nationwide Children\'s Hospital',
+        'Cincinnati Children\'s Hospital',
+        'CHOP Foundation',
+        'Stand Up To Cancer',
+        'Susan G. Komen',
+        'Relay For Life',
+        'Alex\'s Lemonade Stand',
+        'Be The Match'
+    ];
+
+    // Common US cities
+    private cities: string[] = [
+        'New York, NY',
+        'Los Angeles, CA',
+        'Chicago, IL',
+        'Houston, TX',
+        'Phoenix, AZ',
+        'Philadelphia, PA',
+        'San Antonio, TX',
+        'San Diego, CA',
+        'Dallas, TX',
+        'Austin, TX',
+        'San Jose, CA',
+        'Fort Worth, TX',
+        'Jacksonville, FL',
+        'Columbus, OH',
+        'Charlotte, NC',
+        'Seattle, WA',
+        'Denver, CO',
+        'Boston, MA',
+        'Nashville, TN',
+        'Detroit, MI',
+        'Portland, OR',
+        'Atlanta, GA',
+        'Miami, FL',
+        'Tampa, FL',
+        'St. Petersburg, FL'
+    ];
+
+    constructor(
+        private route: ActivatedRoute,
+        private requestsService: RequestsService,
+        private likesService: LikesService
+    ) {}
 
     ngOnInit(): void {
         this.liked.set(new Set(this.likesService.getAllLikes()));
@@ -64,8 +120,12 @@ export class RequestComponent implements OnInit {
 
     getTimeAgo(date: Date | string): string {
         const now = new Date();
-        const diffInDays = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
-        if (diffInDays === 0) return 'Today';
+        const diffInMs = now.getTime() - new Date(date).getTime();
+        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+        const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+        
+        if (diffInHours < 1) return 'Just now';
+        if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
         if (diffInDays === 1) return '1 day ago';
         if (diffInDays < 7) return `${diffInDays} days ago`;
         if (diffInDays < 14) return '1 week ago';
@@ -87,21 +147,6 @@ export class RequestComponent implements OnInit {
         return icons[zone] || 'forum';
     }
 
-    getSupportCount(): number {
-        return this.request()?.messages?.length || 0;
-    }
-
-    getMediaLabel(message: ISupportMessage): string {
-        if (message.type === 'video') return 'VIDEO';
-        if (message.type === 'image') return 'IMAGE';
-        return 'TEXT';
-    }
-
-    toggleAccordion(section: keyof AccordionState): void {
-        const current = this.accordionOpen();
-        this.accordionOpen.set({ ...current, [section]: !current[section] });
-    }
-
     isLiked(requestId: string): boolean {
         return this.liked().has(requestId);
     }
@@ -120,10 +165,29 @@ export class RequestComponent implements OnInit {
         this.request.set({ ...current });
     }
 
-    toggleSend(): void {
-        this.sendOpen.update(v => !v);
+    // App Modal
+    openAppModal(): void {
+        this.appModalOpen.set(true);
     }
 
+    closeAppModal(): void {
+        this.appModalOpen.set(false);
+    }
+
+    // Mail Modal
+    openMailModal(): void {
+        this.mailModalOpen.set(true);
+    }
+
+    closeMailModal(): void {
+        this.mailModalOpen.set(false);
+    }
+
+    closeSuccessModal(): void {
+        this.successModalOpen.set(false);
+    }
+
+    // File upload
     onFileSelected(event: Event): void {
         const input = event.target as HTMLInputElement;
         const file = input.files?.[0];
@@ -143,6 +207,79 @@ export class RequestComponent implements OnInit {
         });
     }
 
+    removeUploadedImage(): void {
+        this.uploadedMediaUrl.set(null);
+    }
+
+    // Organization autocomplete
+    onOrganizationInput(event: Event): void {
+        const value = (event.target as HTMLInputElement).value.toLowerCase();
+        if (value.length > 0) {
+            this.filteredOrganizations.set(
+                this.organizations.filter(org => org.toLowerCase().includes(value))
+            );
+            this.organizationDropdownOpen.set(true);
+        } else {
+            this.filteredOrganizations.set([]);
+            this.organizationDropdownOpen.set(false);
+        }
+    }
+
+    showOrganizationDropdown(): void {
+        if (this.senderOrganization.length > 0) {
+            this.filteredOrganizations.set(
+                this.organizations.filter(org => 
+                    org.toLowerCase().includes(this.senderOrganization.toLowerCase())
+                )
+            );
+            this.organizationDropdownOpen.set(true);
+        }
+    }
+
+    hideOrganizationDropdownDelayed(): void {
+        setTimeout(() => this.organizationDropdownOpen.set(false), 200);
+    }
+
+    selectOrganization(org: string): void {
+        this.senderOrganization = org;
+        this.organizationDropdownOpen.set(false);
+    }
+
+    // City autocomplete
+    onCityInput(event: Event): void {
+        const value = (event.target as HTMLInputElement).value.toLowerCase();
+        if (value.length > 0) {
+            this.filteredCities.set(
+                this.cities.filter(city => city.toLowerCase().includes(value))
+            );
+            this.cityDropdownOpen.set(true);
+        } else {
+            this.filteredCities.set([]);
+            this.cityDropdownOpen.set(false);
+        }
+    }
+
+    showCityDropdown(): void {
+        if (this.senderCity.length > 0) {
+            this.filteredCities.set(
+                this.cities.filter(city => 
+                    city.toLowerCase().includes(this.senderCity.toLowerCase())
+                )
+            );
+            this.cityDropdownOpen.set(true);
+        }
+    }
+
+    hideCityDropdownDelayed(): void {
+        setTimeout(() => this.cityDropdownOpen.set(false), 200);
+    }
+
+    selectCity(city: string): void {
+        this.senderCity = city;
+        this.cityDropdownOpen.set(false);
+    }
+
+    // Submit support message
     submitSupportMessage(): void {
         const req = this.request();
         if (!req) return;
@@ -150,8 +287,19 @@ export class RequestComponent implements OnInit {
         const message = this.messageText.trim();
         const mediaUrl = this.uploadedMediaUrl();
 
-        if (!this.senderEmail.trim() || !this.senderLocation.trim()) {
-            alert('Please provide your email and location');
+        if (!this.senderName.trim()) {
+            alert('Please provide your first name');
+            return;
+        }
+
+        if (!this.senderEmail.trim()) {
+            alert('Please provide your email');
+            return;
+        }
+
+        // City is required if organization is selected
+        if (this.senderOrganization.trim() && !this.senderCity.trim()) {
+            alert('Please provide your city when selecting an organization');
             return;
         }
 
@@ -160,28 +308,34 @@ export class RequestComponent implements OnInit {
             return;
         }
 
+        // Build location string from city and organization
+        let location = this.senderCity.trim() || 'Unknown Location';
+        if (this.senderOrganization.trim()) {
+            location = `${location} - ${this.senderOrganization.trim()}`;
+        }
+
         const payload: CreateSupportMessageDto = {
             message: message || undefined,
             type: mediaUrl ? 'image' : 'text',
             mediaUrl: mediaUrl || undefined,
             thumbnailUrl: mediaUrl || undefined,
-            fromName: this.senderName.trim() || undefined,
+            fromName: this.senderName.trim(),
             email: this.senderEmail.trim(),
-            location: this.senderLocation.trim(),
+            location: location,
         };
 
         this.sendingMessage.set(true);
         this.requestsService.createSupportMessage(req.id, payload).subscribe({
             next: () => {
-                // Don't add message to list - it needs approval first
-                // Just clear the form and show success modal
+                // Clear the form and show success modal
                 this.messageText = '';
-                this.senderEmail = '';
                 this.senderName = '';
-                this.senderLocation = '';
+                this.senderEmail = '';
+                this.senderOrganization = '';
+                this.senderCity = '';
                 this.uploadedMediaUrl.set(null);
                 this.sendingMessage.set(false);
-                this.sendOpen.set(false);
+                this.mailModalOpen.set(false);
                 this.successModalOpen.set(true);
             },
             error: () => {
@@ -189,18 +343,6 @@ export class RequestComponent implements OnInit {
                 alert('Failed to send message');
             }
         });
-    }
-
-    openMailModal(): void {
-        this.mailModalOpen.set(true);
-    }
-
-    closeMailModal(): void {
-        this.mailModalOpen.set(false);
-    }
-
-    closeSuccessModal(): void {
-        this.successModalOpen.set(false);
     }
 
     shareRequest(): void {
@@ -222,26 +364,6 @@ export class RequestComponent implements OnInit {
         window.location.href = '/browse-requests';
     }
 
-    copyMailAddress(): void {
-        const req = this.request();
-        const text = `WondrVoices\nID: ${req?.id || ''}\nPO Box 40056\nSt. Pete, FL 33743`;
-        if (navigator?.clipboard?.writeText) {
-            navigator.clipboard.writeText(text).then(() => alert('Address copied')).catch(() => this.fallbackCopy(text));
-        } else {
-            this.fallbackCopy(text);
-        }
-    }
-
-    private fallbackCopy(text: string): void {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('Address copied');
-    }
-
     getInitials(message: ISupportMessage): string {
         const name = message.anonymous ? 'Anonymous' : message.fromName || 'User';
         const parts = name.trim().split(/\s+/);
@@ -255,19 +377,5 @@ export class RequestComponent implements OnInit {
         if (message.type === 'image') return 'Artwork';
         if (message.type === 'video') return 'Video';
         return 'Message';
-    }
-
-    getPrimaryTag(detail?: IRequestDetail): string | undefined {
-        return detail?.tags?.[0] || detail?.comfortZones?.[0];
-    }
-
-    formatTag(tag?: string): string {
-        if (!tag) return '';
-        return tag
-            .replace(/[-_]/g, ' ')
-            .split(' ')
-            .filter(Boolean)
-            .map(part => part.charAt(0).toUpperCase() + part.slice(1))
-            .join(' ');
     }
 }
