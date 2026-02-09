@@ -1,6 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { map, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
+import { retry } from 'rxjs/operators';
 import { CreateVoiceRequest, IVoice, UpdateVoiceRequest, VoicesListResponse, VoiceStatus } from '../types/voices';
 import { BASE_PATH_API } from './variables';
 
@@ -26,6 +27,30 @@ export class VoicesService {
         private http: HttpClient,
         @Inject(BASE_PATH_API) private basePathApi: string
     ) {}
+
+    /**
+     * Handles HTTP errors and returns a user-friendly error message
+     */
+    private handleError(error: HttpErrorResponse, context: string): Observable<never> {
+        let errorMessage = 'An unexpected error occurred';
+        
+        if (error.status === 0) {
+            errorMessage = 'Unable to connect to server. Please check your internet connection.';
+        } else if (error.status === 404) {
+            errorMessage = `${context} not found`;
+        } else if (error.status === 400) {
+            errorMessage = error.error?.message || 'Invalid request data';
+        } else if (error.status === 403) {
+            errorMessage = 'Access denied. You do not have permission for this action.';
+        } else if (error.status === 429) {
+            errorMessage = 'Too many requests. Please try again later.';
+        } else if (error.status >= 500) {
+            errorMessage = 'Server error. Please try again later.';
+        }
+        
+        console.error(`[VoicesService] ${context} error:`, error);
+        return throwError(() => new Error(errorMessage));
+    }
 
     public getVoices(
         limit: number,
@@ -60,9 +85,11 @@ export class VoicesService {
             `${this.basePathApi}/${this.path}${approvedUrl}`,
             { params }
         ).pipe(
+            retry({ count: 1, delay: 1000 }),
             tap(({ items }) => {
                 this.cache = { ...this.cache, [stringifiedExtra]: items };
-            })
+            }),
+            catchError((error) => this.handleError(error, 'Fetching voices'))
         );
     }
 
@@ -77,7 +104,12 @@ export class VoicesService {
             .get<SuggestRow[] | SuggestAllDto>(`${this.basePathApi}/voices/suggest-all`)
             .pipe(
                 map(payload => this.normalizeSuggestRows(payload)),
-                tap(dto => { this.suggestAllIndex = dto; })
+                tap(dto => { this.suggestAllIndex = dto; }),
+                catchError((error) => {
+                    console.error('[VoicesService] getSuggestAllIndex error:', error);
+                    // Return empty suggestions on error instead of breaking the app
+                    return of({ location: [], creditTo: [], tag: [] });
+                })
             );
     }
 
@@ -159,15 +191,21 @@ export class VoicesService {
 
     public getVoiceById(id: number, status?: VoiceStatus): Observable<IVoice> {
         const approvedUrl = status === VoiceStatus.Approved ? '/approved' : '';
-        return this.http.get<IVoice>(`${this.basePathApi}/${this.path}${approvedUrl}/${id}`);
+        return this.http.get<IVoice>(`${this.basePathApi}/${this.path}${approvedUrl}/${id}`).pipe(
+            catchError((error) => this.handleError(error, 'Voice'))
+        );
     }
 
     public createVoice(payload: CreateVoiceRequest): Observable<IVoice> {
-        return this.http.post<IVoice>(`${this.basePathApi}/${this.path}`, payload);
+        return this.http.post<IVoice>(`${this.basePathApi}/${this.path}`, payload).pipe(
+            catchError((error) => this.handleError(error, 'Creating voice'))
+        );
     }
 
     public updateVoiceById(id: number, payload: UpdateVoiceRequest): Observable<{ affected: number }> {
-        return this.http.patch<{ affected: number }>(`${this.basePathApi}/${this.path}/${id}`, payload);
+        return this.http.patch<{ affected: number }>(`${this.basePathApi}/${this.path}/${id}`, payload).pipe(
+            catchError((error) => this.handleError(error, 'Updating voice'))
+        );
     }
 
     /** Admin: change moderation status only */
@@ -175,11 +213,15 @@ export class VoicesService {
         return this.http.patch<{ affected: number; id: number; status: VoiceStatus }>(
             `${this.basePathApi}/${this.path}/${id}/status`,
             { status }
+        ).pipe(
+            catchError((error) => this.handleError(error, 'Changing voice status'))
         );
     }
 
     public deleteVoiceById(id: number): Observable<{ affected: number }> {
-        return this.http.delete<{ affected: number }>(`${this.basePathApi}/${this.path}/${id}`);
+        return this.http.delete<{ affected: number }>(`${this.basePathApi}/${this.path}/${id}`).pipe(
+            catchError((error) => this.handleError(error, 'Deleting voice'))
+        );
     }
 
     // ──────────────────────── helpers ────────────────────────

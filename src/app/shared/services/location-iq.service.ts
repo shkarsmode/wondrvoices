@@ -1,7 +1,8 @@
 // shared/services/location-iq.service.ts
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface LocationIqSuggestion {
@@ -35,17 +36,38 @@ export class LocationIqService {
     private http = inject(HttpClient);
     private base = 'https://api.locationiq.com/v1/autocomplete';
 
+    /**
+     * Handles location search errors gracefully - returns empty array instead of breaking
+     */
+    private handleError(error: HttpErrorResponse): Observable<LocationIqSuggestion[]> {
+        if (error.status === 429) {
+            console.warn('[LocationIqService] Rate limit exceeded, returning empty results');
+        } else if (error.status === 0) {
+            console.warn('[LocationIqService] Network error, returning empty results');
+        } else {
+            console.error('[LocationIqService] Search error:', error);
+        }
+        // Return empty array to not break the UI
+        return of([]);
+    }
+
     searchCities(q: string, limit = 6): Observable<LocationIqSuggestion[]> {
+        if (!q || q.trim().length < 2) {
+            return of([]);
+        }
+
         const params = new HttpParams()
             .set('key', environment.locationIqToken)
             .set('q', q)
             .set('limit', limit)
             .set('format', 'json')
-            .set('dedupe', '1')
+            .set('dedupe', '1');
             // .set('normalizeaddress', '1')
             // Фильтр на поселения: city/town/village (class=place)
             // .set('tag', 'place:city,place:town,place:village');
 
-        return this.http.get<LocationIqSuggestion[]>(this.base, { params });
+        return this.http.get<LocationIqSuggestion[]>(this.base, { params }).pipe(
+            catchError((error) => this.handleError(error))
+        );
     }
 }

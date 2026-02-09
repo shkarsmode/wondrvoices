@@ -436,15 +436,17 @@ export class RequestSupportComponent {
                         this.isSubmitting.set(false);
                         this.currentStep.set(5);
                     },
-                    error: () => {
+                    error: (error: Error) => {
                         this.isSubmitting.set(false);
-                        alert('Failed to send verification code');
+                        console.error('Verification code error:', error);
+                        alert(error.message || 'Failed to send verification code. Please try again.');
                     }
                 });
             },
-            error: () => {
+            error: (error: Error) => {
                 this.isSubmitting.set(false);
-                alert('Failed to submit request');
+                console.error('Submit request error:', error);
+                alert(error.message || 'Failed to submit request. Please check your connection and try again.');
             }
         });
     }
@@ -456,10 +458,11 @@ export class RequestSupportComponent {
                 if (codeResponse.code) {
                     this.demoVerificationCode.set(codeResponse.code);
                 }
-                alert('Verification code resent!');
+                alert('Verification code resent! Please check your email.');
             },
-            error: () => {
-                alert('Failed to resend code');
+            error: (error: Error) => {
+                console.error('Resend code error:', error);
+                alert(error.message || 'Failed to resend code. Please try again in a moment.');
             }
         });
     }
@@ -481,9 +484,13 @@ export class RequestSupportComponent {
                 this.isSubmitting.set(false);
                 this.currentStep.set(6);
             },
-            error: () => {
+            error: (error: Error) => {
                 this.isSubmitting.set(false);
-                alert('Invalid verification code');
+                console.error('Verification error:', error);
+                const errorMessage = error.message?.includes('expired') 
+                    ? 'Verification code has expired. Please request a new one.'
+                    : error.message || 'Invalid verification code. Please try again.';
+                alert(errorMessage);
             }
         });
     }
