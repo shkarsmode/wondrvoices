@@ -48,9 +48,9 @@
                         <span class="material-symbols-outlined">favorite</span>
                         {{ getHeartCount(req) }}
                     </span>
-                    <span class="stat messages">
+                    <span class="stat messages" style="cursor: pointer" (click)="scrollToMessages()">
                         <span class="material-symbols-outlined">mail</span>
-                        {{ req.comments || 0 }}
+                        {{ req.messages.length || 0 }}
                     </span>
                     <button class="share-btn" type="button" (click)="shareRequest()">
                         <span class="material-symbols-outlined">ios_share</span>
@@ -62,14 +62,14 @@
     </div>
 
     <!-- Keep the Hope Flowing Banner -->
-    <a class="keep-hope-banner" routerLink="/get-involved">
+    <a class="keep-hope-banner" href="#FUNTHRZKBWU">
         <div class="banner-content">
             <div class="icon-wrap">
                 <span class="material-symbols-outlined">eco</span>
             </div>
             <div class="text">
                 <span class="title">Keep the hope flowing</span>
-                <span class="subtitle">Your support helps more journeys get seen</span>
+                <span class="subtitle">Support our mission</span>
             </div>
         </div>
         <span class="material-symbols-outlined chevron">chevron_right</span>
@@ -77,16 +77,22 @@
 
     <!-- Support Their Journey Section -->
     <div class="support-journey-section">
-        <h3 class="section-title">Support their journey</h3>
+        <h3 class="section-title">Write a message or attach a card or letter</h3>
         <div class="support-buttons">
-            <button type="button" class="btn-use-app" (click)="openAppModal()">
-                <span class="material-symbols-outlined">smartphone</span>
-                Use App
+            <button type="button" class="btn-send-message" (click)="openMailModal()">
+                <span class="material-symbols-outlined">edit</span>
+                Send a Message
             </button>
-            <button type="button" class="btn-mail-card" (click)="openMailModal()">
-                <span class="material-symbols-outlined">mail</span>
-                Mail a Card
-            </button>
+            <div class="support-buttons-row">
+                <button type="button" class="btn-use-app" (click)="openAppModal()">
+                    <span class="material-symbols-outlined">smartphone</span>
+                    Use Mobile App
+                </button>
+                <button type="button" class="btn-mail-card" (click)="openMailModal()">
+                    <span class="material-symbols-outlined">mail</span>
+                    Mail a Card
+                </button>
+            </div>
         </div>
     </div>
 
@@ -151,10 +157,6 @@
                         <span class="material-symbols-outlined">favorite</span>
                         {{ msg.likes || 0 }}
                     </div>
-                    <button class="share-link" type="button">
-                        <span class="material-symbols-outlined">ios_share</span>
-                        Share
-                    </button>
                 </div>
             </div>
             }
@@ -266,42 +268,26 @@
                     <label>Community / Organization <span class="optional">(optional)</span></label>
                     <div class="autocomplete-wrapper">
                         <input
+                            #orgInput
                             type="text"
                             placeholder="Start typing to search..."
                             name="organization"
                             [(ngModel)]="senderOrganization"
-                            (input)="onOrganizationInput($event)"
-                            (focus)="showOrganizationDropdown()"
-                            (blur)="hideOrganizationDropdownDelayed()">
-                        @if (organizationDropdownOpen() && filteredOrganizations().length > 0) {
-                        <ul class="autocomplete-dropdown">
-                            @for (org of filteredOrganizations(); track org) {
-                            <li (mousedown)="selectOrganization(org)">{{ org }}</li>
-                            }
-                        </ul>
-                        }
+                            [attr.autocomplete]="'off'">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>City @if (senderOrganization) {<span class="required">*</span>} @else {<span class="optional">(optional)</span>}</label>
+                    <label>City <span class="required">*</span></label>
                     <div class="autocomplete-wrapper">
                         <input
+                            #cityInput
                             type="text"
                             placeholder="Start typing to search..."
-                            name="city"
-                            [required]="!!senderOrganization"
+                            name="cіty"
+                            required
                             [(ngModel)]="senderCity"
-                            (input)="onCityInput($event)"
-                            (focus)="showCityDropdown()"
-                            (blur)="hideCityDropdownDelayed()">
-                        @if (cityDropdownOpen() && filteredCities().length > 0) {
-                        <ul class="autocomplete-dropdown">
-                            @for (city of filteredCities(); track city) {
-                            <li (mousedown)="selectCity(city)">{{ city }}</li>
-                            }
-                        </ul>
-                        }
+                            [attr.autocomplete]="'off'">
                     </div>
                 </div>
 

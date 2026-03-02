@@ -336,7 +336,7 @@
             flex-direction: column;
             gap: 12px;
 
-            .btn-use-app {
+            .btn-send-message {
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -358,6 +358,37 @@
 
                 &:hover {
                     background: #be8570;
+                }
+            }
+
+            .support-buttons-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .btn-use-app {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                padding: 16px 24px;
+                background: #fff;
+                border: 1px solid #c9907a;
+                border-radius: 12px;
+                color: #c9907a;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                .material-symbols-outlined {
+                    font-size: 20px;
+                }
+
+                &:hover {
+                    background: #fdf8f6;
                 }
             }
 

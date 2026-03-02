@@ -151,6 +151,16 @@
                         <span class="zone-label">{{ zone.label }}</span>
                     </button>
                 </div>
+                <div class="custom-zone-input" *ngIf="isZoneSelected('other')">
+                    <input 
+                        type="text" 
+                        class="form-input"
+                        placeholder="Tell us what brings you comfort..."
+                        [value]="otherComfortText()"
+                        (input)="otherComfortText.set($any($event.target).value)"
+                        maxlength="100">
+                    <span class="char-count">{{ otherComfortText().length }}/100</span>
+                </div>
             </div>
 
             <div class="form-group">
@@ -244,6 +254,16 @@
                         placeholder="e.g., Seattle, WA"
                         class="form-input">
                     <small class="help-text">Helps the community send regionally relevant support.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Hospital or Care Facility (Optional)</label>
+                    <input 
+                        type="text" 
+                        formControlName="hospital"
+                        placeholder="e.g., Memorial Sloan Kettering, Seattle Children's Hospital"
+                        class="form-input">
+                    <small class="help-text">Where are you receiving care? This helps connect you with others nearby.</small>
                 </div>
             </form>
 

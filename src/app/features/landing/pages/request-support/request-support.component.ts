@@ -129,6 +129,9 @@ export class RequestSupportComponent {
     ];
     selectedComfortZones = signal<string[]>([]);
 
+    // Comfort zone "Other" custom text
+    otherComfortText = signal<string>('');
+
     constructor(
         private fb: FormBuilder,
         private requestsService: RequestsService,
@@ -155,7 +158,8 @@ export class RequestSupportComponent {
             email: ['', [Validators.required, Validators.email]],
             age: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
             gender: [''],
-            location: ['', Validators.required]
+            location: ['', Validators.required],
+            hospital: ['']
         });
     }
 
@@ -195,6 +199,13 @@ export class RequestSupportComponent {
 
     getContextTags(): string[] {
         const situation = this.selectedSituation();
+        const who = this.whoNeedsSupport();
+        
+        // Hide context tags for "My child" and "A Loved One" in cancer
+        if (situation === 'cancer' && (who === 'my-child' || who === 'someone-i-care-for')) {
+            return [];
+        }
+        
         return this.contextTagsBySituation[situation] || [];
     }
 
@@ -413,6 +424,7 @@ export class RequestSupportComponent {
             age: this.step4Form.value.age,
             gender: this.step4Form.value.gender || undefined,
             location: this.step4Form.value.location,
+            hospital: this.step4Form.value.hospital || undefined,
             situation: this.selectedSituation(),
             whoNeedsSupport: this.whoNeedsSupport(),
             caregiverRelationship: this.caregiverRelationship() || undefined,

@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnInit, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
 import { CreateSupportMessageDto, IRequestDetail, ISupportMessage } from '../../../../shared/types/request-support.types';
+
+declare const google: any;
 
 @Component({
     selector: 'app-request-page',
@@ -15,7 +17,7 @@ import { CreateSupportMessageDto, IRequestDetail, ISupportMessage } from '../../
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class RequestComponent implements OnInit {
+export class RequestComponent implements OnInit, AfterViewChecked {
     request = signal<IRequestDetail | undefined>(undefined);
     loading = signal(true);
     liked = signal<Set<string>>(new Set());
@@ -43,63 +45,18 @@ export class RequestComponent implements OnInit {
     filteredOrganizations = signal<string[]>([]);
     filteredCities = signal<string[]>([]);
 
-    // Predefined organizations list
-    private organizations: string[] = [
-        'American Cancer Society',
-        'St. Jude Children\'s Research Hospital',
-        'Seattle Children\'s Hospital',
-        'Ronald McDonald House Charities',
-        'Leukemia & Lymphoma Society',
-        'Make-A-Wish Foundation',
-        'Dana-Farber Cancer Institute',
-        'MD Anderson Cancer Center',
-        'Memorial Sloan Kettering',
-        'Children\'s Hospital of Philadelphia',
-        'Boston Children\'s Hospital',
-        'Texas Children\'s Hospital',
-        'Nationwide Children\'s Hospital',
-        'Cincinnati Children\'s Hospital',
-        'CHOP Foundation',
-        'Stand Up To Cancer',
-        'Susan G. Komen',
-        'Relay For Life',
-        'Alex\'s Lemonade Stand',
-        'Be The Match'
-    ];
-
-    // Common US cities
-    private cities: string[] = [
-        'New York, NY',
-        'Los Angeles, CA',
-        'Chicago, IL',
-        'Houston, TX',
-        'Phoenix, AZ',
-        'Philadelphia, PA',
-        'San Antonio, TX',
-        'San Diego, CA',
-        'Dallas, TX',
-        'Austin, TX',
-        'San Jose, CA',
-        'Fort Worth, TX',
-        'Jacksonville, FL',
-        'Columbus, OH',
-        'Charlotte, NC',
-        'Seattle, WA',
-        'Denver, CO',
-        'Boston, MA',
-        'Nashville, TN',
-        'Detroit, MI',
-        'Portland, OR',
-        'Atlanta, GA',
-        'Miami, FL',
-        'Tampa, FL',
-        'St. Petersburg, FL'
-    ];
+    // Google Places autocomplete
+    @ViewChild('orgInput') orgInputRef!: ElementRef<HTMLInputElement>;
+    @ViewChild('cityInput') cityInputRef!: ElementRef<HTMLInputElement>;
+    private orgAutocomplete: any;
+    private cityAutocomplete: any;
+    private placesInitialized = false;
 
     constructor(
         private route: ActivatedRoute,
         private requestsService: RequestsService,
-        private likesService: LikesService
+        private likesService: LikesService,
+        private ngZone: NgZone
     ) {}
 
     ngOnInit(): void {
@@ -211,72 +168,94 @@ export class RequestComponent implements OnInit {
         this.uploadedMediaUrl.set(null);
     }
 
-    // Organization autocomplete
-    onOrganizationInput(event: Event): void {
-        const value = (event.target as HTMLInputElement).value.toLowerCase();
-        if (value.length > 0) {
-            this.filteredOrganizations.set(
-                this.organizations.filter(org => org.toLowerCase().includes(value))
-            );
-            this.organizationDropdownOpen.set(true);
-        } else {
-            this.filteredOrganizations.set([]);
-            this.organizationDropdownOpen.set(false);
+    // Google Places autocomplete initialization
+    ngAfterViewChecked(): void {
+        if (this.mailModalOpen() && !this.placesInitialized) {
+            this.initGooglePlacesAutocomplete();
+
         }
+        if (!this.mailModalOpen()) {
+            this.placesInitialized = false;
+            this.orgAutocomplete = null;
+            this.cityAutocomplete = null;
+        }
+    }
+
+    private initGooglePlacesAutocomplete(): void {
+        console.log('Attempting to initialize Google Places Autocomplete', google);
+        if (typeof google === 'undefined' || !google?.maps?.places) return;
+
+        console.log('Initializing Google Places Autocomplete', this.orgInputRef, this.cityInputRef);
+
+        const orgInput = this.orgInputRef?.nativeElement;
+        const cityInput = this.cityInputRef?.nativeElement;
+
+        if (!orgInput || !cityInput) return;
+        this.placesInitialized = true;
+
+        // Organization autocomplete (establishments)
+        this.orgAutocomplete = new google.maps.places.Autocomplete(orgInput, {
+            types: ['establishment'],
+            fields: ['name', 'formatted_address']
+        });
+        this.orgAutocomplete.addListener('place_changed', () => {
+            this.ngZone.run(() => {
+                const place = this.orgAutocomplete.getPlace();
+                if (place?.name) {
+                    this.senderOrganization = place.name;
+                }
+            });
+        });
+
+        // City autocomplete (cities)
+        this.cityAutocomplete = new google.maps.places.Autocomplete(cityInput, {
+            types: ['(cities)'],
+            fields: ['formatted_address', 'name']
+        });
+        this.cityAutocomplete.addListener('place_changed', () => {
+            this.ngZone.run(() => {
+                const place = this.cityAutocomplete.getPlace();
+                if (place?.formatted_address) {
+                    this.senderCity = place.formatted_address;
+                } else if (place?.name) {
+                    this.senderCity = place.name;
+                }
+            });
+        });
+    }
+
+    // Organization input handler (for manual typing)
+    onOrganizationInput(event: Event): void {
+        // Google Places handles the dropdown automatically
     }
 
     showOrganizationDropdown(): void {
-        if (this.senderOrganization.length > 0) {
-            this.filteredOrganizations.set(
-                this.organizations.filter(org => 
-                    org.toLowerCase().includes(this.senderOrganization.toLowerCase())
-                )
-            );
-            this.organizationDropdownOpen.set(true);
-        }
+        // Google Places handles this
     }
 
     hideOrganizationDropdownDelayed(): void {
-        setTimeout(() => this.organizationDropdownOpen.set(false), 200);
+        // Google Places handles this
     }
 
     selectOrganization(org: string): void {
         this.senderOrganization = org;
-        this.organizationDropdownOpen.set(false);
     }
 
-    // City autocomplete
+    // City input handler (for manual typing)
     onCityInput(event: Event): void {
-        const value = (event.target as HTMLInputElement).value.toLowerCase();
-        if (value.length > 0) {
-            this.filteredCities.set(
-                this.cities.filter(city => city.toLowerCase().includes(value))
-            );
-            this.cityDropdownOpen.set(true);
-        } else {
-            this.filteredCities.set([]);
-            this.cityDropdownOpen.set(false);
-        }
+        // Google Places handles the dropdown automatically
     }
 
     showCityDropdown(): void {
-        if (this.senderCity.length > 0) {
-            this.filteredCities.set(
-                this.cities.filter(city => 
-                    city.toLowerCase().includes(this.senderCity.toLowerCase())
-                )
-            );
-            this.cityDropdownOpen.set(true);
-        }
+        // Google Places handles this
     }
 
     hideCityDropdownDelayed(): void {
-        setTimeout(() => this.cityDropdownOpen.set(false), 200);
+        // Google Places handles this
     }
 
     selectCity(city: string): void {
         this.senderCity = city;
-        this.cityDropdownOpen.set(false);
     }
 
     // Submit support message
@@ -356,6 +335,13 @@ export class RequestComponent implements OnInit {
             navigator.share({ title: text, url }).catch(() => {});
         } else if (navigator?.clipboard?.writeText) {
             navigator.clipboard.writeText(url).then(() => alert('Link copied to clipboard!')).catch(() => {});
+        }
+    }
+
+    scrollToMessages(): void {
+        const el = document.querySelector('.messages-feed');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
