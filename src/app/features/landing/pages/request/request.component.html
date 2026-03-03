@@ -209,9 +209,7 @@
                             rows="5"
                             placeholder="Write your message of support..."
                             name="message"
-                            maxlength="1000"
                             [(ngModel)]="messageText"></textarea>
-                        <span class="char-count">{{ messageText.length }}/1000</span>
                     </div>
                 </div>
 
@@ -255,12 +253,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Email <span class="required">*</span></label>
+                    <label>Email <span class="optional">(optional)</span></label>
                     <input
                         type="email"
                         placeholder="Your email address"
                         name="email"
-                        required
                         [(ngModel)]="senderEmail">
                 </div>
 

@@ -1,9 +1,11 @@
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, ElementRef, QueryList, signal, ViewChildren } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, computed, ElementRef, NgZone, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RequestsService } from '../../../../shared/services/requests.service';
 import { CreateSupportRequestDto } from '../../../../shared/types/request-support.types';
+
+declare const google: any;
 
 @Component({
     selector: 'app-request-support',
@@ -13,7 +15,7 @@ import { CreateSupportRequestDto } from '../../../../shared/types/request-suppor
     styleUrl: './request-support.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RequestSupportComponent {
+export class RequestSupportComponent implements AfterViewChecked {
     currentStep = signal(1);
     totalSteps = 6;
     isSubmitting = signal(false);
@@ -23,6 +25,13 @@ export class RequestSupportComponent {
     demoVerificationCode = signal<string>('');
     
     @ViewChildren('codeInput') codeInputs!: QueryList<ElementRef<HTMLInputElement>>;
+
+    // Google Places autocomplete
+    @ViewChild('locationInput') locationInputRef!: ElementRef<HTMLInputElement>;
+    @ViewChild('hospitalInput') hospitalInputRef!: ElementRef<HTMLInputElement>;
+    private locationAutocomplete: any;
+    private hospitalAutocomplete: any;
+    private placesInitialized = false;
 
     // Forms
     step1Form: FormGroup;
@@ -135,7 +144,8 @@ export class RequestSupportComponent {
     constructor(
         private fb: FormBuilder,
         private requestsService: RequestsService,
-        private router: Router
+        private router: Router,
+        private ngZone: NgZone
     ) {
         this.step1Form = this.fb.group({
             situation: ['', Validators.required],
@@ -160,6 +170,73 @@ export class RequestSupportComponent {
             gender: [''],
             location: ['', Validators.required],
             hospital: ['']
+        });
+    }
+
+    // Google Places autocomplete initialization
+    ngAfterViewChecked(): void {
+        if (this.currentStep() === 4 && !this.placesInitialized) {
+            this.initGooglePlacesAutocomplete();
+        }
+        if (this.currentStep() !== 4) {
+            this.placesInitialized = false;
+            this.locationAutocomplete = null;
+            this.hospitalAutocomplete = null;
+        }
+    }
+
+    private initGooglePlacesAutocomplete(): void {
+        if (typeof google === 'undefined' || !google?.maps?.places) return;
+
+        const locationInput = this.locationInputRef?.nativeElement;
+        const hospitalInput = this.hospitalInputRef?.nativeElement;
+
+        if (!locationInput || !hospitalInput) return;
+        this.placesInitialized = true;
+
+        // Location autocomplete (cities)
+        this.locationAutocomplete = new google.maps.places.Autocomplete(locationInput, {
+            types: ['(cities)'],
+            fields: ['formatted_address', 'name', 'address_components']
+        });
+        this.locationAutocomplete.addListener('place_changed', () => {
+            this.ngZone.run(() => {
+                const place = this.locationAutocomplete.getPlace();
+                if (place?.address_components) {
+                    const cityComponent = place.address_components.find(
+                        (c: any) => c.types.includes('locality')
+                    );
+                    const stateComponent = place.address_components.find(
+                        (c: any) => c.types.includes('administrative_area_level_1')
+                    );
+                    if (cityComponent) {
+                        const cityName = cityComponent.long_name;
+                        const stateShort = stateComponent?.short_name;
+                        const locationValue = stateShort ? `${cityName}, ${stateShort}` : cityName;
+                        this.step4Form.patchValue({ location: locationValue });
+                    } else if (place.formatted_address) {
+                        this.step4Form.patchValue({ location: place.formatted_address });
+                    }
+                } else if (place?.formatted_address) {
+                    this.step4Form.patchValue({ location: place.formatted_address });
+                } else if (place?.name) {
+                    this.step4Form.patchValue({ location: place.name });
+                }
+            });
+        });
+
+        // Hospital autocomplete (establishments)
+        this.hospitalAutocomplete = new google.maps.places.Autocomplete(hospitalInput, {
+            types: ['establishment'],
+            fields: ['name', 'formatted_address']
+        });
+        this.hospitalAutocomplete.addListener('place_changed', () => {
+            this.ngZone.run(() => {
+                const place = this.hospitalAutocomplete.getPlace();
+                if (place?.name) {
+                    this.step4Form.patchValue({ hospital: place.name });
+                }
+            });
         });
     }
 

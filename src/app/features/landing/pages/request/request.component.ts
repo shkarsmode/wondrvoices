@@ -196,13 +196,35 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         // Organization autocomplete (establishments)
         this.orgAutocomplete = new google.maps.places.Autocomplete(orgInput, {
             types: ['establishment'],
-            fields: ['name', 'formatted_address']
+            fields: ['name', 'formatted_address', 'address_components']
         });
         this.orgAutocomplete.addListener('place_changed', () => {
             this.ngZone.run(() => {
                 const place = this.orgAutocomplete.getPlace();
                 if (place?.name) {
                     this.senderOrganization = place.name;
+                }
+                // Auto-populate city from the organization's address
+                if (place?.address_components) {
+                    const cityComponent = place.address_components.find(
+                        (c: any) => c.types.includes('locality')
+                    );
+                    const stateComponent = place.address_components.find(
+                        (c: any) => c.types.includes('administrative_area_level_1')
+                    );
+                    if (cityComponent) {
+                        const cityName = cityComponent.long_name;
+                        const stateShort = stateComponent?.short_name;
+                        this.senderCity = stateShort ? `${cityName}, ${stateShort}` : cityName;
+                        if (cityInput) {
+                            cityInput.value = this.senderCity;
+                        }
+                    } else if (place.formatted_address) {
+                        this.senderCity = place.formatted_address;
+                        if (cityInput) {
+                            cityInput.value = this.senderCity;
+                        }
+                    }
                 }
             });
         });
@@ -271,10 +293,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             return;
         }
 
-        if (!this.senderEmail.trim()) {
-            alert('Please provide your email');
-            return;
-        }
+        // Email is optional
 
         // City is required if organization is selected
         if (this.senderOrganization.trim() && !this.senderCity.trim()) {
