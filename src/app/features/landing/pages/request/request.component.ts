@@ -443,13 +443,9 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     // Animated support map
     private async initSupportMap(): Promise<void> {
         if (typeof window === 'undefined') return;
-
-        console.log('Initializing support map with messages:', this.request()?.messages);
         
         const mapEl = this.supportMapRef?.nativeElement;
-        console.log(this.supportMapRef, mapEl, 'Leaflet loaded:', this.L);
         if (!mapEl) {
-            console.log(this.supportMapRef, mapEl, 'Leaflet loaded:', this.L);
             // Element not visible yet — retry
             setTimeout(() => {
                 this.supportMapInitialized = false; // allow re-trigger
@@ -462,10 +458,8 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             this.L = (leafletModule as any).default ?? leafletModule;
             (window as any).L = this.L;
 
-            console.log('support', this.supportMapRef, mapEl, 'Leaflet loaded:', this.L);
-            // Create the map
+            // Create the map — SVG renderer (no preferCanvas) so CSS animations work on paths
             this.supportMap = this.L.map(mapEl, {
-                preferCanvas: true,
                 zoomControl: true,
                 scrollWheelZoom: false,
             }).setView([30, 0], 2);
@@ -522,13 +516,14 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             const originMarker = markers.find(m => m.isOrigin);
             const supportMarkers = markers.filter(m => !m.isOrigin);
 
-            // Add origin marker with a special icon
+            // Add origin marker with a special icon + pulse ring
             if (originMarker) {
+                const count = req.messages?.length || 0;
                 const originIcon = this.L.divIcon({
                     className: 'support-map-origin',
-                    html: `<div class="origin-marker"><span>${req.messages?.length || 0}</span></div>`,
-                    iconSize: [44, 44],
-                    iconAnchor: [22, 22],
+                    html: `<div class="origin-pulse-ring"></div><div class="origin-marker"><span>${count}</span></div>`,
+                    iconSize: [56, 56],
+                    iconAnchor: [28, 28],
                 });
                 this.L.marker([originMarker.lat, originMarker.lng], { icon: originIcon })
                     .addTo(this.supportMap);
@@ -541,9 +536,9 @@ export class RequestComponent implements OnInit, AfterViewChecked {
                 
                 const supportIcon = this.L.divIcon({
                     className: 'support-map-dot',
-                    html: `<div class="support-dot"></div>`,
-                    iconSize: [16, 16],
-                    iconAnchor: [8, 8],
+                    html: `<div class="support-dot-ring"></div><div class="support-dot"></div>`,
+                    // iconSize: [20, 20],
+                    // iconAnchor: [10, 10],
                 });
 
                 this.L.marker([sm.lat, sm.lng], { icon: supportIcon })
@@ -620,23 +615,68 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         if (!this.L || !this.supportMap) return;
 
         const latlngs: [number, number][] = [];
-        const steps = 30;
-        
+        const steps = 64;
+
+        const dlat = to[0] - from[0];
+        const dlng = to[1] - from[1];
+        const dist = Math.sqrt(dlat * dlat + dlng * dlng);
+
+        // Always curve northward — natural great-circle-like appearance
+        const arcHeight = Math.max(Math.min(dist * 0.15, 14), 1.5);
+
         for (let i = 0; i <= steps; i++) {
             const t = i / steps;
-            const lat = from[0] + (to[0] - from[0]) * t;
-            const lng = from[1] + (to[1] - from[1]) * t;
-            // Add a curve offset
-            const offset = Math.sin(t * Math.PI) * 15;
-            latlngs.push([lat + offset, lng]);
+            latlngs.push([
+                from[0] + dlat * t + Math.sin(t * Math.PI) * arcHeight,
+                from[1] + dlng * t,
+            ]);
         }
 
+        // Force SVG renderer and add a class so we can style/animate the path
         const polyline = this.L.polyline(latlngs, {
-            color: '#c9a0dc',
-            weight: 2,
-            opacity: 0.6,
-            dashArray: '6 4',
+            color: '#c9907a',
+            weight: 2.5,
+            opacity: 0.7,
+            interactive: false,
+            renderer: (this.L as any).svg && (this.L as any).svg(),
             className: 'animated-arc',
         }).addTo(this.supportMap);
+
+        // Animate draw-in then switch to flowing dashes (robust element lookup)
+        requestAnimationFrame(() => {
+            const maybeGetEl = (poly: any) => (typeof poly.getElement === 'function' ? poly.getElement() : poly._path || null);
+            const el: SVGPathElement | null = maybeGetEl(polyline);
+            if (!el) return;
+
+            // Ensure stroke attributes are set on the path
+            try { el.setAttribute('stroke', '#c9907a'); } catch (_) {}
+            try { el.setAttribute('stroke-width', '2.5'); } catch (_) {}
+            try { el.setAttribute('fill', 'none'); } catch (_) {}
+
+            const totalLen = (typeof el.getTotalLength === 'function') ? el.getTotalLength() : 600;
+
+            // Phase 1: draw-in
+            el.style.transition = 'none';
+            el.style.strokeDasharray = `${totalLen}`;
+            el.style.strokeDashoffset = `${totalLen}`;
+            el.style.opacity = '0.85';
+            el.style.strokeLinecap = 'round';
+
+            // Kick the transition in next frame
+            requestAnimationFrame(() => {
+                el.style.transition = 'stroke-dashoffset 1.2s ease-out';
+                el.style.strokeDashoffset = '0';
+
+                // Phase 2: after draw-in, switch to flowing dashes
+                setTimeout(() => {
+                    el.style.transition = 'none';
+                    el.style.strokeDasharray = '10 8';
+                    el.style.strokeDashoffset = '0';
+                    el.classList.add('arc-flowing');
+                    // Make sure path is visible
+                    el.style.opacity = '0.9';
+                }, 1250);
+            });
+        });
     }
 }
