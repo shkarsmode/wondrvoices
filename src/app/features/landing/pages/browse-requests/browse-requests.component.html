@@ -108,7 +108,7 @@
                     </span>
                     <span class="stat messages">
                         <span class="material-symbols-outlined">mail</span>
-                        {{ request.comments || 0 }}
+                        {{ request | json}}
                     </span>
                     <span class="stat time">
                         <span class="material-symbols-outlined">schedule</span>

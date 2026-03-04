@@ -17,6 +17,7 @@ export interface ISupportRequest {
     hearts?: number;
     shares?: number;
     comments?: number;
+    supportCount?: number;
     tags?: string[];
     lat?: number;
     lng?: number;

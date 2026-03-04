@@ -199,7 +199,9 @@ export class RequestComponent implements OnInit, AfterViewChecked {
 
         // Initialize support map when messages section is visible
         if (!this.supportMapInitialized && this.supportMapRef?.nativeElement && this.request()?.messages?.length) {
-            this.initSupportMap();
+            this.supportMapInitialized = true; // set early to prevent re-entry
+            // Delay map init to ensure the DOM element has dimensions
+            setTimeout(() => this.initSupportMap(), 200);
         }
     }
 
@@ -441,9 +443,13 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         if (typeof window === 'undefined') return;
         
         const mapEl = this.supportMapRef?.nativeElement;
-        if (!mapEl) return;
-
-        this.supportMapInitialized = true;
+        if (!mapEl || mapEl.offsetHeight === 0) {
+            // Element not visible yet — retry
+            setTimeout(() => {
+                this.supportMapInitialized = false; // allow re-trigger
+            }, 500);
+            return;
+        }
 
         try {
             const leafletModule = await import('leaflet');
@@ -461,6 +467,10 @@ export class RequestComponent implements OnInit, AfterViewChecked {
                 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
                 { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }
             ).addTo(this.supportMap);
+
+            // Force a size recalculation after the tile layer is added
+            setTimeout(() => this.supportMap?.invalidateSize(), 0);
+            setTimeout(() => this.supportMap?.invalidateSize(), 300);
 
             // Get request location and messages
             const req = this.request();
@@ -508,7 +518,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
                     iconAnchor: [8, 8],
                 });
 
-                const marker = this.L.marker([sm.lat, sm.lng], { icon: supportIcon })
+                this.L.marker([sm.lat, sm.lng], { icon: supportIcon })
                     .addTo(this.supportMap);
 
                 // Draw an animated arc from supporter to origin
@@ -528,11 +538,13 @@ export class RequestComponent implements OnInit, AfterViewChecked {
                 }
             }
 
-            // Fix map sizing
+            // Fix map sizing (multiple retries for reliability)
             setTimeout(() => this.supportMap?.invalidateSize(), 100);
             setTimeout(() => this.supportMap?.invalidateSize(), 500);
+            setTimeout(() => this.supportMap?.invalidateSize(), 1000);
         } catch (e) {
             console.error('Failed to initialize support map:', e);
+            this.supportMapInitialized = false; // allow retry on error
         }
     }
 
