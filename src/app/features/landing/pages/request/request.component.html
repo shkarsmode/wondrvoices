@@ -103,76 +103,78 @@
 
     <!-- Support From Around the World - Only shows if there are messages -->
     @if (req.messages && req.messages.length > 0) {
-    <div class="world-support-section">
-        <h3 class="section-title">
-            <span class="material-symbols-outlined">public</span>
-            Support From Around the World
-        </h3>
-        <p class="section-subtitle">See where messages of hope and encouragement have come from for this request</p>
-
-        <!-- Messages Feed -->
-        <div class="messages-feed">
-            @for (msg of req.messages; track msg.id) {
-            <div class="message-card">
-                <div class="message-header">
-                    <div class="avatar">{{ getInitials(msg) }}</div>
-                    <div class="meta">
-                        <div class="sender-name">{{ msg.anonymous ? 'Anonymous' : msg.fromName }}</div>
-                        <div class="sender-details">
-                            @if (msg.location) {
-                                @if (getLocationCity(msg.location); as city) {
+        <div class="world-support-section">
+            
+            <!-- Messages Feed -->
+            <div class="messages-feed">
+                @for (msg of req.messages; track msg.id) {
+                <div class="message-card">
+                    <div class="message-header">
+                        <div class="avatar">{{ getInitials(msg) }}</div>
+                        <div class="meta">
+                            <div class="sender-name">{{ msg.anonymous ? 'Anonymous' : msg.fromName }}</div>
+                            <div class="sender-details">
+                                @if (msg.location) {
+                                    @if (getLocationCity(msg.location); as city) {
+                                    <span class="detail-item">
+                                        <span class="material-symbols-outlined">location_on</span>
+                                        {{ city }}
+                                    </span>
+                                    }
+                                    @if (getLocationVenue(msg.location); as venue) {
+                                    <span class="detail-item venue">
+                                        <span class="material-symbols-outlined">store</span>
+                                        {{ venue }}
+                                    </span>
+                                    }
+                                }
                                 <span class="detail-item">
-                                    <span class="material-symbols-outlined">location_on</span>
-                                    {{ city }}
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    {{ getTimeAgo(msg.createdAt) }}
                                 </span>
-                                }
-                                @if (getLocationVenue(msg.location); as venue) {
-                                <span class="detail-item venue">
-                                    <span class="material-symbols-outlined">store</span>
-                                    {{ venue }}
-                                </span>
-                                }
-                            }
-                            <span class="detail-item">
-                                <span class="material-symbols-outlined">schedule</span>
-                                {{ getTimeAgo(msg.createdAt) }}
-                            </span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="message-body">
-                    @if (msg.message) {
-                    <p class="message-text">"{{ msg.message }}"</p>
-                    }
-                    @if (msg.type !== 'text' && msg.thumbnailUrl) {
-                    <div class="message-media" (click)="openImageLightbox(msg.thumbnailUrl)">
-                        <img [src]="msg.thumbnailUrl" [alt]="getMessageTypeLabel(msg)" loading="lazy">
-                        <div class="media-expand-hint">
-                            <span class="material-symbols-outlined">zoom_in</span>
+                    <div class="message-body">
+                        @if (msg.message) {
+                        <p class="message-text">"{{ msg.message }}"</p>
+                        }
+                        @if (msg.type !== 'text' && msg.thumbnailUrl) {
+                        <div class="message-media" (click)="openImageLightbox(msg.thumbnailUrl)">
+                            <img [src]="msg.thumbnailUrl" [alt]="getMessageTypeLabel(msg)" loading="lazy">
+                            <div class="media-expand-hint">
+                                <span class="material-symbols-outlined">zoom_in</span>
+                            </div>
+                            @if (msg.type === 'video') {
+                            <span class="media-badge">
+                                <span class="material-symbols-outlined">play_arrow</span>
+                            </span>
+                            }
                         </div>
-                        @if (msg.type === 'video') {
-                        <span class="media-badge">
-                            <span class="material-symbols-outlined">play_arrow</span>
-                        </span>
                         }
                     </div>
-                    }
-                </div>
 
-                <div class="message-footer">
-                    <div class="stat hearts">
-                        <span class="material-symbols-outlined">favorite</span>
-                        {{ msg.likes || 0 }}
+                    <div class="message-footer">
+                        <div class="stat hearts">
+                            <span class="material-symbols-outlined">favorite</span>
+                            {{ msg.likes || 0 }}
+                        </div>
                     </div>
                 </div>
+                }
             </div>
-            }
         </div>
+    }
 
+    @if (request() && request()?.messages?.length) {
+        <h3 class="section-title">
+                <span class="material-symbols-outlined">public</span>
+                Support From Around the World
+            </h3>
+        <p class="section-subtitle">See where messages of hope and encouragement have come from for this request</p>
         <!-- Animated Support Map (below messages) -->
         <div class="support-map-container" #supportMap></div>
-    </div>
     }
 
     <!-- Use App Modal -->

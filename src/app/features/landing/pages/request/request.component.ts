@@ -197,12 +197,14 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             this.cityAutocomplete = null;
         }
 
-        // Initialize support map when messages section is visible
-        if (!this.supportMapInitialized && this.supportMapRef?.nativeElement && this.request()?.messages?.length) {
-            this.supportMapInitialized = true; // set early to prevent re-entry
-            // Delay map init to ensure the DOM element has dimensions
-            setTimeout(() => this.initSupportMap(), 200);
-        }
+
+        setTimeout(() => {
+            if (!this.supportMapInitialized && this.request()?.messages?.length) {
+                this.supportMapInitialized = true; // set early to prevent re-entry
+                // Delay map init to ensure the DOM element has dimensions
+                setTimeout(() => this.initSupportMap(), 300);
+            }
+        }, 400);
     }
 
     private initGooglePlacesAutocomplete(): void {
@@ -441,9 +443,13 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     // Animated support map
     private async initSupportMap(): Promise<void> {
         if (typeof window === 'undefined') return;
+
+        console.log('Initializing support map with messages:', this.request()?.messages);
         
         const mapEl = this.supportMapRef?.nativeElement;
-        if (!mapEl || mapEl.offsetHeight === 0) {
+        console.log(this.supportMapRef, mapEl, 'Leaflet loaded:', this.L);
+        if (!mapEl) {
+            console.log(this.supportMapRef, mapEl, 'Leaflet loaded:', this.L);
             // Element not visible yet — retry
             setTimeout(() => {
                 this.supportMapInitialized = false; // allow re-trigger
@@ -456,6 +462,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             this.L = (leafletModule as any).default ?? leafletModule;
             (window as any).L = this.L;
 
+            console.log('support', this.supportMapRef, mapEl, 'Leaflet loaded:', this.L);
             // Create the map
             this.supportMap = this.L.map(mapEl, {
                 preferCanvas: true,
@@ -479,14 +486,35 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             const markers: Array<{ lat: number; lng: number; label: string; isOrigin: boolean }> = [];
 
             // Add the request origin (recipient location)
-            if (req.lat && req.lng) {
-                markers.push({ lat: req.lat, lng: req.lng, label: req.location || 'Recipient', isOrigin: true });
+            // If API provides lat/lng use them, otherwise geocode the location string
+            let originLat = req.lat;
+            let originLng = req.lng;
+            if ((!originLat || !originLng) && req.location) {
+                const coords = await this.geocodeLocation(req.location);
+                if (coords) {
+                    originLat = coords.lat;
+                    originLng = coords.lng;
+                }
+            }
+            if (originLat && originLng) {
+                markers.push({ lat: originLat, lng: originLng, label: req.location || 'Recipient', isOrigin: true });
             }
 
-            // Add message locations from mapMarkers if available
-            if (req.mapMarkers?.length) {
-                for (const m of req.mapMarkers) {
-                    markers.push({ lat: m.lat, lng: m.lng, label: m.from || m.label || 'Supporter', isOrigin: false });
+            // Geocode each message's location to get supporter markers
+            if (req.messages?.length) {
+                for (const msg of req.messages) {
+                    if (!msg.location) continue;
+                    const cityPart = msg.location.split(' - ')[0]?.trim();
+                    if (!cityPart) continue;
+                    const coords = await this.geocodeLocation(cityPart);
+                    if (coords) {
+                        markers.push({
+                            lat: coords.lat,
+                            lng: coords.lng,
+                            label: msg.fromName || 'Supporter',
+                            isOrigin: false,
+                        });
+                    }
                 }
             }
 
@@ -545,6 +573,46 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         } catch (e) {
             console.error('Failed to initialize support map:', e);
             this.supportMapInitialized = false; // allow retry on error
+        }
+    }
+
+    /**
+     * Geocode a location string to lat/lng using OpenStreetMap Nominatim.
+     * Caches results to avoid duplicate requests for the same location.
+     */
+    private geocodeCache = new Map<string, { lat: number; lng: number } | null>();
+
+    private async geocodeLocation(location: string): Promise<{ lat: number; lng: number } | null> {
+        if (!location?.trim()) return null;
+
+        const key = location.trim().toLowerCase();
+        if (this.geocodeCache.has(key)) return this.geocodeCache.get(key)!;
+
+        try {
+            const query = encodeURIComponent(location.trim());
+            const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${query}`;
+
+            const response = await fetch(url, {
+                headers: { 'User-Agent': 'WondrVoices/1.0' },
+            });
+
+            if (!response.ok) {
+                this.geocodeCache.set(key, null);
+                return null;
+            }
+
+            const data = await response.json();
+            if (data?.length > 0 && data[0].lat && data[0].lon) {
+                const result = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                this.geocodeCache.set(key, result);
+                return result;
+            }
+
+            this.geocodeCache.set(key, null);
+            return null;
+        } catch {
+            this.geocodeCache.set(key, null);
+            return null;
         }
     }
 

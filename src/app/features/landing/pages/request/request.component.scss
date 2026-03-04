@@ -315,7 +315,7 @@
     // Support Journey Section
     .support-journey-section {
         margin-top: 32px;
-        max-width: 500px;
+        max-width: 750px;
         margin-left: auto;
         margin-right: auto;
         background: #fff;
@@ -399,10 +399,33 @@
         }
     }
 
+     .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: "Playfair Display", Georgia, serif;
+            color: #1a1a1a;
+            margin: 0 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+
+            .material-symbols-outlined {
+                font-size: 24px;
+                color: #c9907a;
+            }
+        }
+
+        .section-subtitle {
+            color: #888;
+            font-size: 14px;
+            margin: 0 0 20px;
+        }
+
     // World Support Section
     .world-support-section {
         margin-top: 32px;
-        max-width: 500px;
+        max-width: 750px;
         margin-left: auto;
         margin-right: auto;
 
@@ -429,15 +452,6 @@
         }
 
         // Animated support map (below messages)
-        .support-map-container {
-            width: 100%;
-            height: 360px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #e0e0e0;
-            margin-top: 24px;
-            background: #f0f4f8;
-        }
 
         .messages-feed {
             display: flex;
@@ -1309,4 +1323,14 @@
 button:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+}
+
+.support-map-container {
+    width: 100%;
+    height: 360px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    margin-top: 24px;
+    background: #f0f4f8;
 }
