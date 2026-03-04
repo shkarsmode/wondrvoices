@@ -4,17 +4,17 @@
     <header class="map-toolbar">
         <div class="map-toolbar__left">
             <h2 class="map-title">
-                Voices map
+                WondrVoices Map
             </h2>
             <p class="map-subtitle">
-                Explore where WondrVoices were recorded, filter by city and credit.
+                Explore voices of support and journeys from around the world.
             </p>
         </div>
 
         <div class="map-toolbar__right">
             <div class="map-meta">
                 <span class="map-meta__count">
-                    {{ filtered().length }} voices
+                    {{ totalCount() }} markers
                 </span>
 
                 @if (!mapReady()) {
@@ -22,6 +22,29 @@
                         Loading map…
                     </span>
                 }
+            </div>
+
+            <div class="map-layer-toggle">
+                <button
+                    class="layer-btn"
+                    [class.active]="queryLayer() === 'all'"
+                    (click)="setLayer('all')">
+                    All
+                </button>
+                <button
+                    class="layer-btn layer-btn--voice"
+                    [class.active]="queryLayer() === 'voices'"
+                    (click)="setLayer('voices')">
+                    <span class="layer-dot" style="background: #22c55e;"></span>
+                    Voices
+                </button>
+                <button
+                    class="layer-btn layer-btn--journey"
+                    [class.active]="queryLayer() === 'journeys'"
+                    (click)="setLayer('journeys')">
+                    <span class="layer-dot" style="background: #8b5cf6;"></span>
+                    Journeys
+                </button>
             </div>
 
             <div class="map-filters">

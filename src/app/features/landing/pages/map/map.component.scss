@@ -174,6 +174,48 @@
     justify-content: flex-end;
 }
 
+/* Layer toggle */
+
+.map-layer-toggle {
+    display: flex;
+    gap: 4px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.04);
+    padding: 3px;
+}
+
+.layer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(15, 23, 42, 0.65);
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &.active {
+        background: #fff;
+        color: #0f172a;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.1);
+    }
+
+    &:hover:not(.active) {
+        color: #0f172a;
+    }
+}
+
+.layer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
 .map-chip {
     display: inline-flex;
     align-items: center;
@@ -361,6 +403,34 @@
 
     .vp-link {
         cursor: pointer;
+    }
+
+    .jp-link {
+        cursor: pointer;
+        color: #6d28d9;
+    }
+
+    .jp-meta {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+        font-size: 12px;
+    }
+
+    .journey-popup {
+        button {
+            margin-top: 6px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid #8b5cf6;
+            background: rgba(139, 92, 246, 0.08);
+            color: #6d28d9;
+            font-size: 12px;
+            cursor: pointer;
+            &:hover {
+                background: rgba(139, 92, 246, 0.15);
+            }
+        }
     }
 
     .marker-cluster {

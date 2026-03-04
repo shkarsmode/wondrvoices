@@ -197,6 +197,7 @@
                         type="text" 
                         formControlName="firstName"
                         placeholder="e.g., Sarah"
+                        autocomplete="given-name"
                         class="form-input">
                     <div class="anonymous-option">
                         <input type="checkbox" id="postAnonymously" [checked]="isAnonymous()" (change)="toggleAnonymous()">
@@ -208,13 +209,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Email for Verification <span class="required">*</span></label>
+                    <label>Email <span class="optional">(optional)</span></label>
                     <input 
                         type="email" 
                         formControlName="email"
                         placeholder="your&#64;email.com"
+                        autocomplete="email"
                         class="form-input">
-                    <small class="help-text">We'll send a verification code. Never shown publicly.</small>
+                    <small class="help-text">If provided, we'll verify via a code. Never shown publicly.</small>
                 </div>
 
                 <div class="form-group">
@@ -276,7 +278,7 @@
                     Back
                 </button>
                 <button type="button" class="btn-continue" (click)="nextStep()" [disabled]="isSubmitting()">
-                    Verify Email <span class="material-symbols-outlined">arrow_forward</span>
+                    {{ step4Form.value.email ? 'Verify Email' : 'Submit' }} <span class="material-symbols-outlined">arrow_forward</span>
                 </button>
             </div>
         </div>

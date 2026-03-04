@@ -50,7 +50,7 @@
                     </span>
                     <span class="stat messages" style="cursor: pointer" (click)="scrollToMessages()">
                         <span class="material-symbols-outlined">mail</span>
-                        {{ req.messages.length || 0 }}
+                        {{ getMessageCount(req) }}
                     </span>
                     <button class="share-btn" type="button" (click)="shareRequest()">
                         <span class="material-symbols-outlined">ios_share</span>
@@ -77,44 +77,41 @@
 
     <!-- Support Their Journey Section -->
     <div class="support-journey-section">
-        <h3 class="section-title">Write a message or attach a card or letter</h3>
+        <h3 class="section-title">Show your support</h3>
+        <p class="section-subtitle">Choose how you'd like to send encouragement</p>
         <div class="support-buttons">
-            <button type="button" class="btn-send-message" (click)="openMailModal()">
-                <span class="material-symbols-outlined">edit</span>
-                Send a Message
+            <button type="button" class="btn-support-option" (click)="openMailModal('text')">
+                <div class="support-option-icon">
+                    <span class="material-symbols-outlined">keyboard</span>
+                </div>
+                <div class="support-option-text">
+                    <strong>Type a Message</strong>
+                    <span>Share a memory, a story, or a note of appreciation</span>
+                </div>
             </button>
-            <div class="support-buttons-row">
-                <button type="button" class="btn-use-app" (click)="openAppModal()">
-                    <span class="material-symbols-outlined">smartphone</span>
-                    Use Mobile App
-                </button>
-                <button type="button" class="btn-mail-card" (click)="openMailModal()">
-                    <span class="material-symbols-outlined">mail</span>
-                    Mail a Card
-                </button>
-            </div>
+            <button type="button" class="btn-support-option" (click)="openMailModal('image')">
+                <div class="support-option-icon">
+                    <span class="material-symbols-outlined">photo_camera</span>
+                </div>
+                <div class="support-option-text">
+                    <strong>Upload a Creation</strong>
+                    <span>Share a photo of a handwritten note, drawing, or handmade gift</span>
+                </div>
+            </button>
         </div>
     </div>
 
     <!-- Support From Around the World - Only shows if there are messages -->
     @if (req.messages && req.messages.length > 0) {
     <div class="world-support-section">
-        <!-- <h3 class="section-title">Support From Around the World</h3>
-        <p class="section-subtitle">where messages of hope and encouragement have come from for this request</p>
+        <h3 class="section-title">
+            <span class="material-symbols-outlined">public</span>
+            Support From Around the World
+        </h3>
+        <p class="section-subtitle">See where messages of hope and encouragement have come from for this request</p>
         
-        @if (req.mapMarkers?.length) {
-        <div class="map-container">
-            <div class="map-placeholder">
-                <div class="map-legend">
-                    <span class="legend-dot"></span>
-                    <span class="legend-label">Support markers</span>
-                </div>
-                <div class="map-content">
-                    Map view ({{ req.mapMarkers?.length }} markers)
-                </div>
-            </div>
-        </div>
-        } -->
+        <!-- Animated Support Map -->
+        <div class="support-map-container" #supportMap></div>
 
         <!-- Messages Feed -->
         <div class="messages-feed">
@@ -124,14 +121,25 @@
                     <div class="avatar">{{ getInitials(msg) }}</div>
                     <div class="meta">
                         <div class="sender-name">{{ msg.anonymous ? 'Anonymous' : msg.fromName }}</div>
-                        <div class="sender-meta">
+                        <div class="sender-details">
                             @if (msg.location) {
-                            <span class="material-symbols-outlined">location_on</span>
-                            <span>{{ msg.location }}</span>
-                            <span class="dot">•</span>
+                                @if (getLocationCity(msg.location); as city) {
+                                <span class="detail-item">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                    {{ city }}
+                                </span>
+                                }
+                                @if (getLocationVenue(msg.location); as venue) {
+                                <span class="detail-item venue">
+                                    <span class="material-symbols-outlined">store</span>
+                                    {{ venue }}
+                                </span>
+                                }
                             }
-                            <span class="material-symbols-outlined">schedule</span>
-                            <span>{{ getTimeAgo(msg.createdAt) }}</span>
+                            <span class="detail-item">
+                                <span class="material-symbols-outlined">schedule</span>
+                                {{ getTimeAgo(msg.createdAt) }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -141,8 +149,11 @@
                     <p class="message-text">"{{ msg.message }}"</p>
                     }
                     @if (msg.type !== 'text' && msg.thumbnailUrl) {
-                    <div class="message-media">
+                    <div class="message-media" (click)="openImageLightbox(msg.thumbnailUrl)">
                         <img [src]="msg.thumbnailUrl" [alt]="getMessageTypeLabel(msg)" loading="lazy">
+                        <div class="media-expand-hint">
+                            <span class="material-symbols-outlined">zoom_in</span>
+                        </div>
                         @if (msg.type === 'video') {
                         <span class="media-badge">
                             <span class="material-symbols-outlined">play_arrow</span>
@@ -194,14 +205,54 @@
 
     <!-- Mail a Card / Send Message Modal -->
     @if (mailModalOpen()) {
-    <div class="modal-backdrop" (click)="closeMailModal()">
+    <div class="modal-backdrop">
         <div class="modal mail-modal" (click)="$event.stopPropagation()">
             <button type="button" class="close-btn" (click)="closeMailModal()">
                 <span class="material-symbols-outlined">close</span>
             </button>
-            <h2 class="modal-title">Send a Message</h2>
+            <h2 class="modal-title">{{ mailModalMode() === 'image' ? 'Upload a Creation' : 'Send a Message' }}</h2>
             
             <form class="mail-form" (ngSubmit)="submitSupportMessage()">
+                @if (mailModalMode() === 'image') {
+                <!-- Image-first flow: upload first, then optional note -->
+                <div class="form-group">
+                    <label>Upload your creation <span class="required">*</span></label>
+                    <p class="upload-hint">Share a photo of a handwritten note, a poem, a drawing, or a handmade gift.</p>
+                    <div class="upload-area">
+                        @if (uploadedMediaUrl()) {
+                        <div class="uploaded-preview">
+                            <img [src]="uploadedMediaUrl()" alt="Uploaded image">
+                            <button type="button" class="remove-image" (click)="removeUploadedImage()">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        } @else {
+                        <button type="button" class="upload-btn upload-btn-large" (click)="fileInput.click()" [disabled]="uploadingMedia()">
+                            <span class="material-symbols-outlined">add_photo_alternate</span>
+                            {{ uploadingMedia() ? 'Uploading...' : 'Choose a photo' }}
+                        </button>
+                        <input
+                            #fileInput
+                            type="file"
+                            accept="image/*"
+                            (change)="onFileSelected($event)"
+                            hidden>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Add a note <span class="optional">(optional)</span></label>
+                    <div class="textarea-wrapper">
+                        <textarea
+                            rows="3"
+                            placeholder="Add a short note about your creation..."
+                            name="message"
+                            [(ngModel)]="messageText"></textarea>
+                    </div>
+                </div>
+                } @else {
+                <!-- Text-first flow: message first, then optional image -->
                 <div class="form-group">
                     <label>Your message</label>
                     <div class="textarea-wrapper">
@@ -237,6 +288,7 @@
                         }
                     </div>
                 </div>
+                }
 
                 <div class="form-divider">
                     <span>Tell us about yourself</span>
@@ -248,6 +300,7 @@
                         type="text"
                         placeholder="Your first name"
                         name="name"
+                        autocomplete="given-name"
                         required
                         [(ngModel)]="senderName">
                 </div>
@@ -299,7 +352,7 @@
 
     <!-- Success Modal -->
     @if (successModalOpen()) {
-    <div class="modal-backdrop" (click)="closeSuccessModal()">
+    <div class="modal-backdrop">
         <div class="modal success-modal" (click)="$event.stopPropagation()">
             <button type="button" class="close-btn" (click)="closeSuccessModal()">
                 <span class="material-symbols-outlined">close</span>
@@ -318,6 +371,18 @@
                 Support More Journeys
             </button>
             <button type="button" class="btn-close-text" (click)="closeSuccessModal()">Close</button>
+        </div>
+    </div>
+    }
+
+    <!-- Image Lightbox -->
+    @if (lightboxImageUrl()) {
+    <div class="lightbox-backdrop" (click)="closeLightbox()">
+        <div class="lightbox-content" (click)="$event.stopPropagation()">
+            <button type="button" class="lightbox-close" (click)="closeLightbox()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <img [src]="lightboxImageUrl()" alt="Full size image">
         </div>
     </div>
     }

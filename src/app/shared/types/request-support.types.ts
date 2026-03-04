@@ -41,7 +41,7 @@ export interface CreateSupportMessageDto {
     mediaUrl?: string;
     thumbnailUrl?: string;
     fromName?: string;
-    email: string;
+    email?: string;
     location: string;
 }
 

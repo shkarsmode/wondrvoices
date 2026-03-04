@@ -8,6 +8,9 @@ import { CreateSupportMessageDto, IRequestDetail, ISupportMessage } from '../../
 
 declare const google: any;
 
+// Leaflet type imports for SSR safety
+type LeafletType = typeof import('leaflet');
+
 @Component({
     selector: 'app-request-page',
     standalone: true,
@@ -25,7 +28,9 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     // Modal states
     appModalOpen = signal(false);
     mailModalOpen = signal(false);
+    mailModalMode = signal<'text' | 'image'>('text');
     successModalOpen = signal(false);
+    lightboxImageUrl = signal<string | null>(null);
 
     // Form fields
     messageText = '';
@@ -48,9 +53,16 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     // Google Places autocomplete
     @ViewChild('orgInput') orgInputRef!: ElementRef<HTMLInputElement>;
     @ViewChild('cityInput') cityInputRef!: ElementRef<HTMLInputElement>;
+    @ViewChild('nameInput') nameInputRef!: ElementRef<HTMLInputElement>;
+    @ViewChild('supportMap') supportMapRef!: ElementRef<HTMLDivElement>;
     private orgAutocomplete: any;
     private cityAutocomplete: any;
     private placesInitialized = false;
+
+    // Leaflet map for support locations
+    private L: any;
+    private supportMap: any;
+    private supportMapInitialized = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -113,6 +125,11 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         return this.isLiked(detail.id) ? baseHearts + 1 : baseHearts;
     }
 
+    getMessageCount(detail: IRequestDetail): number {
+        // Use supportCount from API if available, fall back to messages array length, fall back to comments
+        return detail.supportCount ?? detail.comments ?? detail.messages?.length ?? 0;
+    }
+
     toggleSendLove(): void {
         const current = this.request();
         if (!current) return;
@@ -132,7 +149,8 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     }
 
     // Mail Modal
-    openMailModal(): void {
+    openMailModal(mode: 'text' | 'image' = 'text'): void {
+        this.mailModalMode.set(mode);
         this.mailModalOpen.set(true);
     }
 
@@ -172,12 +190,16 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     ngAfterViewChecked(): void {
         if (this.mailModalOpen() && !this.placesInitialized) {
             this.initGooglePlacesAutocomplete();
-
         }
         if (!this.mailModalOpen()) {
             this.placesInitialized = false;
             this.orgAutocomplete = null;
             this.cityAutocomplete = null;
+        }
+
+        // Initialize support map when messages section is visible
+        if (!this.supportMapInitialized && this.supportMapRef?.nativeElement && this.request()?.messages?.length) {
+            this.initSupportMap();
         }
     }
 
@@ -293,15 +315,22 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             return;
         }
 
-        // Email is optional
+        // Email is optional - no validation needed
 
-        // City is required if organization is selected
-        if (this.senderOrganization.trim() && !this.senderCity.trim()) {
-            alert('Please provide your city when selecting an organization');
+        // City is required
+        if (!this.senderCity.trim()) {
+            alert('Please provide your city');
             return;
         }
 
-        if (!message && !mediaUrl) {
+        // For image mode, require an image
+        if (this.mailModalMode() === 'image' && !mediaUrl) {
+            alert('Please upload an image of your creation');
+            return;
+        }
+
+        // For text mode, require a message
+        if (this.mailModalMode() === 'text' && !message && !mediaUrl) {
             alert('Please add a message or upload an image');
             return;
         }
@@ -318,7 +347,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             mediaUrl: mediaUrl || undefined,
             thumbnailUrl: mediaUrl || undefined,
             fromName: this.senderName.trim(),
-            email: this.senderEmail.trim(),
+            email: this.senderEmail.trim() || undefined,
             location: location,
         };
 
@@ -382,5 +411,152 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         if (message.type === 'image') return 'Artwork';
         if (message.type === 'video') return 'Video';
         return 'Message';
+    }
+
+    // Location parsing helpers for better formatting
+    getLocationCity(location: string): string {
+        if (!location) return '';
+        // Location format: "City, State, Country - Venue Name"
+        const parts = location.split(' - ');
+        return parts[0]?.trim() || location;
+    }
+
+    getLocationVenue(location: string): string {
+        if (!location) return '';
+        const parts = location.split(' - ');
+        return parts.length > 1 ? parts.slice(1).join(' - ').trim() : '';
+    }
+
+    // Image lightbox
+    openImageLightbox(imageUrl: string): void {
+        this.lightboxImageUrl.set(imageUrl);
+    }
+
+    closeLightbox(): void {
+        this.lightboxImageUrl.set(null);
+    }
+
+    // Animated support map
+    private async initSupportMap(): Promise<void> {
+        if (typeof window === 'undefined') return;
+        
+        const mapEl = this.supportMapRef?.nativeElement;
+        if (!mapEl) return;
+
+        this.supportMapInitialized = true;
+
+        try {
+            const leafletModule = await import('leaflet');
+            this.L = (leafletModule as any).default ?? leafletModule;
+            (window as any).L = this.L;
+
+            // Create the map
+            this.supportMap = this.L.map(mapEl, {
+                preferCanvas: true,
+                zoomControl: true,
+                scrollWheelZoom: false,
+            }).setView([30, 0], 2);
+
+            this.L.tileLayer(
+                'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }
+            ).addTo(this.supportMap);
+
+            // Get request location and messages
+            const req = this.request();
+            if (!req) return;
+
+            const markers: Array<{ lat: number; lng: number; label: string; isOrigin: boolean }> = [];
+
+            // Add the request origin (recipient location)
+            if (req.lat && req.lng) {
+                markers.push({ lat: req.lat, lng: req.lng, label: req.location || 'Recipient', isOrigin: true });
+            }
+
+            // Add message locations from mapMarkers if available
+            if (req.mapMarkers?.length) {
+                for (const m of req.mapMarkers) {
+                    markers.push({ lat: m.lat, lng: m.lng, label: m.from || m.label || 'Supporter', isOrigin: false });
+                }
+            }
+
+            // Animate markers appearing with arcs
+            const originMarker = markers.find(m => m.isOrigin);
+            const supportMarkers = markers.filter(m => !m.isOrigin);
+
+            // Add origin marker with a special icon
+            if (originMarker) {
+                const originIcon = this.L.divIcon({
+                    className: 'support-map-origin',
+                    html: `<div class="origin-marker"><span>${req.messages?.length || 0}</span></div>`,
+                    iconSize: [44, 44],
+                    iconAnchor: [22, 22],
+                });
+                this.L.marker([originMarker.lat, originMarker.lng], { icon: originIcon })
+                    .addTo(this.supportMap);
+            }
+
+            // Animate support markers appearing one by one
+            for (let i = 0; i < supportMarkers.length; i++) {
+                const sm = supportMarkers[i];
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                const supportIcon = this.L.divIcon({
+                    className: 'support-map-dot',
+                    html: `<div class="support-dot"></div>`,
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8],
+                });
+
+                const marker = this.L.marker([sm.lat, sm.lng], { icon: supportIcon })
+                    .addTo(this.supportMap);
+
+                // Draw an animated arc from supporter to origin
+                if (originMarker) {
+                    this.drawArc(
+                        [sm.lat, sm.lng],
+                        [originMarker.lat, originMarker.lng]
+                    );
+                }
+            }
+
+            // Fit bounds
+            if (markers.length > 0) {
+                const bounds = this.L.latLngBounds(markers.map(m => [m.lat, m.lng]));
+                if (bounds.isValid()) {
+                    this.supportMap.fitBounds(bounds.pad(0.3), { animate: true });
+                }
+            }
+
+            // Fix map sizing
+            setTimeout(() => this.supportMap?.invalidateSize(), 100);
+            setTimeout(() => this.supportMap?.invalidateSize(), 500);
+        } catch (e) {
+            console.error('Failed to initialize support map:', e);
+        }
+    }
+
+    private drawArc(from: [number, number], to: [number, number]): void {
+        if (!this.L || !this.supportMap) return;
+
+        const latlngs: [number, number][] = [];
+        const steps = 30;
+        
+        for (let i = 0; i <= steps; i++) {
+            const t = i / steps;
+            const lat = from[0] + (to[0] - from[0]) * t;
+            const lng = from[1] + (to[1] - from[1]) * t;
+            // Add a curve offset
+            const offset = Math.sin(t * Math.PI) * 15;
+            latlngs.push([lat + offset, lng]);
+        }
+
+        const polyline = this.L.polyline(latlngs, {
+            color: '#c9a0dc',
+            weight: 2,
+            opacity: 0.6,
+            dashArray: '6 4',
+            className: 'animated-arc',
+        }).addTo(this.supportMap);
     }
 }

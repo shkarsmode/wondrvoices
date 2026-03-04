@@ -165,7 +165,7 @@ export class RequestSupportComponent implements AfterViewChecked {
 
         this.step4Form = this.fb.group({
             firstName: [''],
-            email: ['', [Validators.required, Validators.email]],
+            email: ['', [Validators.email]],
             age: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
             gender: [''],
             location: ['', Validators.required],
@@ -516,8 +516,15 @@ export class RequestSupportComponent implements AfterViewChecked {
         this.requestsService.createRequest(requestData).subscribe({
             next: (response) => {
                 this.requestId.set(response.requestId);
+                const email = this.step4Form.value.email;
+                if (!email) {
+                    // No email provided — skip verification, go to success
+                    this.isSubmitting.set(false);
+                    this.currentStep.set(6);
+                    return;
+                }
                 // Send verification code
-                this.requestsService.sendVerificationCode(this.step4Form.value.email, this.requestId()).subscribe({
+                this.requestsService.sendVerificationCode(email, this.requestId()).subscribe({
                     next: (codeResponse) => {
                         if (codeResponse.code) {
                             this.demoVerificationCode.set(codeResponse.code);

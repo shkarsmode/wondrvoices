@@ -14,7 +14,9 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { first } from 'rxjs';
+import { RequestsService } from 'src/app/shared/services/requests.service';
 import { VoicesService } from 'src/app/shared/services/voices.service';
+import { ISupportRequest } from 'src/app/shared/types/request-support.types';
 import { IVoice } from 'src/app/shared/types/voices';
 
 // ❗ Типы подтянем через import type, чтобы не тянуть рантайм-модуль на сервере
@@ -28,13 +30,16 @@ import type * as Leaflet from 'leaflet';
 })
 export class MapComponent implements AfterViewInit {
     private voicesSvc = inject(VoicesService);
+    private requestsSvc = inject(RequestsService);
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
 
     // === Signals ===
     voices = signal<IVoice[]>([]);
+    journeys = signal<ISupportRequest[]>([]);
     queryCity = signal<string | null>(null);
     queryCredit = signal<string | null>(null);
+    queryLayer = signal<'all' | 'voices' | 'journeys'>('all');
     mapReady = signal(false);
 
     distinctCities = computed(() => {
@@ -42,6 +47,9 @@ export class MapComponent implements AfterViewInit {
         for (const v of this.voices()) {
             const c = [v.location].filter(Boolean).join(', ');
             if (c) set.add(c);
+        }
+        for (const j of this.journeys()) {
+            if (j.location) set.add(j.location);
         }
         return Array.from(set).sort((a, b) => a.localeCompare(b));
     });
@@ -65,7 +73,22 @@ export class MapComponent implements AfterViewInit {
         });
     });
 
-    public effect = effect(() => { this.voices(); this.refreshLayers() });
+    filteredJourneys = computed(() => {
+        const byCity = this.queryCity();
+        return this.journeys().filter((j) => {
+            const okCity = !byCity || j.location === byCity;
+            return okCity;
+        });
+    });
+
+    totalCount = computed(() => {
+        const layer = this.queryLayer();
+        if (layer === 'voices') return this.filtered().length;
+        if (layer === 'journeys') return this.filteredJourneys().length;
+        return this.filtered().length + this.filteredJourneys().length;
+    });
+
+    public effect = effect(() => { this.voices(); this.journeys(); this.queryLayer(); this.refreshLayers() });
 
     private L!: typeof Leaflet;
 
@@ -87,7 +110,7 @@ export class MapComponent implements AfterViewInit {
 
 
         this.initMap();
-        await this.loadVoices();
+        await Promise.all([this.loadVoices(), this.loadJourneys()]);
         this.mapReady.set(true);
         this.refreshLayers();
         this.invalidateSoon();
@@ -160,41 +183,95 @@ export class MapComponent implements AfterViewInit {
         this.voices.set(allVoices);
     }
 
+    private async loadJourneys() {
+        if (typeof window === 'undefined') return;
+
+        const limit = 100;
+        let page = 1;
+        const allJourneys: ISupportRequest[] = [];
+
+        console.log('[Map] loading journeys...');
+
+        while (true) {
+            const response = await this.requestsSvc
+                .getBrowseRequests({ limit, page })
+                .pipe(first())
+                .toPromise();
+
+            const items = response?.items;
+            if (!items || !items.length) break;
+
+            console.log('[Map] journeys page', page, 'items:', items.length);
+            allJourneys.push(...items);
+
+            if (items.length < limit) break;
+            page++;
+        }
+
+        console.log('[Map] total journeys loaded:', allJourneys.length);
+        this.journeys.set(allJourneys);
+    }
+
     private refreshLayers() {
         if (!this.map || !this.clusters || typeof window === 'undefined') return;
 
         this.clusters.clearLayers();
 
-        const current = this.filtered();
-        let withCoords = 0;
+        const layer = this.queryLayer();
+        let totalWithCoords = 0;
 
-        for (const v of current) {
-            if (v.lat == null || v.lng == null) continue;
-            withCoords++;
+        // Add voice markers
+        if (layer === 'all' || layer === 'voices') {
+            const current = this.filtered();
 
-            const m = this.L
-                .marker([Number(v.lat), Number(v.lng)], { icon: this.makeDotIcon('voice') })
-                .bindPopup(this.renderVoicePopup(v), {
-                    maxWidth: 320,
-                    minWidth: 240,
-                    className: 'voice-popup',
+            for (const v of current) {
+                if (v.lat == null || v.lng == null) continue;
+                totalWithCoords++;
+
+                const m = this.L
+                    .marker([Number(v.lat), Number(v.lng)], { icon: this.makeDotIcon('voice') })
+                    .bindPopup(this.renderVoicePopup(v), {
+                        maxWidth: 320,
+                        minWidth: 240,
+                        className: 'voice-popup',
+                    });
+
+                m.on('popupopen', (ev: Leaflet.LeafletEvent) => {
+                    const popup = (ev as any).popup as Leaflet.Popup;
+                    const el = popup.getElement();
+                    if (!el) return;
+                    el.querySelectorAll('img').forEach((img: HTMLImageElement) => {
+                        if (img.complete) return;
+                        img.addEventListener('load', () => popup.update(), { once: true });
+                        img.addEventListener('error', () => { img.style.display = 'none'; popup.update(); }, { once: true });
+                    });
                 });
 
-            m.on('popupopen', (ev: Leaflet.LeafletEvent) => {
-                const popup = (ev as any).popup as Leaflet.Popup;
-                const el = popup.getElement();
-                if (!el) return;
-                el.querySelectorAll('img').forEach((img: HTMLImageElement) => {
-                    if (img.complete) return;
-                    img.addEventListener('load', () => popup.update(), { once: true });
-                    img.addEventListener('error', () => { img.style.display = 'none'; popup.update(); }, { once: true });
-                });
-            });
-
-            this.clusters.addLayer(m);
+                this.clusters.addLayer(m);
+            }
         }
 
-        console.log('voices total:', current.length, 'with coords:', withCoords);
+        // Add journey markers
+        if (layer === 'all' || layer === 'journeys') {
+            const currentJourneys = this.filteredJourneys();
+
+            for (const j of currentJourneys) {
+                if (j.lat == null || j.lng == null) continue;
+                totalWithCoords++;
+
+                const m = this.L
+                    .marker([Number(j.lat), Number(j.lng)], { icon: this.makeDotIcon('journey') })
+                    .bindPopup(this.renderJourneyPopup(j), {
+                        maxWidth: 320,
+                        minWidth: 240,
+                        className: 'journey-popup',
+                    });
+
+                this.clusters.addLayer(m);
+            }
+        }
+
+        console.log('map markers:', totalWithCoords, '(layer:', layer, ')');
 
         const b = this.clusters.getBounds();
         if (b.isValid()) {
@@ -236,19 +313,54 @@ export class MapComponent implements AfterViewInit {
         `;
     }
 
+    private renderJourneyPopup(j: ISupportRequest): string {
+        const name = j.isAnonymous ? 'Anonymous' : (j.firstName || 'Someone');
+        const loc = j.location ? `<div>${this.escapeHtml(j.location)}</div>` : '';
+        const diagnosis = j.diagnosis ? `<div><small>${this.escapeHtml(j.diagnosis)}</small></div>` : '';
+        const stage = j.journeyStage ? `<div><small>${this.escapeHtml(j.journeyStage)}</small></div>` : '';
+        const hearts = j.hearts ? `<span>❤️ ${j.hearts}</span>` : '';
+        const comments = j.comments ? `<span>💬 ${j.comments}</span>` : '';
+        const meta = (hearts || comments) ? `<div class="jp-meta">${hearts} ${comments}</div>` : '';
+
+        return `
+            <div class="journey-popup">
+                <div><strong class="jp-link" data-journey-id="${j.id}">${this.escapeHtml(name)}'s Journey</strong></div>
+                ${loc}
+                ${diagnosis}
+                ${stage}
+                ${meta}
+                <button class="jp-link" data-journey-id="${j.id}">View Journey</button>
+            </div>
+        `;
+    }
+
     @HostListener('document:click', ['$event'])
     protected onDocClick = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
-        const link = target.closest('.vp-link') as HTMLAnchorElement | null;
-        if (!link) return;
 
-        const id = link.dataset['voiceId'];
-        if (!id) return;
+        // Handle voice popup links
+        const voiceLink = target.closest('.vp-link') as HTMLElement | null;
+        if (voiceLink) {
+            const id = voiceLink.dataset['voiceId'];
+            if (id) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.router.navigate(['/voices', id]);
+                return;
+            }
+        }
 
-        e.preventDefault();
-        e.stopPropagation();
-
-        this.router.navigate(['/voices', id]);
+        // Handle journey popup links
+        const journeyLink = target.closest('.jp-link') as HTMLElement | null;
+        if (journeyLink) {
+            const id = journeyLink.dataset['journeyId'];
+            if (id) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.router.navigate(['/request', id]);
+                return;
+            }
+        }
     };
 
     setCity(c: string | null) {
@@ -262,13 +374,22 @@ export class MapComponent implements AfterViewInit {
     clearFilters() {
         this.queryCity.set(null);
         this.queryCredit.set(null);
+        this.queryLayer.set('all');
+    }
+
+    setLayer(layer: 'all' | 'voices' | 'journeys') {
+        this.queryLayer.set(layer);
     }
 
     // === Helpers ===
-    private makeDotIcon(kind: 'city' | 'voice'): Leaflet.DivIcon {
-        const bg = kind === 'city' ? '#3b82f6' : '#22c55e';
-        const border = kind === 'city' ? '#1d4ed8' : '#15803d';
-        const html = `<div class="lv-dot" style="--bg:${bg};--bd:${border}"></div>`;
+    private makeDotIcon(kind: 'city' | 'voice' | 'journey'): Leaflet.DivIcon {
+        const colors: Record<string, { bg: string; bd: string }> = {
+            city: { bg: '#3b82f6', bd: '#1d4ed8' },
+            voice: { bg: '#22c55e', bd: '#15803d' },
+            journey: { bg: '#8b5cf6', bd: '#6d28d9' },
+        };
+        const c = colors[kind] || colors['voice'];
+        const html = `<div class="lv-dot" style="--bg:${c.bg};--bd:${c.bd}"></div>`;
         return this.L.divIcon({
             className: 'lv-dot-wrap',
             html,
