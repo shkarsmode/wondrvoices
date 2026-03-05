@@ -25,13 +25,33 @@
                     <span>{{ getTimeAgo(req.createdAt) }}</span>
                 </div>
                 @if (req.hospital) {
-                <a class="hospital-link" href="javascript:void(0)">
-                    <span class="material-symbols-outlined">apartment</span>
-                    {{ req.hospital }}
-                </a>
+                <div class="hospital-diagnosis-row">
+                    <a class="hospital-link" href="javascript:void(0)">
+                        <span class="material-symbols-outlined">apartment</span>
+                        {{ req.hospital }}
+                    </a>
+                </div>
                 }
                 <div class="diagnosis-badge">{{ req.diagnosis }}</div>
                 <p class="additional-note">{{ req.additionalNote }}</p>
+                
+                @if (getJourneyStageLabel(req) || getRelationshipLabel(req)) {
+                <div class="journey-info-block">
+                    @if (getJourneyStageLabel(req)) {
+                    <div class="journey-info-item">
+                        <span class="journey-info-label">Where in the Journey:</span>
+                        <span class="journey-info-value">{{ getJourneyStageLabel(req) }}</span>
+                    </div>
+                    }
+                    @if (getRelationshipLabel(req)) {
+                    <div class="journey-info-item">
+                        <span class="journey-info-label">Relationship:</span>
+                        <span class="journey-info-value">{{ getRelationshipLabel(req) }}</span>
+                    </div>
+                    }
+                </div>
+                }
+
                 <div class="comfort-block">
                     <div class="comfort-label">What brings comfort:</div>
                     <div class="comfort-tags">
@@ -61,7 +81,8 @@
         </div>
     </div>
 
-    <!-- Keep the Hope Flowing Banner -->
+    <!-- Keep the Hope Flowing Banner - Hidden -->
+    <!--
     <a class="keep-hope-banner" href="#FUNTHRZKBWU">
         <div class="banner-content">
             <div class="icon-wrap">
@@ -74,11 +95,11 @@
         </div>
         <span class="material-symbols-outlined chevron">chevron_right</span>
     </a>
+    -->
 
     <!-- Support Their Journey Section -->
     <div class="support-journey-section">
-        <h3 class="section-title">Show your support</h3>
-        <p class="section-subtitle">Choose how you'd like to send encouragement</p>
+        <h3 class="section-title">Choose how you'd like to send support</h3>
         <div class="support-buttons">
             <button type="button" class="btn-support-option" (click)="openMailModal('text')">
                 <div class="support-option-icon">
@@ -86,7 +107,7 @@
                 </div>
                 <div class="support-option-text">
                     <strong>Type a Message</strong>
-                    <span>Share a memory, a story, or a note of appreciation</span>
+                    <span>Share a memory, a story, or a note</span>
                 </div>
             </button>
             <button type="button" class="btn-support-option" (click)="openMailModal('image')">
@@ -95,7 +116,7 @@
                 </div>
                 <div class="support-option-text">
                     <strong>Upload a Creation</strong>
-                    <span>Share a photo of a handwritten note, drawing, or handmade gift</span>
+                    <span>Share a photo of a handwritten note, a poem, a drawing, or handmade art.</span>
                 </div>
             </button>
         </div>
@@ -219,7 +240,7 @@
                 <!-- Image-first flow: upload first, then optional note -->
                 <div class="form-group">
                     <label>Upload your creation <span class="required">*</span></label>
-                    <p class="upload-hint">Share a photo of a handwritten note, a poem, a drawing, or a handmade gift.</p>
+                    <p class="upload-hint">Share a photo of a handwritten note, a poem, a drawing, or handmade art.</p>
                     <div class="upload-area">
                         @if (uploadedMediaUrl()) {
                         <div class="uploaded-preview">
@@ -248,7 +269,7 @@
                     <div class="textarea-wrapper">
                         <textarea
                             rows="3"
-                            placeholder="Add a short note about your creation..."
+                            [placeholder]="'A short note to ' + getDisplayName()"
                             name="message"
                             [(ngModel)]="messageText"></textarea>
                     </div>
@@ -266,6 +287,8 @@
                     </div>
                 </div>
 
+                <!-- Attach an image hidden -->
+                <!--
                 <div class="form-group">
                     <label>Attach an image <span class="optional">(optional)</span></label>
                     <div class="upload-area">
@@ -290,6 +313,7 @@
                         }
                     </div>
                 </div>
+                -->
                 }
 
                 <div class="form-divider">

@@ -7,6 +7,9 @@ export interface ISupportRequest {
     city?: string;
     state?: string;
     diagnosis: string;
+    situation?: string;
+    whoNeedsSupport?: string;
+    caregiverRelationship?: string;
     journeyStage: string;
     hospital?: string;
     isAnonymous: boolean;

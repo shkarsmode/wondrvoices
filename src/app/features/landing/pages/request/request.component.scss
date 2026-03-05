@@ -126,6 +126,10 @@
                 }
             }
 
+            .hospital-diagnosis-row {
+                display: block;
+            }
+
             .diagnosis-badge {
                 display: inline-block;
                 margin-top: 12px;
@@ -142,6 +146,29 @@
                 color: #444;
                 font-size: 15px;
                 line-height: 1.6;
+            }
+
+            .journey-info-block {
+                margin-top: 14px;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+
+                .journey-info-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 13px;
+
+                    .journey-info-label {
+                        color: #666;
+                        font-weight: 600;
+                    }
+
+                    .journey-info-value {
+                        color: #444;
+                    }
+                }
             }
 
             .comfort-block {

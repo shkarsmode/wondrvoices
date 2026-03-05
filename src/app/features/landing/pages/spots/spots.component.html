@@ -1,205 +1,178 @@
-<section class="wondrspot-hero">
-    <div class="wondrspot-content">
-        <div class="text">
-            <h1 [style.viewTransitionName]="'title'">What’s a WondrSpot?</h1>
-            <p>
-                It’s a simple way to share the spirit of your space with someone navigating cancer. 
-                <br /><br />
-                Whether having post cards on the counter or lending your space to creativity, there are many ways to get involved. 
-            </p>
-            <a href="spots#wondrspot"><button class="button primary wondrspot-btn" >Become a WondrSpot</button></a>
-        </div>
-        <div class="image">
-            <img src="assets/img/spots/banner-3.webp" alt="WondrSpot Banner" />
-            <img src="assets/img/spots/banner-2.webp" alt="WondrSpot Banner" />
-            <img src="assets/img/spots/banner-1.webp" alt="WondrSpot Banner" />
-        </div>
-    </div>
-</section>
-
-<section class="wondrspot-description">
-    <h2>💛 Why It Matters</h2>
-    <p>
-        Most people don’t expect to face cancer. And when they do, many are met with silence not because others don’t
-        care, but because they don’t know what to say.
-    </p>
-    <p>
-        WondrSpots offer a simple but tangible way to respond. By putting out blank cards, they invite people to pause
-        and create something meaningful: a message of care, a drawing, a few kind words.
-    </p>
-    <p>
-        These cards become voices that might otherwise go unspoken. Each WondrSpot carries the unique spirit of its
-        setting, a reminder that kindness can come from anywhere, and that we’re all connected.
-    </p>
-    <p>
-        For some spaces, it’s a quiet corner of compassion. Others turn it into a shared moment of creativity and
-        connection. Either way, it becomes the part of your space that outlives a visit.
-    </p>
-    <a href="spots#wondrspot" class="wondrspot-link">Join as a Wondrspot →</a>
-
-    <h2>🌍 Who Can Be a WondrSpot?</h2>
-    <p>Any place where people gather, pause, or connect. Our growing community includes:</p>
-    <ul>
-        <li>☕ Coffee shops & bakeries</li>
-        <li>📚 Bookstores & libraries</li>
-        <li>🎨 Art studios & creative spaces</li>
-        <li>🧓 Senior centers & care homes</li>
-        <li>🏨 Hotels & spas</li>
-        <li>🐶 Pet boutiques & doggy daycares</li>
-        <li>🍷 Bars & tasting rooms</li>
-        <li>🛍️ Boutiques & community pop-ups</li>
-    </ul>
-    <p>Your space already nurtures community, let’s add one more beautiful layer.</p>
-</section>
-
-<section class="wondrspot-description wondrspot-postcards">
-    <div>
-        <h2>Start with 50 free postcards, on us!</h2>
-        <p>Love being a WondrSpot? We’ll happily send more.</p>
-        <p><strong>Want to add your logo to custom postcards?</strong></p>
-        <p>
-            We offer an option to include your logo directly on the cards, turning each message into a small but lasting
-            symbol of your community’s care. Your tax-deductible donation ensures these messages of hope reach those who
-            need them most. Adding your logo honors the space where these connections begin, celebrating the voices shared
-            because of you.
+﻿<!-- Hero Section -->
+<section class="partners-hero">
+    <div class="hero-content">
+        <h1 [style.viewTransitionName]="'title'">Partner With Us to Spread Hope</h1>
+        <p class="hero-subtitle">
+            Whether you're a healthcare facility supporting patients or an organization
+            looking to give back, Wondvoices connects your community with meaningful
+            moments of encouragement.
         </p>
-        <a href="/spots#spots_form" class="wondrspot-link">Claim Your Postcard Kit →</a>
+        <p class="hero-note">
+            Join hospitals, schools, businesses, and community groups already making a difference
+            in the lives of those facing cancer and serious illness.
+        </p>
+        <a href="spots#partner-form">
+            <button class="button primary cta-btn">Become a Partner &nbsp;&rarr;</button>
+        </a>
     </div>
-    <div>
-        <img src="assets/img/spots/banner-group.webp" alt="Banner">
+
+    <div class="org-type-chips">
+        <span class="chip"><span class="material-symbols-outlined">local_hospital</span> Healthcare Facility</span>
+        <span class="chip"><span class="material-symbols-outlined">school</span> School / University</span>
+        <span class="chip"><span class="material-symbols-outlined">apartment</span> Corporation / Business</span>
+        <span class="chip"><span class="material-symbols-outlined">volunteer_activism</span> Nonprofit / Foundation</span>
+        <span class="chip"><span class="material-symbols-outlined">groups</span> Community Organization</span>
+        <span class="chip"><span class="material-symbols-outlined">church</span> Faith-Based Organization</span>
     </div>
 </section>
 
-<section class="wondrspot-description" id="spots_form">
-    <h2>📦 Join our Growing Community</h2>
+<!-- Two Ways to Partner -->
+<section class="two-ways">
+    <h2>Two Ways to Partner</h2>
+    <div class="ways-cards">
+        <div class="way-card">
+            <div class="way-icon receiving">
+                <span class="material-symbols-outlined">favorite</span>
+            </div>
+            <h3>Receiving Partners</h3>
+            <p>Healthcare facilities that connect patients with messages of hope and encouragement.</p>
+            <ul>
+                <li><span class="material-symbols-outlined">local_hospital</span> Hospitals &amp; Medical Centers</li>
+                <li><span class="material-symbols-outlined">science</span> Oncology &amp; Infusion Centers</li>
+                <li><span class="material-symbols-outlined">child_care</span> Pediatric Healthcare</li>
+                <li><span class="material-symbols-outlined">spa</span> Hospice &amp; Palliative Care</li>
+            </ul>
+        </div>
+        <div class="way-card">
+            <div class="way-icon sending">
+                <span class="material-symbols-outlined">star</span>
+            </div>
+            <h3>Sending Partners</h3>
+            <p>Organizations that mobilize their communities to send messages of support and kindness.</p>
+            <ul>
+                <li><span class="material-symbols-outlined">school</span> Schools &amp; Universities</li>
+                <li><span class="material-symbols-outlined">apartment</span> Corporations &amp; Businesses</li>
+                <li><span class="material-symbols-outlined">groups</span> Community Organizations</li>
+                <li><span class="material-symbols-outlined">church</span> Faith-Based Groups</li>
+            </ul>
+        </div>
+    </div>
 </section>
 
-<section class="wondrspot-form" id="wondrspot">
+<!-- How It Works -->
+<section class="how-it-works">
+    <h2>How It Works</h2>
+    <p class="how-subtitle">Getting started is <u>simple</u>. We handle the technology so you can focus on what matters most: your community.</p>
+
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>You Sign Up</h4>
+                <p>Fill out the form below and we'll reach out within 1-2 business days. We'll learn about your organization, the people you serve, and how Wondvoices can best support your mission.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Connect Your Community</h4>
+                <p><strong>Receiving partners:</strong> Help patients request personalized messages of encouragement. <strong>Sending partners:</strong> Mobilize your members to create and send heartfelt support.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Make an Impact Together</h4>
+                <p>Whether receiving or sending, your organization becomes part of a network spreading hope. Track your community's impact and celebrate the connections you've helped create.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Get Started Form -->
+<section class="get-started" id="partner-form">
+    <h2>Get Started</h2>
+    <p class="form-subtitle">Tell us about your organization and we'll reach out to help you get set up.</p>
+
     @if (!submitted()) {
-        <h3>Become a WondrSpot?</h3>
         <form
             [formGroup]="form"
             (ngSubmit)="submit()"
-            class="form"
+            class="partner-form"
             autocomplete="on">
-            @for (f of fields; track f.key) {
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <input
-                            [id]="f.key"
-                            [formControlName]="f.key"
-                            [attr.name]="f.key"
-                            [type]="f.type"
-                            [attr.autocomplete]="f.autocomplete"
-                            placeholder=" " />
-                        <label
-                            [class.focused]="form.get(f.key)?.value"
-                            [for]="f.key">
-                            {{ f.label }}
-                        </label>
-                    </div>
-                </div>
-            }
 
-            <!-- Optional partner logo -->
             <div class="form-group">
-                <div
-                    *ngIf="true"
-                    id="logo-dropzone"
-                    class="input-wrapper file dropzone"
-                    [class.is-dragover]="isDragOver()"
-                    (dragover)="onDragOver($event)"
-                    (dragleave)="onDragLeave($event)"
-                    (drop)="onDropLogo($event)">
-            
-                    <!-- Preview or placeholder -->
-                    <div *ngIf="logoPreviewUrl(); else logoPlaceholder" class="preview">
-                        <img
-                            id="logo-preview"
-                            [src]="logoPreviewUrl()!"
-                            alt="Selected logo preview" />
-                    </div>
-            
-                    <ng-template #logoPlaceholder>
-                        <div class="placeholder">
-                            <span class="icon" aria-hidden="true">🖼️</span>
-                            <span class="hint">PNG or JPEG, up to 5 MB</span>
-                        </div>
-                    </ng-template>
-            
-                    <!-- Hidden file input, triggered by label or button -->
-                    <input
-                        id="logo"
-                        #logoInput
-                        type="file"
-                        (change)="onLogoSelected($event)"
-                        name="logo"
-                        accept=".webp,.jpg,.jpeg,image/png,image/jpeg" />
-            
-                    <label
-                        [class.focused]="form.get('logoFileName')?.value"
-                        for="logo">
-                        {{ form.get('logoFileName')?.value || 'Upload your logo (optional)' }}
-                    </label>
-            
-                    <!-- Quick actions -->
-                    <div *ngIf="form.get('logoFileName')?.value" class="actions">
-                        <button
-                            type="button"
-                            class="button sm"
-                            (click)="triggerFileDialog(logoInput)">
-                            Change
-                        </button>
-            
-                        <button
-                            type="button"
-                            class="button sm ghost"
-                            (click)="clearLogo(logoInput)">
-                            Remove
-                        </button>
-                    </div>
-            
-                    <!-- Validation / error -->
-                    <small *ngIf="logoError()" class="file-note error">
-                        {{ logoError() }}
-                    </small>
-                </div>
+                <label for="contactPerson">Your Name <span class="required">*</span></label>
+                <input
+                    id="contactPerson"
+                    formControlName="contactPerson"
+                    type="text"
+                    autocomplete="name"
+                    placeholder="Jane Smith" />
+            </div>
+
+            <div class="form-group">
+                <label for="organizationName">Organization Name <span class="required">*</span></label>
+                <input
+                    id="organizationName"
+                    formControlName="organizationName"
+                    type="text"
+                    autocomplete="organization"
+                    placeholder="Sunrise Community Center" />
+            </div>
+
+            <div class="form-group">
+                <label for="organizationType">Organization Type <span class="required">*</span></label>
+                <select
+                    id="organizationType"
+                    formControlName="organizationType">
+                    <option value="" disabled>Select your organization type</option>
+                    @for (orgType of organizationTypes; track orgType.id) {
+                        <option [value]="orgType.id">{{ orgType.label }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input
+                    id="email"
+                    formControlName="email"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="jane@organization.org" />
+            </div>
+
+            <div class="form-group">
+                <label for="message">How can we help? <span class="optional">(Optional)</span></label>
+                <textarea
+                    id="message"
+                    formControlName="message"
+                    rows="4"
+                    placeholder="Share your goals, the community you serve, or any questions you have..."></textarea>
             </div>
 
             <button
-                class="button primary wondrspot-btn"
+                class="button primary submit-btn"
                 type="submit"
-                [disabled]="(form.invalid && form.touched && form.dirty) || isLoading()">
+                [disabled]="(form.invalid && form.touched) || isLoading()">
                 @if (!isLoading()) {
-                    Join
+                    Get Started
                 } @else {
                     <span class="loader"></span>
                 }
             </button>
         </form>
     } @else {
-        <h3>Thank you for joining as a WondrSpot!</h3>
-        <p>
-            Your space is now part of a growing community that spreads kindness and hope. We’ll be in touch soon with your
-            free postcard kit and more details on how to get involved.
-        </p>
-
-        @if (pdfUrl()) {
+        <div class="success-message">
+            <div class="success-icon">
+                <span class="material-symbols-outlined">check_circle</span>
+            </div>
+            <h3>Thank you for your interest!</h3>
             <p>
-                View your confirmation PDF:
-                <a
-                    [href]="pdfUrl()"
-                    target="_blank"
-                    rel="noopener">
-                    open in a new tab
-                </a>
-                or
-                <a
-                    [href]="pdfUrl()"
-                    download="WondrSpot_Thank_You.pdf">
-                    download
-                </a>.
+                We've received your information and will reach out within 1-2 business days to discuss
+                how we can partner together to spread hope and kindness in your community.
             </p>
-        }
+        </div>
     }
 </section>

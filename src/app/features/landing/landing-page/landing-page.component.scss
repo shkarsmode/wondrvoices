@@ -174,6 +174,11 @@
     }
 }
 
+// Mobile donate button in header (next to burger)
+.mobile-donate-btn {
+    display: none; // hidden on desktop
+}
+
 .burger {
     display: none;
     flex-direction: column;
@@ -217,6 +222,21 @@
 @media (max-width: 1200px) {
     .burger {
         display: flex;
+    }
+
+    // Show mobile donate button in header
+    .mobile-donate-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 36px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .top-bar {
@@ -459,7 +479,7 @@
     gap: 3px;
     width: 100px;
     height: 44px;
-    background-color: #A9D957 !important;
+    background-color: var(--btn-primary-bg) !important;
 
     div {
         position: absolute !important;

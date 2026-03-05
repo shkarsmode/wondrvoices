@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 import { CreateSupportMessageDto, IRequestDetail, ISupportMessage } from '../../../../shared/types/request-support.types';
 
 declare const google: any;
@@ -68,7 +69,8 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         private route: ActivatedRoute,
         private requestsService: RequestsService,
         private likesService: LikesService,
-        private ngZone: NgZone
+        private ngZone: NgZone,
+        private toastService: ToastService
     ) {}
 
     ngOnInit(): void {
@@ -85,6 +87,61 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         const req = this.request();
         if (!req) return '';
         return req.isAnonymous ? 'Anonymous' : req.firstName || 'Anonymous';
+    }
+
+    getJourneyStageLabel(req: IRequestDetail): string {
+        if (!req.journeyStage) return '';
+        const stageLabels: Record<string, string> = {
+            'just-diagnosed': 'Just diagnosed',
+            'starting-treatment': 'Starting treatment',
+            'in-treatment': 'In the middle of treatment',
+            'waiting-results': 'Scan day / Waiting for results',
+            'difficult-news': 'Got difficult news',
+            'cancer-returned': 'Cancer returned',
+            'celebration': 'Celebrating a milestone',
+            'in-hospital': 'In the hospital',
+            'recovery': 'Recovery at home',
+            'survivorship': 'Long-term survivorship',
+            'recently-lost': 'Recently lost someone',
+            'early-days': 'Navigating the early days',
+            'new-normal': 'Finding a new normal',
+            'anniversary': 'Anniversary or milestone approaching',
+            'holidays': 'Missing them during holidays',
+            'honoring-memory': 'Honoring their memory',
+            'hospice-start': 'Recently started hospice care',
+            'quality-time': 'Focusing on comfort and quality time',
+            'finding-peace': 'Finding peace and meaning',
+            'celebrating-life': 'Celebrating life and memories',
+            'supporting-family': 'Supporting family through this time',
+            'other': 'Other'
+        };
+        return stageLabels[req.journeyStage] || req.journeyStage;
+    }
+
+    getRelationshipLabel(req: IRequestDetail): string {
+        if (!req.caregiverRelationship) return '';
+        const relationshipLabels: Record<string, string> = {
+            'spouse': 'Lost my spouse / partner',
+            'parent': 'Lost my parent',
+            'sibling': 'Lost my sibling',
+            'friend': 'Lost my friend',
+            'other-family': 'Lost other family member',
+            'other': 'Other'
+        };
+        // For grief/loss, show "Lost my..." prefix
+        if (req.situation === 'loss') {
+            return relationshipLabels[req.caregiverRelationship] || req.caregiverRelationship;
+        }
+        // For caregivers, show relationship
+        const caregiverLabels: Record<string, string> = {
+            'spouse': 'My spouse / partner',
+            'parent': 'My parent',
+            'sibling': 'My sibling',
+            'friend': 'My friend',
+            'other-family': 'Other family member',
+            'other': 'Other'
+        };
+        return caregiverLabels[req.caregiverRelationship] || req.caregiverRelationship;
     }
 
     getTimeAgo(date: Date | string): string {
@@ -167,6 +224,17 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         const input = event.target as HTMLInputElement;
         const file = input.files?.[0];
         if (!file) return;
+
+        // Validate file size (4MB max)
+        const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+        if (file.size > MAX_FILE_SIZE) {
+            this.toastService.error(
+                'File too large',
+                'Please upload an image smaller than 4MB.'
+            );
+            input.value = '';
+            return;
+        }
 
         this.uploadingMedia.set(true);
         this.requestsService.uploadSupportImage(file).subscribe({
