@@ -616,6 +616,25 @@
                 }
             }
 
+            .message-tags {
+                margin-top: 10px;
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+
+                .msg-tag {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 4px 10px;
+                    background: #f6f7fb;
+                    color: #24313f;
+                    border: 1px solid #e8eef6;
+                    border-radius: 999px;
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+            }
+
             .message-footer {
                 margin-top: 14px;
                 display: flex;

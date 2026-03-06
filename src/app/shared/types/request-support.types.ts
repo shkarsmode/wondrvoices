@@ -34,6 +34,7 @@ export interface ISupportMessage {
     message?: string;
     mediaUrl?: string;
     thumbnailUrl?: string;
+    tags?: string[];
     createdAt: Date;
     likes?: number;
     location?: string;

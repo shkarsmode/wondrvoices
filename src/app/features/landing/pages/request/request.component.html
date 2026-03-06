@@ -161,9 +161,9 @@
                         @if (msg.message) {
                         <p class="message-text">"{{ msg.message }}"</p>
                         }
-                        @if (msg.type !== 'text' && msg.thumbnailUrl) {
-                        <div class="message-media" (click)="openImageLightbox(msg.thumbnailUrl)">
-                            <img [src]="msg.thumbnailUrl" [alt]="getMessageTypeLabel(msg)" loading="lazy">
+                        @if (msg.type !== 'text' && msg.mediaUrl) {
+                        <div class="message-media" (click)="openImageLightbox(msg.mediaUrl)">
+                            <img [src]="msg.mediaUrl" [alt]="getMessageTypeLabel(msg)" loading="lazy">
                             <div class="media-expand-hint">
                                 <span class="material-symbols-outlined">zoom_in</span>
                             </div>
@@ -175,6 +175,14 @@
                         </div>
                         }
                     </div>
+
+                    @if (msg.tags && msg.tags.length > 0) {
+                    <div class="message-tags">
+                        @for (tag of msg.tags; track tag) {
+                        <span class="msg-tag">{{ tag }}</span>
+                        }
+                    </div>
+                    }
 
                     <!-- <div class="message-footer">
                         <div class="stat hearts">
