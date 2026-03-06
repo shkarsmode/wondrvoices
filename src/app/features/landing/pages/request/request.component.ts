@@ -225,28 +225,108 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         const file = input.files?.[0];
         if (!file) return;
 
-        // Validate file size (4MB max)
         const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
-        if (file.size > MAX_FILE_SIZE) {
-            this.toastService.error(
-                'File too large',
-                'Please upload an image smaller than 4MB.'
-            );
-            input.value = '';
+
+        if (file.size <= MAX_FILE_SIZE) {
+            // File is within limits — upload directly
+            this.uploadFile(file);
             return;
         }
 
+        // File is too large — attempt client-side compression
+        this.toastService.info(
+            'Processing image',
+            'Your image is being processed...',
+            3500
+        );
+        this.compressImage(file, MAX_FILE_SIZE).then(compressed => {
+            if (!compressed) {
+                this.toastService.error(
+                    'Image too large',
+                    'We couldn\'t compress this image below 4 MB. Please use a smaller image or lower resolution.'
+                );
+                input.value = '';
+                return;
+            }
+            this.uploadFile(compressed, true);
+        });
+    }
+
+    private uploadFile(file: File | Blob, showCompressedToast: boolean = false): void {
         this.uploadingMedia.set(true);
-        this.requestsService.uploadSupportImage(file).subscribe({
+        const fileToUpload = file instanceof File ? file : new File([file], 'compressed.jpg', { type: 'image/jpeg' });
+        this.requestsService.uploadSupportImage(fileToUpload).subscribe({
             next: (response) => {
                 const url = response?.imageUrl?.secure_url || response?.imageUrl?.url || response?.imageUrl?.secureUrl;
                 this.uploadedMediaUrl.set(url || null);
                 this.uploadingMedia.set(false);
+
+                if (showCompressedToast) {
+                    this.toastService.success(
+                        'Image compressed',
+                        'Your image was successfully resized and is ready to upload.'
+                    );
+                }
             },
             error: () => {
                 this.uploadingMedia.set(false);
-                alert('Failed to upload file');
+                this.toastService.error('Upload failed', 'Failed to upload the image. Please try again.');
             }
+        });
+    }
+
+    private compressImage(file: File, maxSize: number): Promise<File | null> {
+        return new Promise((resolve) => {
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                img.onload = () => {
+                    // Try progressively smaller sizes and quality levels
+                    const attempts: { scale: number; quality: number }[] = [
+                        { scale: 1.0, quality: 0.8 },
+                        { scale: 1.0, quality: 0.6 },
+                        { scale: 0.8, quality: 0.7 },
+                        { scale: 0.8, quality: 0.5 },
+                        { scale: 0.6, quality: 0.6 },
+                        { scale: 0.5, quality: 0.5 },
+                        { scale: 0.4, quality: 0.5 },
+                    ];
+
+                    const tryCompress = (index: number) => {
+                        if (index >= attempts.length) {
+                            resolve(null); // Could not compress below maxSize
+                            return;
+                        }
+
+                        const { scale, quality } = attempts[index];
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.round(img.width * scale);
+                        canvas.height = Math.round(img.height * scale);
+                        const ctx = canvas.getContext('2d')!;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                tryCompress(index + 1);
+                                return;
+                            }
+                            if (blob.size <= maxSize) {
+                                const compressed = new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+                                resolve(compressed);
+                            } else {
+                                tryCompress(index + 1);
+                            }
+                        }, 'image/jpeg', quality);
+                    };
+
+                    tryCompress(0);
+                };
+                img.onerror = () => resolve(null);
+                img.src = e.target?.result as string;
+            };
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(file);
         });
     }
 

@@ -4,7 +4,7 @@
 
 :host {
     display: block;
-    background: #f0ebe6;
+    background: #faf8f6;
     color: #3a2e28;
     font-family: 'Inter', sans-serif;
 }
@@ -12,38 +12,42 @@
 /* ---------- Hero ---------- */
 .partners-hero {
     text-align: center;
-    padding: 4rem 1.5rem 3rem;
-    background: #f8f5f2;
+    padding: 5rem 1.5rem 3rem;
+    background: #fff;
 
     .hero-content {
-        max-width: 720px;
+        max-width: 700px;
         margin: 0 auto;
 
         h1 {
-            font-size: 2.6rem;
-            font-weight: 600;
-            color: #5c4033;
-            margin-bottom: 1rem;
-            line-height: 1.2;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #2c1e16;
+            margin-bottom: 1.25rem;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            font-family: 'Playfair Display', Georgia, serif;
         }
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
-        line-height: 1.6;
+        font-size: 1.05rem;
+        line-height: 1.7;
         color: #5e4e45;
         margin-bottom: 0.75rem;
     }
 
     .hero-note {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: #8a7a71;
-        margin-bottom: 2rem;
+        margin-bottom: 2.25rem;
+        line-height: 1.6;
     }
 
     .cta-btn {
-        font-size: 1.05rem;
-        padding: 0.85rem 2rem;
+        font-size: 1rem;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
     }
 }
 
@@ -52,7 +56,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.6rem;
+    gap: 0.5rem;
     max-width: 780px;
     margin: 2rem auto 0;
 }
@@ -62,7 +66,7 @@
     align-items: center;
     gap: 0.35rem;
     padding: 0.45rem 1rem;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 500;
     color: #5c4033;
     background: #fff;
@@ -71,23 +75,167 @@
     white-space: nowrap;
 
     .material-symbols-outlined {
-        font-size: 18px;
-        color: #cf866e;
+        font-size: 17px;
+        color: #a08878;
+    }
+}
+
+/* ---------- Partner Logos ---------- */
+.partner-logos {
+    padding: 2.5rem 0 1.5rem;
+    overflow: hidden;
+    background: #fff;
+
+    .logo-label {
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #b09b8e;
+        margin: 0 0 1rem;
+    }
+}
+
+.marquee {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 2rem;
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 80px;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    &::before {
+        left: 0;
+        background: linear-gradient(to right, #fff, transparent);
+    }
+
+    &::after {
+        right: 0;
+        background: linear-gradient(to left, #fff, transparent);
+    }
+}
+
+.marquee-inner {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    width: max-content;
+    animation: scroll-left 30s linear infinite;
+
+    .reverse & {
+        animation: scroll-right 35s linear infinite;
+    }
+
+    img {
+        height: 32px;
+        opacity: 0.45;
+        filter: grayscale(100%);
+        transition: opacity 0.3s;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+}
+
+@keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+}
+
+/* ---------- Why Partner (Benefit Cards) ---------- */
+.why-partner {
+    padding: 3.5rem 1.5rem 2rem;
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.benefit-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.benefit-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border: 1px solid #ece6e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+
+    h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #2c1e16;
+        margin-bottom: 0.75rem;
+    }
+
+    > p {
+        font-size: 0.88rem;
+        color: #6e5b51;
+        line-height: 1.6;
+        margin: 0;
+    }
+}
+
+.benefit-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+
+    .material-symbols-outlined {
+        font-size: 22px;
+    }
+
+    &.heart {
+        background: #fbe9e5;
+        .material-symbols-outlined { color: #cf866e; }
+    }
+
+    &.clock {
+        background: #e6f0e9;
+        .material-symbols-outlined { color: #5a9a6e; }
+    }
+
+    &.star {
+        background: #e8f0f8;
+        .material-symbols-outlined { color: #6a9ac5; }
     }
 }
 
 /* ---------- Two Ways ---------- */
 .two-ways {
-    padding: 4rem 1.5rem;
+    padding: 3.5rem 1.5rem;
     max-width: 960px;
     margin: 0 auto;
 
     h2 {
         text-align: center;
         font-size: 2rem;
-        font-weight: 600;
-        color: #5c4033;
+        font-weight: 700;
+        color: #2c1e16;
         margin-bottom: 2rem;
+        font-family: 'Playfair Display', Georgia, serif;
     }
 }
 
@@ -99,21 +247,22 @@
 
 .way-card {
     background: #fff;
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 2rem 1.75rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #ece6e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 
     h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #5c4033;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2c1e16;
         margin-bottom: 0.5rem;
     }
 
     > p {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: #6e5b51;
-        line-height: 1.5;
+        line-height: 1.55;
         margin-bottom: 1.25rem;
     }
 
@@ -130,12 +279,13 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.92rem;
-        color: #5e4e45;
+        font-size: 0.9rem;
+        color: #4a3d35;
+        font-weight: 500;
 
         .material-symbols-outlined {
-            font-size: 20px;
-            color: #cf866e;
+            font-size: 18px;
+            color: #8a7a71;
         }
     }
 }
@@ -150,38 +300,41 @@
     margin-bottom: 1rem;
 
     .material-symbols-outlined {
-        font-size: 24px;
-        color: #fff;
+        font-size: 22px;
     }
 
     &.receiving {
-        background: #cf866e;
+        background: #fbe9e5;
+        .material-symbols-outlined { color: #cf866e; }
     }
 
     &.sending {
-        background: #7aae8e;
+        background: #e8f0f8;
+        .material-symbols-outlined { color: #6a9ac5; }
     }
 }
 
 /* ---------- How It Works ---------- */
 .how-it-works {
-    padding: 4rem 1.5rem;
-    max-width: 780px;
+    padding: 3.5rem 1.5rem 4rem;
+    max-width: 720px;
     margin: 0 auto;
 
     h2 {
         text-align: center;
         font-size: 2rem;
-        font-weight: 600;
-        color: #5c4033;
+        font-weight: 700;
+        color: #2c1e16;
         margin-bottom: 0.5rem;
+        font-family: 'Playfair Display', Georgia, serif;
     }
 
     .how-subtitle {
         text-align: center;
-        font-size: 1rem;
+        font-size: 0.95rem;
         color: #6e5b51;
         margin-bottom: 2.5rem;
+        line-height: 1.6;
     }
 }
 
@@ -204,7 +357,7 @@
     border-radius: 50%;
     background: #cf866e;
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -213,36 +366,37 @@
 
 .step-content {
     h4 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #5c4033;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #2c1e16;
         margin-bottom: 0.3rem;
     }
 
     p {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         color: #6e5b51;
-        line-height: 1.55;
+        line-height: 1.6;
     }
 }
 
 /* ---------- Get Started Form ---------- */
 .get-started {
     padding: 4rem 1.5rem 5rem;
-    max-width: 600px;
+    max-width: 580px;
     margin: 0 auto;
 
     h2 {
         text-align: center;
         font-size: 2rem;
-        font-weight: 600;
-        color: #5c4033;
+        font-weight: 700;
+        color: #2c1e16;
         margin-bottom: 0.4rem;
+        font-family: 'Playfair Display', Georgia, serif;
     }
 
     .form-subtitle {
         text-align: center;
-        font-size: 1rem;
+        font-size: 0.95rem;
         color: #6e5b51;
         margin-bottom: 2rem;
     }
@@ -252,6 +406,11 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    background: #fff;
+    border: 1px solid #ece6e0;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .form-group {
@@ -260,9 +419,9 @@
     gap: 0.35rem;
 
     label {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         font-weight: 600;
-        color: #5c4033;
+        color: #3a2e28;
 
         .required {
             color: #cf4a4a;
@@ -280,7 +439,7 @@
     textarea {
         width: 100%;
         padding: 0.7rem 0.85rem;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         font-family: inherit;
         color: #3a2e28;
         background: #fff;
@@ -296,7 +455,7 @@
 
         &:focus {
             border-color: #cf866e;
-            box-shadow: 0 0 0 3px rgba(207, 134, 110, 0.15);
+            box-shadow: 0 0 0 3px rgba(207, 134, 110, 0.12);
         }
     }
 
@@ -324,10 +483,18 @@
 }
 
 .submit-btn {
-    align-self: flex-start;
-    margin-top: 0.5rem;
-    font-size: 1.05rem;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 1rem;
     padding: 0.85rem 2.4rem;
+    border-radius: 8px;
+}
+
+.response-note {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #8a7a71;
+    margin-top: 0.25rem;
 }
 
 /* ---------- Success Message ---------- */
@@ -343,7 +510,7 @@
     h3 {
         font-size: 1.4rem;
         font-weight: 600;
-        color: #5c4033;
+        color: #2c1e16;
         margin: 0.75rem 0 0.5rem;
     }
 
@@ -376,14 +543,14 @@
 /* ---------- Responsive ---------- */
 @media screen and (max-width: 768px) {
     .partners-hero {
-        padding: 2.5rem 1rem 2rem;
+        padding: 3rem 1rem 2rem;
 
         .hero-content h1 {
             font-size: 1.8rem;
         }
 
         .hero-subtitle {
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
     }
 
@@ -396,6 +563,10 @@
         padding: 0.35rem 0.75rem;
     }
 
+    .benefit-cards {
+        grid-template-columns: 1fr;
+    }
+
     .ways-cards {
         grid-template-columns: 1fr;
     }
@@ -406,7 +577,7 @@
         font-size: 1.6rem;
     }
 
-    .submit-btn {
-        width: 100%;
+    .partner-form {
+        padding: 1.25rem;
     }
 }

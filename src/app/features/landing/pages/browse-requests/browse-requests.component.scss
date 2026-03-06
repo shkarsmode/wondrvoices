@@ -203,6 +203,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             text-decoration: none;
             color: inherit;
+            min-height: 285px;
             transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 
             &:hover {
