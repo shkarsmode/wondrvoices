@@ -65,7 +65,7 @@ export class RequestSupportComponent implements AfterViewChecked {
         { id: 'parent', label: 'My parent' },
         { id: 'sibling', label: 'My sibling' },
         { id: 'friend', label: 'My friend' },
-        { id: 'other-family', label: 'Other family member' },
+        { id: 'other-family', label: 'My child' },
         { id: 'other', label: 'Other' }
     ];
     caregiverRelationship = signal<string>('');

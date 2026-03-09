@@ -138,7 +138,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
             'parent': 'My parent',
             'sibling': 'My sibling',
             'friend': 'My friend',
-            'other-family': 'Other family member',
+            'other-family': 'My child',
             'other': 'Other'
         };
         return caregiverLabels[req.caregiverRelationship] || req.caregiverRelationship;
