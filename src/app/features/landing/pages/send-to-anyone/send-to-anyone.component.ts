@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { first } from 'rxjs';
+import { VoicesService } from '../../../../shared/services/voices.service';
+import { IVoice } from '../../../../shared/types/voices';
 
 @Component({
     selector: 'app-send-to-anyone',
@@ -10,48 +13,62 @@ import { RouterLink } from '@angular/router';
     styleUrl: './send-to-anyone.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SendToAnyoneComponent {
-    messageFormOpen = signal(true);
-    
-    matchedMessages = [
-        {
-            id: 1,
-            image: 'assets/img/matched/flowers.jpg',
-            quote: '"Stay strong! You\'re braver than you believe."',
-            from: 'Jennifer M.',
-            matchedWith: 'Sarah',
-            supporting: 'Cancer Treatment',
-            location: 'Portland, OR',
-            matchedAgo: '2 days ago'
-        },
-        {
-            id: 2,
-            image: 'assets/img/matched/watercolor.jpg',
-            quote: '"Sending you healing vibes and peaceful thoughts."',
-            from: 'Anonymous',
-            matchedWith: 'Anonymous',
-            supporting: 'Loss & Grief',
-            location: 'Boston, MA',
-            matchedAgo: '1 week ago'
-        },
-        {
-            id: 3,
-            image: 'assets/img/matched/sunset.jpg',
-            quote: '"Your smile lights up the world. Keep shining!"',
-            from: 'Michael R.',
-            matchedWith: 'Emma',
-            supporting: 'Mental Health',
-            location: 'Austin, TX',
-            matchedAgo: '3 days ago'
-        }
-    ];
+export class SendToAnyoneComponent implements OnInit {
+    private readonly voicesService = inject(VoicesService);
 
-    toggleMessageForm(): void {
-        this.messageFormOpen.update(v => !v);
+    readonly wallLoading = signal(false);
+    readonly wallCards = signal<IVoice[]>([]);
+    readonly addressCopied = signal(false);
+
+    readonly visibleWallCards = computed(() =>
+        this.wallCards()
+            .filter((card) => !!card.img)
+            .slice(0, 6)
+    );
+
+    ngOnInit(): void {
+        this.loadWallCards();
     }
 
     copyAddress(): void {
         const address = 'WondrVoices\nPO Box 40056\nSt. Pete, FL 33743';
-        navigator.clipboard.writeText(address);
+
+        if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+            return;
+        }
+
+        navigator.clipboard.writeText(address).then(() => {
+            this.addressCopied.set(true);
+            setTimeout(() => this.addressCopied.set(false), 1800);
+        }).catch(() => {
+            this.addressCopied.set(false);
+        });
+    }
+
+    getVoiceDisplayName(card: IVoice): string {
+        return card.firstName?.trim() || card.creditTo?.trim() || 'Community Member';
+    }
+
+    getVoiceLocation(card: IVoice): string {
+        return card.location?.trim() || 'From the WondrVoices community';
+    }
+
+    private loadWallCards(): void {
+        this.wallLoading.set(true);
+
+        this.voicesService.getApprovedVoices(6, {
+            orderBy: 'createdAt',
+            orderDir: 'DESC',
+            page: 1
+        }).pipe(first()).subscribe({
+            next: ({ items }) => {
+                this.wallCards.set(items ?? []);
+                this.wallLoading.set(false);
+            },
+            error: () => {
+                this.wallCards.set([]);
+                this.wallLoading.set(false);
+            }
+        });
     }
 }

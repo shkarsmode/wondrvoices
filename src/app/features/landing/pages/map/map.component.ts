@@ -1,4 +1,3 @@
-// src/app/features/map/map.component.ts
 import { CommonModule } from '@angular/common';
 import {
     AfterViewInit,
@@ -13,13 +12,12 @@ import {
     viewChild
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { first } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { RequestsService } from 'src/app/shared/services/requests.service';
 import { VoicesService } from 'src/app/shared/services/voices.service';
 import { ISupportRequest } from 'src/app/shared/types/request-support.types';
 import { IVoice } from 'src/app/shared/types/voices';
 
-// ❗ Типы подтянем через import type, чтобы не тянуть рантайм-модуль на сервере
 import type * as Leaflet from 'leaflet';
 
 @Component({
@@ -29,382 +27,301 @@ import type * as Leaflet from 'leaflet';
     styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements AfterViewInit {
-    private voicesSvc = inject(VoicesService);
-    private requestsSvc = inject(RequestsService);
-    private router = inject(Router);
-    private destroyRef = inject(DestroyRef);
+    private readonly voicesService = inject(VoicesService);
+    private readonly requestsService = inject(RequestsService);
+    private readonly router = inject(Router);
+    private readonly destroyRef = inject(DestroyRef);
 
-    // === Signals ===
-    voices = signal<IVoice[]>([]);
-    journeys = signal<ISupportRequest[]>([]);
-    queryCity = signal<string | null>(null);
-    queryCredit = signal<string | null>(null);
-    queryLayer = signal<'all' | 'voices' | 'journeys'>('all');
-    mapReady = signal(false);
+    readonly journeys = signal<ISupportRequest[]>([]);
+    readonly supportCards = signal<IVoice[]>([]);
+    readonly activeLayer = signal<'journeys' | 'support'>('journeys');
+    readonly mapReady = signal(false);
 
-    distinctCities = computed(() => {
-        const set = new Set<string>();
-        for (const v of this.voices()) {
-            const c = [v.location].filter(Boolean).join(', ');
-            if (c) set.add(c);
-        }
-        for (const j of this.journeys()) {
-            if (j.location) set.add(j.location);
-        }
-        return Array.from(set).sort((a, b) => a.localeCompare(b));
+    readonly journeyMarkers = computed(() =>
+        this.journeys().filter((journey) => journey.lat != null && journey.lng != null)
+    );
+
+    readonly supportMarkers = computed(() =>
+        this.supportCards().filter((card) => card.lat != null && card.lng != null)
+    );
+
+    readonly journeyCount = computed(() => this.journeyMarkers().length);
+    readonly supportCount = computed(() => this.supportMarkers().length);
+
+    private readonly markerSync = effect(() => {
+        this.activeLayer();
+        this.journeyMarkers();
+        this.supportMarkers();
+        this.refreshMarkers();
     });
-
-    distinctCredits = computed(() => {
-        const set = new Set<string>();
-        for (const v of this.voices()) {
-            if (v.creditTo) set.add(v.creditTo);
-        }
-        return Array.from(set).sort((a, b) => a.localeCompare(b));
-    });
-
-    filtered = computed(() => {
-        const byCity = this.queryCity();
-        const byCred = this.queryCredit();
-        return this.voices().filter((v) => {
-            const cityLabel = [v.location].filter(Boolean).join(', ');
-            const okCity = !byCity || cityLabel === byCity;
-            const okCred = !byCred || v.creditTo === byCred;
-            return okCity && okCred;
-        });
-    });
-
-    filteredJourneys = computed(() => {
-        const byCity = this.queryCity();
-        return this.journeys().filter((j) => {
-            const okCity = !byCity || j.location === byCity;
-            return okCity;
-        });
-    });
-
-    totalCount = computed(() => {
-        const layer = this.queryLayer();
-        if (layer === 'voices') return this.filtered().length;
-        if (layer === 'journeys') return this.filteredJourneys().length;
-        return this.filtered().length + this.filteredJourneys().length;
-    });
-
-    public effect = effect(() => { this.voices(); this.journeys(); this.queryLayer(); this.refreshLayers() });
 
     private L!: typeof Leaflet;
-
     private map?: Leaflet.Map;
-    private baseLayer?: Leaflet.TileLayer;
-    private clusters?: any;
+    private markersLayer?: Leaflet.LayerGroup;
 
-    mapEl = viewChild.required<ElementRef<HTMLDivElement>>('map');
+    readonly mapEl = viewChild.required<ElementRef<HTMLDivElement>>('map');
 
-    async ngAfterViewInit() {
-        if (typeof window === 'undefined') return;
-
-        const leafletModule = await import('leaflet');
-        this.L = resolveLeafletNamespace(leafletModule);
-        (window as any).L = this.L;
-
-        // @ts-ignore
-        await import('leaflet.markercluster/dist/leaflet.markercluster.js');
-
-
-        this.initMap();
-        await Promise.all([this.loadVoices(), this.loadJourneys()]);
-        this.mapReady.set(true);
-        this.refreshLayers();
-        this.invalidateSoon();
-
-        window.addEventListener('resize', () => this.map?.invalidateSize());
-    }
-
-    private initMap() {
-        this.map = this.L.map(this.mapEl().nativeElement, {
-            preferCanvas: true,
-            zoomControl: true,
-        }).setView([50.4501, 30.5234], 6);
-
-        this.baseLayer = this.L.tileLayer(
-            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-            { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }
-        ).addTo(this.map);
-
-        this.clusters = (this.L as any).markerClusterGroup({
-            showCoverageOnHover: false,
-            maxClusterRadius: 45,
-            spiderfyOnEveryZoom: false,
-            zoomToBoundsOnClick: true,
-            disableClusteringAtZoom: 20,
-        });
-
-        this.map.addLayer(this.clusters);
-    }
-
-    private async loadVoices() {
+    async ngAfterViewInit(): Promise<void> {
         if (typeof window === 'undefined') {
             return;
         }
-    
+
+        const leafletModule = await import('leaflet');
+        this.L = resolveLeafletNamespace(leafletModule);
+
+        this.initMap();
+        await Promise.allSettled([this.loadJourneys(), this.loadSupportCards()]);
+        this.mapReady.set(true);
+        this.refreshMarkers();
+        this.invalidateSoon();
+
+        const onResize = () => this.map?.invalidateSize();
+        window.addEventListener('resize', onResize);
+
+        this.destroyRef.onDestroy(() => {
+            window.removeEventListener('resize', onResize);
+            this.map?.remove();
+        });
+    }
+
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        const target = event.target as HTMLElement;
+
+        const journeyLink = target.closest('[data-journey-id]') as HTMLElement | null;
+        if (journeyLink?.dataset['journeyId']) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.router.navigate(['/request', journeyLink.dataset['journeyId']]);
+            return;
+        }
+
+        const supportLink = target.closest('[data-voice-id]') as HTMLElement | null;
+        if (supportLink?.dataset['voiceId']) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.router.navigate(['/voices', supportLink.dataset['voiceId']]);
+        }
+    }
+
+    setLayer(layer: 'journeys' | 'support'): void {
+        this.activeLayer.set(layer);
+    }
+
+    private initMap(): void {
+        this.map = this.L.map(this.mapEl().nativeElement, {
+            zoomControl: true,
+            scrollWheelZoom: false,
+            attributionControl: true
+        }).setView([28, -22], 2);
+
+        this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(this.map);
+
+        this.markersLayer = this.L.layerGroup().addTo(this.map);
+    }
+
+    private async loadJourneys(): Promise<void> {
         const limit = 100;
         let page = 1;
-        const allVoices: IVoice[] = [];
-    
-        console.log('[Map] loading voices...');
-    
-        while (true) {
-            const response = await this.voicesSvc
-                .getApprovedVoices(limit, { page })
-                .pipe(first())
-                .toPromise();
+        const loaded: ISupportRequest[] = [];
 
-            const items = response?.items;
-            if (!items) {
-                break;
-            }
-    
-            console.log('[Map] page', page, 'items:', items.length);
-    
+        while (true) {
+            const response = await firstValueFrom(this.requestsService.getBrowseRequests({ limit, page }));
+            const items = response?.items ?? [];
+
             if (!items.length) {
                 break;
             }
-    
-            allVoices.push(...items);
-    
-            // если вернулось меньше limit — значит это последняя страница
+
+            loaded.push(...items);
+
             if (items.length < limit) {
                 break;
             }
-    
-            page++;
+
+            page += 1;
         }
-    
-        console.log('[Map] total voices loaded:', allVoices.length);
-    
-        this.voices.set(allVoices);
+
+        this.journeys.set(loaded);
     }
 
-    private async loadJourneys() {
-        if (typeof window === 'undefined') return;
-
+    private async loadSupportCards(): Promise<void> {
         const limit = 100;
         let page = 1;
-        const allJourneys: ISupportRequest[] = [];
-
-        console.log('[Map] loading journeys...');
+        const loaded: IVoice[] = [];
 
         while (true) {
-            const response = await this.requestsSvc
-                .getBrowseRequests({ limit, page })
-                .pipe(first())
-                .toPromise();
+            const response = await firstValueFrom(this.voicesService.getApprovedVoices(limit, {
+                orderBy: 'createdAt',
+                orderDir: 'DESC',
+                page
+            }));
+            const items = response?.items ?? [];
 
-            const items = response?.items;
-            if (!items || !items.length) break;
+            if (!items.length) {
+                break;
+            }
 
-            console.log('[Map] journeys page', page, 'items:', items.length);
-            allJourneys.push(...items);
+            loaded.push(...items);
 
-            if (items.length < limit) break;
-            page++;
+            if (items.length < limit) {
+                break;
+            }
+
+            page += 1;
         }
 
-        console.log('[Map] total journeys loaded:', allJourneys.length);
-        this.journeys.set(allJourneys);
+        this.supportCards.set(loaded);
     }
 
-    private refreshLayers() {
-        if (!this.map || !this.clusters || typeof window === 'undefined') return;
-
-        this.clusters.clearLayers();
-
-        const layer = this.queryLayer();
-        let totalWithCoords = 0;
-
-        // Add voice markers
-        if (layer === 'all' || layer === 'voices') {
-            const current = this.filtered();
-
-            for (const v of current) {
-                if (v.lat == null || v.lng == null) continue;
-                totalWithCoords++;
-
-                const m = this.L
-                    .marker([Number(v.lat), Number(v.lng)], { icon: this.makeDotIcon('voice') })
-                    .bindPopup(this.renderVoicePopup(v), {
-                        maxWidth: 320,
-                        minWidth: 240,
-                        className: 'voice-popup',
-                    });
-
-                m.on('popupopen', (ev: Leaflet.LeafletEvent) => {
-                    const popup = (ev as any).popup as Leaflet.Popup;
-                    const el = popup.getElement();
-                    if (!el) return;
-                    el.querySelectorAll('img').forEach((img: HTMLImageElement) => {
-                        if (img.complete) return;
-                        img.addEventListener('load', () => popup.update(), { once: true });
-                        img.addEventListener('error', () => { img.style.display = 'none'; popup.update(); }, { once: true });
-                    });
-                });
-
-                this.clusters.addLayer(m);
-            }
+    private refreshMarkers(): void {
+        if (!this.map || !this.markersLayer) {
+            return;
         }
 
-        // Add journey markers
-        if (layer === 'all' || layer === 'journeys') {
-            const currentJourneys = this.filteredJourneys();
+        this.markersLayer.clearLayers();
 
-            for (const j of currentJourneys) {
-                if (j.lat == null || j.lng == null) continue;
-                totalWithCoords++;
+        const isJourneyLayer = this.activeLayer() === 'journeys';
+        const items = isJourneyLayer ? this.journeyMarkers() : this.supportMarkers();
+        const bounds = this.L.latLngBounds([]);
 
-                const m = this.L
-                    .marker([Number(j.lat), Number(j.lng)], { icon: this.makeDotIcon('journey') })
-                    .bindPopup(this.renderJourneyPopup(j), {
-                        maxWidth: 320,
-                        minWidth: 240,
-                        className: 'journey-popup',
-                    });
+        items.forEach((item) => {
+            const lat = Number(item.lat);
+            const lng = Number(item.lng);
 
-                this.clusters.addLayer(m);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                return;
             }
-        }
 
-        console.log('map markers:', totalWithCoords, '(layer:', layer, ')');
+            const position: [number, number] = [lat, lng];
+            const marker = this.L.marker(position, {
+                icon: this.makeMarkerIcon(isJourneyLayer ? 'journey' : 'support')
+            }).bindPopup(
+                isJourneyLayer
+                    ? this.renderJourneyPopup(item as ISupportRequest)
+                    : this.renderSupportPopup(item as IVoice),
+                {
+                    maxWidth: 286,
+                    minWidth: 240,
+                    className: 'support-map-popup'
+                }
+            );
 
-        const b = this.clusters.getBounds();
-        if (b.isValid()) {
-            this.map.fitBounds(b.pad(0.2), { animate: true });
+            this.markersLayer?.addLayer(marker);
+            bounds.extend(position);
+        });
+
+        if (items.length > 0 && bounds.isValid()) {
+            this.map.fitBounds(bounds.pad(0.26), { animate: true, maxZoom: 4 });
+        } else {
+            this.map.setView([28, -22], 2);
         }
 
         this.invalidateSoon();
     }
 
-    private invalidateSoon() {
+    private invalidateSoon(): void {
         queueMicrotask(() => this.map?.invalidateSize());
         requestAnimationFrame(() => this.map?.invalidateSize());
         setTimeout(() => this.map?.invalidateSize(), 0);
     }
 
-    private renderVoicePopup(v: IVoice): string {
-        const loc = [v.location].filter(Boolean).join(', ');
-        const who = v.creditTo ? `<div><small>Credit to: ${this.escapeHtml(v.creditTo)}</small></div>` : '';
-
-        const msg = v.note
-            ? `<div class="msg">${this.escapeHtml(v.note)}</div>`
-            : '';
-
-        const img = v.img
-            ? `<div class="vp-img">
-                    <img src="${this.escapeHtml(v.img)}" alt="" width="250" height="250" loading="lazy" style="view-transition-name: img-voice-${v.id};"/>
-               </div>`
-            : '';
-
-        return `
-            <div class="voice-popup">
-                <div><strong class="vp-link" data-voice-id="${v.id}">Voice #${v.id}</strong></div>
-                ${loc ? `<div>${this.escapeHtml(loc)}</div>` : ''}
-                ${who}
-                ${msg}
-                ${img}
-                <button class="vp-link" data-voice-id="${v.id}">Show</button>
-            </div>
+    private makeMarkerIcon(kind: 'journey' | 'support'): Leaflet.DivIcon {
+        const journeyIcon = `
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 6.5h10a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-6.2L7 19.8V16.5A3 3 0 0 1 4 13.5v-4a3 3 0 0 1 3-3Z" fill="currentColor"></path>
+            </svg>
         `;
-    }
-
-    private renderJourneyPopup(j: ISupportRequest): string {
-        const name = j.isAnonymous ? 'Anonymous' : (j.firstName || 'Someone');
-        const loc = j.location ? `<div>${this.escapeHtml(j.location)}</div>` : '';
-        const diagnosis = j.diagnosis ? `<div><small>${this.escapeHtml(j.diagnosis)}</small></div>` : '';
-        const stage = j.journeyStage ? `<div><small>${this.escapeHtml(j.journeyStage)}</small></div>` : '';
-        const hearts = j.hearts ? `<span>❤️ ${j.hearts}</span>` : '';
-        const comments = j.comments ? `<span>💬 ${j.comments}</span>` : '';
-        const meta = (hearts || comments) ? `<div class="jp-meta">${hearts} ${comments}</div>` : '';
-
-        return `
-            <div class="journey-popup">
-                <div><strong class="jp-link" data-journey-id="${j.id}">${this.escapeHtml(name)}'s Journey</strong></div>
-                ${loc}
-                ${diagnosis}
-                ${stage}
-                ${meta}
-                <button class="jp-link" data-journey-id="${j.id}">View Journey</button>
-            </div>
+        const supportIcon = `
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12.5 18 7l-5.5 13-1.8-5-5-1.8Z" fill="currentColor"></path>
+            </svg>
         `;
-    }
 
-    @HostListener('document:click', ['$event'])
-    protected onDocClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-
-        // Handle voice popup links
-        const voiceLink = target.closest('.vp-link') as HTMLElement | null;
-        if (voiceLink) {
-            const id = voiceLink.dataset['voiceId'];
-            if (id) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.router.navigate(['/voices', id]);
-                return;
-            }
-        }
-
-        // Handle journey popup links
-        const journeyLink = target.closest('.jp-link') as HTMLElement | null;
-        if (journeyLink) {
-            const id = journeyLink.dataset['journeyId'];
-            if (id) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.router.navigate(['/request', id]);
-                return;
-            }
-        }
-    };
-
-    setCity(c: string | null) {
-        this.queryCity.set(c);
-    }
-
-    setCredit(c: string | null) {
-        this.queryCredit.set(c);
-    }
-
-    clearFilters() {
-        this.queryCity.set(null);
-        this.queryCredit.set(null);
-        this.queryLayer.set('all');
-    }
-
-    setLayer(layer: 'all' | 'voices' | 'journeys') {
-        this.queryLayer.set(layer);
-    }
-
-    // === Helpers ===
-    private makeDotIcon(kind: 'city' | 'voice' | 'journey'): Leaflet.DivIcon {
-        const colors: Record<string, { bg: string; bd: string }> = {
-            city: { bg: '#3b82f6', bd: '#1d4ed8' },
-            voice: { bg: '#22c55e', bd: '#15803d' },
-            journey: { bg: '#8b5cf6', bd: '#6d28d9' },
-        };
-        const c = colors[kind] || colors['voice'];
-        const html = `<div class="lv-dot" style="--bg:${c.bg};--bd:${c.bd}"></div>`;
         return this.L.divIcon({
-            className: 'lv-dot-wrap',
-            html,
-            iconSize: [18, 18],
-            iconAnchor: [9, 9],
-            popupAnchor: [0, -10],
+            className: `support-marker support-marker--${kind}`,
+            html: `
+                <div class="support-marker__shell">
+                    ${kind === 'journey' ? journeyIcon : supportIcon}
+                </div>
+            `,
+            iconSize: [42, 42],
+            iconAnchor: [21, 21],
+            popupAnchor: [0, -18]
         });
     }
 
-    private escapeHtml(s: string): string {
-        return s.replace(/[&<>"]+/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    private renderJourneyPopup(journey: ISupportRequest): string {
+        const name = journey.isAnonymous ? 'Anonymous' : (journey.firstName || 'Someone');
+        const message = this.escapeHtml(
+            this.truncate(journey.additionalNote || journey.diagnosis || 'A journey in need of support.', 104)
+        );
+        const notes = journey.supportCount ?? journey.comments ?? 0;
+
+        return `
+            <div class="map-popup-card">
+                <span class="popup-pill popup-pill--journey">Journey</span>
+                <h3 class="popup-title">${this.escapeHtml(name)}</h3>
+                <div class="popup-location">
+                    <span class="popup-location__icon">&#9679;</span>
+                    <span>${this.escapeHtml(journey.location)}</span>
+                </div>
+                <p class="popup-copy">${message}</p>
+                <div class="popup-meta">${notes} note${notes === 1 ? '' : 's'} received</div>
+                <button class="popup-link popup-link--journey" data-journey-id="${this.escapeHtml(journey.id)}">
+                    View Journey
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+        `;
+    }
+
+    private renderSupportPopup(card: IVoice): string {
+        const title = this.getSupportTitle(card);
+        const message = this.escapeHtml(
+            this.truncate(card.note || 'A message of hope shared through the WondrVoices feed.', 104)
+        );
+
+        return `
+            <div class="map-popup-card">
+                <span class="popup-pill popup-pill--support">Support</span>
+                <h3 class="popup-title">${this.escapeHtml(title)}</h3>
+                <div class="popup-location">
+                    <span class="popup-location__icon">&#9679;</span>
+                    <span>${this.escapeHtml(card.location || 'WondrVoices community')}</span>
+                </div>
+                <p class="popup-copy">${message}</p>
+                <div class="popup-meta">Shared through our public gallery</div>
+                <button class="popup-link popup-link--support" data-voice-id="${card.id}">
+                    View Card
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+        `;
+    }
+
+    private getSupportTitle(card: IVoice): string {
+        return card.firstName?.trim() || card.creditTo?.trim() || 'Community Support';
+    }
+
+    private truncate(value: string, maxLength: number): string {
+        return value.length > maxLength ? `${value.slice(0, maxLength - 1).trimEnd()}...` : value;
+    }
+
+    private escapeHtml(value: string): string {
+        return value.replace(/[&<>"]/g, (char) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;'
+        }[char] as string));
     }
 }
 
 function resolveLeafletNamespace(mod: unknown): any {
-    const m = mod as any;
-    return m?.default ?? m; // some builds export under default
+    const value = mod as any;
+    return value?.default ?? value;
 }

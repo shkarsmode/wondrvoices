@@ -61,7 +61,6 @@ export class BrowseRequestsComponent implements OnInit {
 
     sortedRequests = computed(() => {
         const list = [...this.requests()];
-        console.log(list);
 
         switch (this.selectedSort()) {
             case 'newest':

@@ -4,170 +4,206 @@
         Back to Journeys
     </a>
 
-    <div class="hero">
-        <div class="icon-wrap">
-            <span class="material-symbols-outlined">favorite</span>
-        </div>
-        <h1>Send Hope to Anyone</h1>
-        <p class="subtitle">
-            Not sure who to support? Send a general message of hope,<br>
-            encouragement, or joy. We'll match it with someone who needs it most.
-        </p>
-    </div>
+    <section class="intro-card">
+        <div class="intro-card__header">
+            <div class="intro-card__avatar">
+                <span class="material-symbols-outlined">public</span>
+            </div>
 
-    <div class="support-card">
-        <h2>How to send your support</h2>
+            <div class="intro-card__identity">
+                <h1>Anyone Who Needs It</h1>
 
-        <!-- Send a message online -->
-        <div class="option-block" [class.open]="messageFormOpen()">
-            <button type="button" class="option-header" (click)="toggleMessageForm()">
-                <div class="option-icon">
-                    <span class="material-symbols-outlined">chat_bubble</span>
+                <div class="intro-card__meta">
+                    <span>
+                        <span class="material-symbols-outlined">location_on</span>
+                        Everywhere
+                    </span>
+                    <span>
+                        <span class="material-symbols-outlined">schedule</span>
+                        Always open
+                    </span>
                 </div>
-                <div class="option-text">
-                    <div class="option-title">Send a message online</div>
-                    <div class="option-desc">Write a message of hope that will be shared in our community feed.</div>
-                </div>
-                <span class="material-symbols-outlined caret">{{ messageFormOpen() ? 'expand_less' : 'expand_more' }}</span>
-            </button>
-
-            <div class="option-body" *ngIf="messageFormOpen()">
-                <form class="message-form">
-                    <textarea rows="4" placeholder="Write your message of hope, encouragement, or joy..."></textarea>
-                    <div class="inline-actions">
-                        <button type="button" class="chip">
-                            <span class="material-symbols-outlined">videocam</span>
-                            Record video
-                        </button>
-                        <button type="button" class="chip">
-                            <span class="material-symbols-outlined">upload</span>
-                            Upload file
-                        </button>
-                    </div>
-                    <input type="text" placeholder="Your name (optional)">
-                    <input type="text" placeholder="Where is this message from? (e.g., Seattle, WA)">
-                    <button type="submit" class="btn-send">
-                        <span class="material-symbols-outlined">send</span>
-                        Send to Feed
-                    </button>
-                    <p class="form-note">Messages are reviewed before appearing in the public feed.</p>
-                </form>
             </div>
         </div>
 
-        <div class="divider"><span>or</span></div>
+        <div class="intro-card__tags">
+            <span class="intro-tag">Where It All Began</span>
+            <span class="intro-tag intro-tag--success">400+ Cards Received</span>
+        </div>
 
-        <!-- Mail your card or letter -->
-        <div class="option-block">
-            <div class="option-header static">
-                <div class="option-icon">
+        <p class="intro-card__lead">
+            Not sure who to support? Send a message of hope to someone who needs it. We'll match it with a person going through a tough time.
+        </p>
+        <p>
+            Strangers from across the country have been sending handmade greeting cards, letters, and messages of hope to people going through cancer. That spirit of generosity sparked a movement, and WondrVoices now also supports personalized journeys for individuals and families.
+        </p>
+
+        <div class="intro-card__stats">
+            <div class="stat-chip">
+                <span class="material-symbols-outlined">mail</span>
+                <strong>400+</strong>
+                <span>cards &amp; letters</span>
+            </div>
+            <div class="stat-chip">
+                <span class="material-symbols-outlined">location_on</span>
+                <strong>30+</strong>
+                <span>states</span>
+            </div>
+            <div class="stat-chip">
+                <span class="material-symbols-outlined">favorite</span>
+                <strong>100+</strong>
+                <span>recipients</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="origin-story">
+        <div class="origin-story__icon">
+            <span class="material-symbols-outlined">auto_awesome</span>
+        </div>
+        <div class="origin-story__content">
+            <h2>How It All Started</h2>
+            <p>
+                Before personalized journeys existed, every card was addressed to "anyone who needs it." Volunteers, families, and students mailed in handwritten notes, watercolor paintings, and letters full of hope. That collection of love became the foundation of everything you see today.
+            </p>
+        </div>
+    </section>
+
+    <section class="kindness-wall">
+        <h2>A Growing Wall of Kindness</h2>
+        <p class="section-copy">
+            Every card here was made by someone who wanted to brighten a stranger's day. Browse a sample of the submissions that started it all.
+        </p>
+
+        <div class="wall-grid" *ngIf="visibleWallCards().length > 0; else wallState">
+            <a class="wall-card" *ngFor="let card of visibleWallCards()" [routerLink]="['/voices', card.id]">
+                <div class="wall-card__image">
+                    <img [src]="card.img" [alt]="getVoiceDisplayName(card) + ' card'" loading="lazy">
+                </div>
+                <div class="wall-card__footer">
+                    <span class="wall-card__name">{{ getVoiceDisplayName(card) }}</span>
+                    <span class="wall-card__location">
+                        <span class="material-symbols-outlined">location_on</span>
+                        {{ getVoiceLocation(card) }}
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <ng-template #wallState>
+            <div class="wall-empty">
+                <p *ngIf="wallLoading()">Loading gallery cards...</p>
+                <p *ngIf="!wallLoading()">Gallery cards will appear here shortly.</p>
+            </div>
+        </ng-template>
+
+        <a routerLink="/gallery" class="outline-button">
+            View Full Gallery
+            <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+    </section>
+
+    <section class="voice-actions">
+        <h2>Add Your Voice</h2>
+        <p class="section-copy">
+            Continue the tradition. Send a message, mail a card, or share your support with someone who needs it.
+        </p>
+
+        <div class="actions-panel">
+            <div class="action-card">
+                <div class="action-card__icon">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                </div>
+                <div class="action-card__body">
+                    <h3>Send a message online</h3>
+                    <p>Write a message of hope that will be shared in our community feed.</p>
+                    <a routerLink="/submit" class="action-link">
+                        Share in the Feed
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel-divider"><span>or</span></div>
+
+            <div class="action-card">
+                <div class="action-card__icon">
                     <span class="material-symbols-outlined">mail</span>
                 </div>
-                <div class="option-text">
-                    <div class="option-title">Mail your card or letter</div>
-                    <div class="option-desc">Send handwritten cards, drawings, or letters to:</div>
+                <div class="action-card__body">
+                    <h3>Mail your card or letter</h3>
+                    <p>Send handwritten cards, drawings, or letters to:</p>
+
                     <div class="address-block">
                         <span class="org">WondrVoices</span>
                         <span>PO Box 40056</span>
                         <span>St. Pete, FL 33743</span>
                     </div>
+
+                    <button type="button" class="copy-button" (click)="copyAddress()">
+                        <span class="material-symbols-outlined">{{ addressCopied() ? 'check' : 'content_copy' }}</span>
+                        {{ addressCopied() ? 'Address copied' : 'Copy address' }}
+                    </button>
                 </div>
-                <button type="button" class="copy-btn" (click)="copyAddress()">
-                    <span class="material-symbols-outlined">content_copy</span>
-                </button>
             </div>
-        </div>
 
-        <div class="divider"><span>or</span></div>
+            <div class="panel-divider"><span>or</span></div>
 
-        <!-- Upload via mobile app -->
-        <div class="option-block">
-            <div class="option-header static">
-                <div class="option-icon">
+            <div class="action-card">
+                <div class="action-card__icon">
                     <span class="material-symbols-outlined">smartphone</span>
                 </div>
-                <div class="option-text">
-                    <div class="option-title">Upload via mobile app</div>
-                    <div class="option-desc">Download the Wondrvoices app to submit your support digitally. Take a photo of your handwritten card or create one in the app.</div>
-                    <div class="app-buttons">
-                        <a href="#" class="app-btn">
+                <div class="action-card__body">
+                    <h3>Upload via mobile app</h3>
+                    <p>Download the WondrVoices app to submit your support digitally. Take a photo of your handwritten card or create one in the app.</p>
+
+                    <div class="store-links">
+                        <a href="https://apps.apple.com/us/app/wondrvoices-share-kindness/id6748359471" target="_blank" rel="noopener noreferrer">
                             <span class="material-symbols-outlined">apple</span>
                             App Store
                         </a>
-                        <a href="#" class="app-btn">
+                        <a href="https://play.google.com/store/apps/details?id=com.fwollo.wondrdrop" target="_blank" rel="noopener noreferrer">
                             <span class="material-symbols-outlined">play_arrow</span>
                             Google Play
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="divider"><span>or</span></div>
+            <div class="panel-divider"><span>or</span></div>
 
-        <!-- Spread the Word -->
-        <div class="option-block">
-            <div class="option-header static">
-                <div class="option-icon share">
+            <div class="action-card">
+                <div class="action-card__icon">
                     <span class="material-symbols-outlined">share</span>
                 </div>
-                <div class="option-text">
-                    <div class="option-title">Spread the Word</div>
-                    <div class="option-desc">Help others discover WondrVoices and join the movement of spreading hope.</div>
-                    <div class="social-icons">
-                        <a href="#" class="social-btn"><span>𝕏</span></a>
-                        <a href="#" class="social-btn"><span class="material-symbols-outlined">facebook</span></a>
-                        <a href="#" class="social-btn"><span class="material-symbols-outlined">photo_camera</span></a>
-                        <a href="#" class="social-btn"><span>♪</span></a>
-                        <a href="#" class="social-btn"><span class="material-symbols-outlined">work</span></a>
+                <div class="action-card__body">
+                    <h3>Spread the Word</h3>
+                    <p>Help others discover WondrVoices and join the movement of spreading hope.</p>
+
+                    <div class="social-links">
+                        <a href="https://x.com/wondrvoices" target="_blank" rel="noopener noreferrer" aria-label="WondrVoices on X">
+                            <img src="assets/svg/x.svg" alt="X">
+                        </a>
+                        <a href="https://www.facebook.com/WondrVoices" target="_blank" rel="noopener noreferrer" aria-label="WondrVoices on Facebook">
+                            <img src="assets/svg/fb.svg" alt="Facebook">
+                        </a>
+                        <a href="https://www.instagram.com/wondrvoices" target="_blank" rel="noopener noreferrer" aria-label="WondrVoices on Instagram">
+                            <img src="assets/svg/inst.svg" alt="Instagram">
+                        </a>
+                        <a href="https://www.linkedin.com/company/wondrvoices" target="_blank" rel="noopener noreferrer" aria-label="WondrVoices on LinkedIn">
+                            <img src="assets/svg/linkedin.svg" alt="LinkedIn">
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="footer-note">
-        <p>Your submission will be added to our gallery and matched with someone who needs encouragement.</p>
-        <a routerLink="/browse-requests" class="btn-outline">Or choose a specific journey to support</a>
-    </div>
-
-    <section class="matched-section">
-        <h2>Messages That Found Their Match</h2>
-        <p class="subtitle">See how general messages of hope have been matched with people who needed them most.</p>
-
-        <div class="matched-grid">
-            <div class="matched-card" *ngFor="let msg of matchedMessages">
-                <div class="matched-image">
-                    <img [src]="msg.image" [alt]="msg.quote" loading="lazy">
-                </div>
-                <div class="matched-quote">
-                    <span class="quote-icon">"</span>
-                    {{ msg.quote }}
-                </div>
-                <div class="matched-meta">
-                    <div class="meta-row">
-                        <span class="label">From:</span>
-                        <span class="value">{{ msg.from }}</span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="label">Matched with:</span>
-                        <span class="value">{{ msg.matchedWith }}</span>
-                    </div>
-                    <div class="meta-row">
-                        <span class="label">Supporting:</span>
-                        <span class="value link">{{ msg.supporting }}</span>
-                    </div>
-                </div>
-                <div class="matched-footer">
-                    <span class="location">
-                        <span class="material-symbols-outlined">location_on</span>
-                        {{ msg.location }}
-                    </span>
-                    <span class="time">Matched {{ msg.matchedAgo }}</span>
-                </div>
-            </div>
-        </div>
-
-        <a routerLink="/gallery" class="btn-outline">View Full Feed</a>
+    <section class="journeys-footer">
+        <p>Want to support a specific person or family? Browse personalized journeys.</p>
+        <a routerLink="/browse-requests" class="outline-button outline-button--journeys">
+            Browse Personalized Journeys
+            <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
     </section>
 </div>
