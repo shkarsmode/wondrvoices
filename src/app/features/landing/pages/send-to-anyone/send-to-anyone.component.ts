@@ -46,7 +46,7 @@ export class SendToAnyoneComponent implements OnInit {
     }
 
     getVoiceDisplayName(card: IVoice): string {
-        return card.firstName?.trim() || card.creditTo?.trim() || 'Community Member';
+        return card.creditTo?.trim() || card.firstName?.trim() || 'Community Member';
     }
 
     getVoiceLocation(card: IVoice): string {

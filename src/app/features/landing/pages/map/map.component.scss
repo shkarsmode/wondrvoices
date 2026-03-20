@@ -11,7 +11,7 @@
 }
 
 .map-page {
-    max-width: 1440px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 20px 16px 72px;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -23,17 +23,16 @@
 
         h1 {
             margin: 0;
-            font-size: clamp(2.4rem, 5vw, 4.4rem);
-            line-height: 1.04;
-            letter-spacing: -0.04em;
-            color: #16243f;
-            font-family: "Playfair Display", Georgia, serif;
+            font-size: 48px;
+            line-height: 1.1;
+            color: #22222a;
+            font-family: "Lora", Georgia, serif;
         }
 
         p {
             margin: 18px auto 0;
-            color: #44556f;
-            font-size: 17px;
+            color: #505662;
+            font-size: 18px;
             line-height: 1.65;
         }
     }
@@ -59,19 +58,20 @@
         align-items: center;
         gap: 8px;
         border: 0;
-        border-radius: 12px;
+        border-radius: 8px;
         background: transparent;
-        padding: 12px 18px;
+        height: 32px;
+        padding: 0 12px;
         color: #53627b;
-        font-size: 15px;
-        font-weight: 700;
+        font-size: 14px;
+        font-weight: 500;
         cursor: pointer;
         transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 
         &.is-active {
             background: #fff;
-            color: #16243f;
-            box-shadow: 0 3px 12px rgba(22, 36, 63, 0.08);
+            color: #22222a;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
     }
 
@@ -95,18 +95,18 @@
 }
 
 .map-shell {
-    max-width: 1360px;
+    max-width: 1246px;
     margin: 0 auto;
 }
 
 .map-canvas {
     width: 100%;
-    min-height: 460px;
-    height: min(64vh, 560px);
-    border-radius: 24px;
+    min-height: 500px;
+    height: 500px;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #dbe5ef;
-    box-shadow: 0 20px 48px rgba(22, 36, 63, 0.12);
+    border: 1px solid #d4d9e2;
+    box-shadow: 0 1px 3px rgba(163, 173, 194, 0.08), 0 4px 12px rgba(163, 173, 194, 0.06);
     background: #dceff6;
     position: relative;
 
@@ -133,136 +133,100 @@
     }
 
     .leaflet-control-zoom {
-        border: 0;
-        box-shadow: 0 10px 26px rgba(22, 36, 63, 0.14);
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        box-shadow: none;
 
         a {
-            width: 38px;
-            height: 38px;
-            line-height: 38px;
-            color: #16243f;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            color: #22222a;
         }
     }
 
-    .support-marker {
+    .marker-single-custom,
+    .marker-cluster-custom {
         background: transparent;
         border: 0;
+    }
 
-        &__shell {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            border: 3px solid rgba(255, 255, 255, 0.92);
-            box-shadow: 0 10px 26px rgba(22, 36, 63, 0.18);
-        }
+    .single-marker-request,
+    .single-marker-submission {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        border: 2px solid #fff;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
 
         svg {
             width: 18px;
             height: 18px;
             display: block;
         }
+    }
 
-        &--journey .support-marker__shell {
-            background: #4f8fe6;
-        }
+    .single-marker-request {
+        background: #428cd7;
+    }
 
-        &--support .support-marker__shell {
-            background: #62c78a;
+    .single-marker-submission {
+        background: #59c08c;
+    }
+
+    .cluster-icon-request,
+    .cluster-icon-submission {
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: #fff;
+        font-weight: 700;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 6px rgba(34, 34, 42, 0.12), 0 10px 22px rgba(0, 0, 0, 0.18);
+
+        span {
+            line-height: 1;
+            transform: translateY(1px);
         }
     }
 
+    .cluster-icon-request {
+        background: #428cd7;
+    }
+
+    .cluster-icon-submission {
+        background: #59c08c;
+    }
+
+    .cluster-small {
+        width: 45px;
+        height: 45px;
+        font-size: 13px;
+    }
+
+    .cluster-medium {
+        width: 50px;
+        height: 50px;
+        font-size: 14px;
+    }
+
+    .cluster-large {
+        width: 56px;
+        height: 56px;
+        font-size: 15px;
+    }
+
     .support-map-popup .leaflet-popup-content-wrapper {
-        border-radius: 20px;
-        box-shadow: 0 18px 40px rgba(22, 36, 63, 0.16);
+        border-radius: 12px;
+        box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
     }
 
     .support-map-popup .leaflet-popup-content {
         margin: 0;
-    }
-
-    .map-popup-card {
-        padding: 18px;
-        color: #16243f;
-        min-width: 0;
-    }
-
-    .popup-pill {
-        display: inline-flex;
-        align-items: center;
-        padding: 5px 10px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-
-        &--journey {
-            background: #e8f1fe;
-            color: #3c78ca;
-        }
-
-        &--support {
-            background: #eaf7ef;
-            color: #2b8a57;
-        }
-    }
-
-    .popup-title {
-        margin: 12px 0 6px;
-        font-size: 24px;
-        line-height: 1.1;
-        color: #d76f56;
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    .popup-location {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        color: #53627b;
-        font-size: 14px;
-
-        &__icon {
-            font-size: 10px;
-            color: #d76f56;
-        }
-    }
-
-    .popup-copy {
-        margin: 12px 0;
-        color: #2f415f;
-        font-size: 15px;
-        line-height: 1.55;
-    }
-
-    .popup-meta {
-        color: #6f7e96;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
-
-    .popup-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        border: 0;
-        background: transparent;
-        padding: 0;
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-
-        &--journey {
-            color: #d76f56;
-        }
-
-        &--support {
-            color: #2b8a57;
-        }
+        width: auto !important;
     }
 }
 
@@ -294,6 +258,6 @@
     .map-canvas {
         min-height: 360px;
         height: 56vh;
-        border-radius: 18px;
+        border-radius: 12px;
     }
 }
