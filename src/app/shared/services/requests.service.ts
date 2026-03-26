@@ -58,9 +58,21 @@ export class RequestsService {
     }
 
     createRequest(request: CreateSupportRequestDto): Observable<{ requestId: string }> {
-        return this.http.post<{ requestId: string }>(`${this.basePathApi}/${this.path}`, request).pipe(
+        return this.http.post<{ requestId: string }>(
+            `${this.basePathApi}/${this.path}`,
+            this.sanitizeSupportRequestPayload(request),
+        ).pipe(
             catchError((error) => this.handleError(error, 'Creating support request'))
         );
+    }
+
+    private sanitizeSupportRequestPayload(request: CreateSupportRequestDto): CreateSupportRequestDto {
+        const email = request.email?.trim();
+
+        return {
+            ...request,
+            email: email || undefined,
+        };
     }
 
     sendVerificationCode(email: string, requestId?: string): Observable<{ success: boolean; code?: string }> {

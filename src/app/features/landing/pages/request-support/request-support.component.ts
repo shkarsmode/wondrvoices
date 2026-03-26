@@ -507,7 +507,7 @@ export class RequestSupportComponent implements AfterViewChecked {
             caregiverRelationship: this.caregiverRelationship() || undefined,
             journeyStage: this.selectedJourneyStage(),
             contextTags: this.selectedContextTags(),
-            email: this.step4Form.value.email,
+            email: this.step4Form.value.email?.trim() || undefined,
             comfortZones: this.selectedComfortZones(),
             additionalNote: this.step3Form.value.additionalNote || undefined,
             isAnonymous: this.isAnonymous()

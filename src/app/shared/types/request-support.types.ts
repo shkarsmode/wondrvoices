@@ -13,7 +13,7 @@ export interface ISupportRequest {
     journeyStage: string;
     hospital?: string;
     isAnonymous: boolean;
-    email: string;
+    email?: string | null;
     comfortZones: string[];
     additionalNote?: string;
     createdAt: Date;
@@ -68,7 +68,7 @@ export interface CreateSupportRequestDto {
     contextTags?: string[];
     hospital?: string;
     isAnonymous?: boolean;
-    email: string;
+    email?: string;
     comfortZones: string[];
     additionalNote?: string;
 }
