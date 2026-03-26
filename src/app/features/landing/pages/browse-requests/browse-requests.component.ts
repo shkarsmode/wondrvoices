@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, computed, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
@@ -14,9 +14,11 @@ import { FilterCategory, ISupportRequest } from '../../../../shared/types/reques
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrowseRequestsComponent implements OnInit {
+    private readonly platformId = inject(PLATFORM_ID);
+
     FilterCategory = FilterCategory;
     requests = signal<ISupportRequest[]>([]);
-    loading = signal(false);
+    loading = signal(true);
     viewMode = signal<'grid' | 'map'>('grid');
     selectedFilter = signal<FilterCategory>(FilterCategory.All);
     liked = signal<Set<string>>(new Set());
@@ -80,6 +82,11 @@ export class BrowseRequestsComponent implements OnInit {
 
     ngOnInit(): void {
         this.liked.set(new Set(this.likesService.getAllLikes()));
+
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
+        }
+
         this.loadRequests();
     }
 

@@ -157,7 +157,7 @@
 
         </div>
 
-        <div class="empty" *ngIf="sortedRequests().length === 0">
+        <div class="empty" *ngIf="!loading() && sortedRequests().length === 0">
             <p>No journeys match this filter.</p>
             <button type="button" (click)="setFilter(FilterCategory.All)">Show all</button>
         </div>
