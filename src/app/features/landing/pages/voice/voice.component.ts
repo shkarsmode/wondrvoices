@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Inject, OnInit, PLATFORM_ID, Writab
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VoicesService } from 'src/app/shared/services/voices.service';
-import { IVoice } from 'src/app/shared/types/voices';
+import { IVoice, VoiceSourceType } from 'src/app/shared/types/voices';
 
 type SharePlatform = 'twitter' | 'facebook' | 'linkedin';
 type FilterKey = 'tab' | 'location' | 'description' | 'creditTo';
@@ -22,6 +22,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VoiceComponent implements OnInit {
+    public readonly VoiceSourceType = VoiceSourceType;
     private route = inject(ActivatedRoute);
     private title = inject(Title);
     private meta = inject(Meta);
@@ -210,6 +211,10 @@ export class VoiceComponent implements OnInit {
 
     private clamp(value: number, min: number, max: number): number {
         return Math.min(max, Math.max(min, value));
+    }
+
+    public isGenericVoice(card: IVoice | null | undefined): boolean {
+        return card?.sourceType === VoiceSourceType.SupportMessage;
     }
 
 }

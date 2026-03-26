@@ -337,6 +337,14 @@
                     [style]="'--i: 0.02s'"
                     (mouseenter)="mouseEnterCard(card.id)">
                     <div class="card-image-wrap" (click)="openVoicePage(card.id)" >
+                        @if (isGenericVoice(card)) {
+                            <span
+                                class="generic-badge"
+                                title="Generic gallery message"
+                                aria-label="Generic gallery message">
+                                <span class="material-symbols-outlined" aria-hidden="true">scatter_plot</span>
+                            </span>
+                        }
                         <img
                             class="card-image"
                             [src]="card.img"

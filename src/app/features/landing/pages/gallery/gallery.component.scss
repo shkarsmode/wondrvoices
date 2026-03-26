@@ -119,12 +119,37 @@
         }
 
         .card-image-wrap {
+            position: relative;
             display: flex;
             align-items: center;
             overflow: hidden;
             border: 1px solid #C8BFC1;
             border-radius: 10px;
             margin-bottom: 16px;
+        }
+
+        .generic-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: rgba(248, 245, 242, 0.88);
+            border: 1px solid rgba(71, 43, 47, 0.16);
+            color: #7c7476;
+            box-shadow: 0 4px 14px rgba(71, 43, 47, 0.08);
+            backdrop-filter: blur(6px);
+            pointer-events: none;
+
+            .material-symbols-outlined {
+                font-size: 18px;
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            }
         }
 
         .card-image {
@@ -250,6 +275,13 @@
             grid-template-columns: auto;
             padding: 10px;
             padding-top: 2.5rem;
+        }
+
+        .generic-badge {
+            width: 32px !important;
+            height: 32px !important;
+            top: 10px !important;
+            right: 10px !important;
         }
 
         .card-title {

@@ -20,6 +20,15 @@
 
         <div class="content">
             <div class="wrap-category" [style.viewTransitionName]="'img-tag-' + card()!.id">
+                @if (isGenericVoice(card())) {
+                    <span
+                        class="generic-chip"
+                        title="Generic gallery message"
+                        aria-label="Generic gallery message">
+                        <span class="material-symbols-outlined" aria-hidden="true">scatter_plot</span>
+                        <span class="label">Generic</span>
+                    </span>
+                }
                 <span
                     class="category"
                     (click)="goToGalleryWithFilter('location', card()!.location)">

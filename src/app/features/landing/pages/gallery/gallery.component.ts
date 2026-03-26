@@ -5,7 +5,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { catchError, first, of } from 'rxjs';
 import { VoicesService } from 'src/app/shared/services/voices.service';
-import { IVoice } from 'src/app/shared/types/voices';
+import { IVoice, VoiceSourceType } from 'src/app/shared/types/voices';
 import { AutocompleteInputComponent } from '../../components/autocomplete-input/autocomplete-input.component';
 
 type Filters = {
@@ -34,6 +34,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GalleryComponent implements OnInit {
+    public readonly VoiceSourceType = VoiceSourceType;
     public tabs: string[] = [];
     public activeTab = signal<string>('All');
     public tabCounts = signal<Record<string, number>>({});
@@ -458,6 +459,10 @@ export class GalleryComponent implements OnInit {
 
     public openVoicePage(id: number): void {
         this.router.navigateByUrl('voices/' + id);
+    }
+
+    public isGenericVoice(card: IVoice | null | undefined): boolean {
+        return card?.sourceType === VoiceSourceType.SupportMessage;
     }
 
     public deslugify(slug: string): string {
