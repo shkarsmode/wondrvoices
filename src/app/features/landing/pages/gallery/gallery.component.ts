@@ -483,7 +483,6 @@ export class GalleryComponent implements OnInit {
 
         void this.router.navigate(['/request', requestId], {
             queryParams: { messageId: String(messageId) },
-            fragment: `message-${messageId}`,
         });
     }
 

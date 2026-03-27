@@ -956,10 +956,8 @@ export class RequestComponent implements OnInit, AfterViewInit, AfterViewChecked
         this.startTargetMessageFlash();
 
         const steps: Array<{ delay: number; behavior: ScrollBehavior }> = [
-            { delay: 0, behavior: 'auto' },
-            { delay: 220, behavior: 'smooth' },
-            { delay: 900, behavior: 'auto' },
-            { delay: 1500, behavior: 'auto' },
+            { delay: 80, behavior: 'smooth' },
+            { delay: 760, behavior: 'smooth' },
         ];
 
         for (const step of steps) {
@@ -1010,6 +1008,11 @@ export class RequestComponent implements OnInit, AfterViewInit, AfterViewChecked
         const headerHeight = (document.querySelector('.top-bar') as HTMLElement | null)?.offsetHeight ?? 88;
         const targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight - 28;
         const safeTop = Math.max(0, targetTop);
+        const distance = Math.abs(window.scrollY - safeTop);
+
+        if (distance < 10) {
+            return;
+        }
 
         window.scrollTo({ top: safeTop, behavior });
     }
