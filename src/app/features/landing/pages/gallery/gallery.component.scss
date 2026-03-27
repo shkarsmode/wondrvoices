@@ -136,19 +136,48 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 34px;
-            height: 34px;
+            gap: 6px;
+            min-height: 34px;
+            padding: 0 12px;
             border-radius: 999px;
             background: rgba(248, 245, 242, 0.88);
             border: 1px solid rgba(71, 43, 47, 0.16);
             color: #7c7476;
             box-shadow: 0 4px 14px rgba(71, 43, 47, 0.08);
             backdrop-filter: blur(6px);
-            pointer-events: none;
+            appearance: none;
+            font-family: inherit;
+            pointer-events: auto;
+            cursor: default;
 
             .material-symbols-outlined {
                 font-size: 18px;
                 font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            }
+
+            .label {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.02em;
+                line-height: 1;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+
+            &.is-clickable {
+                cursor: pointer;
+                transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
+
+                &:hover {
+                    transform: translateY(-1px);
+                    background: rgba(248, 245, 242, 0.96);
+                    border-color: rgba(71, 43, 47, 0.28);
+                    box-shadow: 0 8px 18px rgba(71, 43, 47, 0.12);
+                }
+            }
+
+            &:disabled {
+                opacity: 0.8;
             }
         }
 
@@ -278,10 +307,14 @@
         }
 
         .generic-badge {
-            width: 32px !important;
-            height: 32px !important;
+            min-height: 32px !important;
+            padding: 0 10px !important;
             top: 10px !important;
             right: 10px !important;
+
+            .label {
+                font-size: 10px !important;
+            }
         }
 
         .card-title {

@@ -21,13 +21,17 @@
         <div class="content">
             <div class="wrap-category" [style.viewTransitionName]="'img-tag-' + card()!.id">
                 @if (isGenericVoice(card())) {
-                    <span
+                    <button
+                        type="button"
                         class="generic-chip"
-                        title="Generic gallery message"
-                        aria-label="Generic gallery message">
+                        [class.is-clickable]="hasLinkedSupportRequest(card())"
+                        [disabled]="!hasLinkedSupportRequest(card())"
+                        title="Open the support request this voice came from"
+                        aria-label="Open the support request this voice came from"
+                        (click)="openLinkedRequest(card(), $event)">
                         <span class="material-symbols-outlined" aria-hidden="true">scatter_plot</span>
-                        <span class="label">Generic</span>
-                    </span>
+                        <span class="label">{{ linkedRequestBadgeLabel }}</span>
+                    </button>
                 }
                 <span
                     class="category"

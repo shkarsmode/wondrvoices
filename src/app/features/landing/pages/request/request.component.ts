@@ -25,6 +25,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     request = signal<IRequestDetail | undefined>(undefined);
     loading = signal(true);
     liked = signal<Set<string>>(new Set());
+    highlightedMessageId = signal<string | null>(null);
     
     // Modal states
     appModalOpen = signal(false);
@@ -59,6 +60,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     private orgAutocomplete: any;
     private cityAutocomplete: any;
     private placesInitialized = false;
+    private pendingMessageFocusId: string | null = null;
 
     // Leaflet map for support locations
     private L: any;
@@ -76,6 +78,9 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     ngOnInit(): void {
         this.liked.set(new Set(this.likesService.getAllLikes()));
         const id = this.route.snapshot.paramMap.get('id');
+        const messageId = this.route.snapshot.queryParamMap.get('messageId');
+        this.highlightedMessageId.set(messageId);
+        this.pendingMessageFocusId = messageId;
         if (!id) return;
         this.requestsService.getRequestById(id).subscribe(detail => {
             this.request.set(detail);
@@ -336,6 +341,8 @@ export class RequestComponent implements OnInit, AfterViewChecked {
 
     // Google Places autocomplete initialization
     ngAfterViewChecked(): void {
+        this.focusTargetMessageCardIfNeeded();
+
         if (this.mailModalOpen() && !this.placesInitialized) {
             this.initGooglePlacesAutocomplete();
         }
@@ -563,6 +570,10 @@ export class RequestComponent implements OnInit, AfterViewChecked {
         if (message.type === 'image') return 'Artwork';
         if (message.type === 'video') return 'Video';
         return 'Message';
+    }
+
+    isTargetMessage(message: ISupportMessage): boolean {
+        return this.highlightedMessageId() === message.id;
     }
 
     // Location parsing helpers for better formatting
@@ -826,5 +837,24 @@ export class RequestComponent implements OnInit, AfterViewChecked {
                 }, 1250);
             });
         });
+    }
+
+    private focusTargetMessageCardIfNeeded(): void {
+        if (!this.pendingMessageFocusId || typeof document === 'undefined') {
+            return;
+        }
+
+        const target = document.querySelector(`[data-message-id="${this.pendingMessageFocusId}"]`) as HTMLElement | null;
+        if (!target) {
+            const messageFeedReady = !!document.querySelector('.messages-feed');
+            if (messageFeedReady || !(this.request()?.messages?.length ?? 0)) {
+                this.pendingMessageFocusId = null;
+            }
+            return;
+        }
+
+        this.pendingMessageFocusId = null;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.focus({ preventScroll: true });
     }
 }

@@ -35,6 +35,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 })
 export class GalleryComponent implements OnInit {
     public readonly VoiceSourceType = VoiceSourceType;
+    public readonly linkedRequestBadgeLabel = 'Specific Request';
     public tabs: string[] = [];
     public activeTab = signal<string>('All');
     public tabCounts = signal<Record<string, number>>({});
@@ -463,6 +464,26 @@ export class GalleryComponent implements OnInit {
 
     public isGenericVoice(card: IVoice | null | undefined): boolean {
         return card?.sourceType === VoiceSourceType.SupportMessage;
+    }
+
+    public hasLinkedSupportRequest(card: IVoice | null | undefined): boolean {
+        return this.isGenericVoice(card) && !!card?.sourceSupportRequestId && !!card?.sourceSupportMessageId;
+    }
+
+    public openLinkedRequest(card: IVoice | null | undefined, event?: Event): void {
+        event?.preventDefault();
+        event?.stopPropagation();
+
+        const requestId = card?.sourceSupportRequestId?.trim();
+        const messageId = card?.sourceSupportMessageId;
+
+        if (!requestId || !messageId) {
+            return;
+        }
+
+        void this.router.navigate(['/request', requestId], {
+            queryParams: { messageId: String(messageId) },
+        });
     }
 
     public deslugify(slug: string): string {

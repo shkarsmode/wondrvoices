@@ -338,12 +338,17 @@
                     (mouseenter)="mouseEnterCard(card.id)">
                     <div class="card-image-wrap" (click)="openVoicePage(card.id)" >
                         @if (isGenericVoice(card)) {
-                            <span
+                            <button
+                                type="button"
                                 class="generic-badge"
-                                title="Generic gallery message"
-                                aria-label="Generic gallery message">
+                                [class.is-clickable]="hasLinkedSupportRequest(card)"
+                                [disabled]="!hasLinkedSupportRequest(card)"
+                                title="Open the support request this voice came from"
+                                aria-label="Open the support request this voice came from"
+                                (click)="openLinkedRequest(card, $event)">
                                 <span class="material-symbols-outlined" aria-hidden="true">scatter_plot</span>
-                            </span>
+                                <span class="label">{{ linkedRequestBadgeLabel }}</span>
+                            </button>
                         }
                         <img
                             class="card-image"

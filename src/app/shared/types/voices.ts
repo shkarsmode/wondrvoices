@@ -32,6 +32,7 @@ export interface IVoice {
     lng?: number;
     sourceType?: VoiceSourceType | null;
     sourceSupportMessageId?: number | null;
+    sourceSupportRequestId?: string | null;
 }
 
 export interface VoicesListResponse {

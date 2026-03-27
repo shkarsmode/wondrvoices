@@ -23,6 +23,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 })
 export class VoiceComponent implements OnInit {
     public readonly VoiceSourceType = VoiceSourceType;
+    public readonly linkedRequestBadgeLabel = 'Specific Request';
     private route = inject(ActivatedRoute);
     private title = inject(Title);
     private meta = inject(Meta);
@@ -215,6 +216,26 @@ export class VoiceComponent implements OnInit {
 
     public isGenericVoice(card: IVoice | null | undefined): boolean {
         return card?.sourceType === VoiceSourceType.SupportMessage;
+    }
+
+    public hasLinkedSupportRequest(card: IVoice | null | undefined): boolean {
+        return this.isGenericVoice(card) && !!card?.sourceSupportRequestId && !!card?.sourceSupportMessageId;
+    }
+
+    public openLinkedRequest(card: IVoice | null | undefined, ev?: Event): void {
+        ev?.preventDefault();
+        ev?.stopPropagation();
+
+        const requestId = card?.sourceSupportRequestId?.trim();
+        const messageId = card?.sourceSupportMessageId;
+
+        if (!requestId || !messageId) {
+            return;
+        }
+
+        void this.router.navigate(['/request', requestId], {
+            queryParams: { messageId: String(messageId) },
+        });
     }
 
 }

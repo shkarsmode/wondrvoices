@@ -492,6 +492,21 @@
             border-radius: 16px;
             padding: 16px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            scroll-margin-top: 96px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+
+            &.is-targeted {
+                border-color: #c9907a;
+                background: #fffaf7;
+                box-shadow:
+                    0 0 0 3px rgba(201, 144, 122, 0.18),
+                    0 10px 24px rgba(201, 144, 122, 0.12);
+                animation: target-message-glow 1.4s ease;
+            }
+
+            &:focus {
+                outline: none;
+            }
 
             .message-header {
                 display: flex;
@@ -1297,6 +1312,17 @@
 @keyframes dot-ring-fade {
     0% { transform: scale(1); opacity: 0.5; }
     100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes target-message-glow {
+    0% {
+        transform: translateY(10px);
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes dash-flow {
