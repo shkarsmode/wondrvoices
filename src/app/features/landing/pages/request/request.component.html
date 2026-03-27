@@ -130,8 +130,11 @@
             <div class="messages-feed">
                 @for (msg of req.messages; track msg.id) {
                 <div
+                    #messageCard
                     class="message-card"
                     [class.is-targeted]="isTargetMessage(msg)"
+                    [class.is-flashing]="isFlashingTargetMessage(msg)"
+                    [attr.id]="'message-' + msg.id"
                     [attr.data-message-id]="msg.id"
                     tabindex="-1">
                     <div class="message-header">

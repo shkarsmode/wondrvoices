@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewChecked, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, NgZone, OnDestroy, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, Scroll } from '@angular/router';
+import { combineLatest, distinctUntilChanged, filter, map, startWith, switchMap, tap } from 'rxjs';
 import { LikesService } from '../../../../shared/services/likes.service';
 import { RequestsService } from '../../../../shared/services/requests.service';
 import { ToastService } from '../../../../shared/toast/toast.service';
@@ -21,11 +23,13 @@ type LeafletType = typeof import('leaflet');
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class RequestComponent implements OnInit, AfterViewChecked {
+export class RequestComponent implements OnInit, AfterViewInit, AfterViewChecked, OnDestroy {
     request = signal<IRequestDetail | undefined>(undefined);
     loading = signal(true);
     liked = signal<Set<string>>(new Set());
     highlightedMessageId = signal<string | null>(null);
+    flashingMessageId = signal<string | null>(null);
+    private readonly destroyRef = inject(DestroyRef);
     
     // Modal states
     appModalOpen = signal(false);
@@ -57,10 +61,13 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     @ViewChild('cityInput') cityInputRef!: ElementRef<HTMLInputElement>;
     @ViewChild('nameInput') nameInputRef!: ElementRef<HTMLInputElement>;
     @ViewChild('supportMap') supportMapRef!: ElementRef<HTMLDivElement>;
+    @ViewChildren('messageCard') messageCardRefs!: QueryList<ElementRef<HTMLElement>>;
     private orgAutocomplete: any;
     private cityAutocomplete: any;
     private placesInitialized = false;
     private pendingMessageFocusId: string | null = null;
+    private flashingMessageResetTimer: ReturnType<typeof setTimeout> | null = null;
+    private pendingFocusTimers: ReturnType<typeof setTimeout>[] = [];
 
     // Leaflet map for support locations
     private L: any;
@@ -69,6 +76,7 @@ export class RequestComponent implements OnInit, AfterViewChecked {
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private requestsService: RequestsService,
         private likesService: LikesService,
         private ngZone: NgZone,
@@ -77,15 +85,66 @@ export class RequestComponent implements OnInit, AfterViewChecked {
 
     ngOnInit(): void {
         this.liked.set(new Set(this.likesService.getAllLikes()));
-        const id = this.route.snapshot.paramMap.get('id');
-        const messageId = this.route.snapshot.queryParamMap.get('messageId');
-        this.highlightedMessageId.set(messageId);
-        this.pendingMessageFocusId = messageId;
-        if (!id) return;
-        this.requestsService.getRequestById(id).subscribe(detail => {
+
+        combineLatest([
+            this.route.queryParamMap,
+            this.route.fragment.pipe(startWith(this.route.snapshot.fragment))
+        ]).pipe(
+            map(([params, fragment]) => params.get('messageId')?.trim() || this.extractMessageIdFromFragment(fragment)),
+            distinctUntilChanged(),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(messageId => {
+            this.clearTargetMessageFocusTimers();
+            this.flashingMessageId.set(null);
+            this.highlightedMessageId.set(messageId);
+            this.pendingMessageFocusId = messageId;
+        });
+
+        this.route.paramMap.pipe(
+            map(params => params.get('id')),
+            filter((id): id is string => !!id),
+            distinctUntilChanged(),
+            tap(() => {
+                this.loading.set(true);
+                this.request.set(undefined);
+                this.destroySupportMap();
+            }),
+            switchMap(id => this.requestsService.getRequestById(id)),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(detail => {
             this.request.set(detail);
             this.loading.set(false);
         });
+    }
+
+    ngAfterViewInit(): void {
+        this.messageCardRefs.changes.pipe(
+            startWith(this.messageCardRefs),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(() => {
+            this.queueTargetMessageFocus();
+        });
+
+        this.router.events.pipe(
+            filter((event): event is Scroll => event instanceof Scroll),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(() => {
+            const messageId = this.pendingMessageFocusId ?? this.highlightedMessageId();
+            if (!messageId) {
+                return;
+            }
+
+            const timer = setTimeout(() => {
+                this.runTargetMessageFocusSequence(messageId);
+            }, 120);
+
+            this.pendingFocusTimers.push(timer);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.clearTargetMessageFocusTimers();
+        this.destroySupportMap();
     }
 
     getDisplayName(): string {
@@ -573,7 +632,11 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     }
 
     isTargetMessage(message: ISupportMessage): boolean {
-        return this.highlightedMessageId() === message.id;
+        return this.highlightedMessageId() === String(message.id);
+    }
+
+    isFlashingTargetMessage(message: ISupportMessage): boolean {
+        return this.flashingMessageId() === String(message.id);
     }
 
     // Location parsing helpers for better formatting
@@ -840,21 +903,148 @@ export class RequestComponent implements OnInit, AfterViewChecked {
     }
 
     private focusTargetMessageCardIfNeeded(): void {
-        if (!this.pendingMessageFocusId || typeof document === 'undefined') {
+        if (!this.pendingMessageFocusId || typeof document === 'undefined' || this.loading()) {
             return;
         }
 
-        const target = document.querySelector(`[data-message-id="${this.pendingMessageFocusId}"]`) as HTMLElement | null;
+        const request = this.request();
+        if (!request) {
+            return;
+        }
+
+        const targetMessageId = this.pendingMessageFocusId;
+        const hasTargetMessage = (request.messages ?? []).some(message => String(message.id) === targetMessageId);
+
+        if (!hasTargetMessage) {
+            this.pendingMessageFocusId = null;
+            return;
+        }
+
+        const target = this.findTargetMessageCard(targetMessageId);
         if (!target) {
-            const messageFeedReady = !!document.querySelector('.messages-feed');
-            if (messageFeedReady || !(this.request()?.messages?.length ?? 0)) {
-                this.pendingMessageFocusId = null;
-            }
             return;
         }
 
         this.pendingMessageFocusId = null;
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        target.focus({ preventScroll: true });
+        this.runTargetMessageFocusSequence(this.highlightedMessageId() ?? target.dataset['messageId'] ?? null);
+    }
+
+    private startTargetMessageFlash(): void {
+        const messageId = this.highlightedMessageId();
+        if (!messageId) {
+            return;
+        }
+
+        if (this.flashingMessageResetTimer) {
+            clearTimeout(this.flashingMessageResetTimer);
+        }
+
+        this.flashingMessageId.set(messageId);
+        this.flashingMessageResetTimer = setTimeout(() => {
+            this.flashingMessageId.set(null);
+            this.flashingMessageResetTimer = null;
+        }, 2600);
+    }
+
+    private runTargetMessageFocusSequence(messageId: string | null): void {
+        if (!messageId || typeof document === 'undefined') {
+            return;
+        }
+
+        this.clearPendingFocusTimers();
+
+        this.startTargetMessageFlash();
+
+        const steps: Array<{ delay: number; behavior: ScrollBehavior }> = [
+            { delay: 0, behavior: 'auto' },
+            { delay: 220, behavior: 'smooth' },
+            { delay: 900, behavior: 'auto' },
+            { delay: 1500, behavior: 'auto' },
+        ];
+
+        for (const step of steps) {
+            const timer = setTimeout(() => {
+                const target = this.findTargetMessageCard(messageId);
+                if (!target) {
+                    return;
+                }
+
+                this.scrollTargetMessageCardIntoView(target, step.behavior);
+                target.focus({ preventScroll: true });
+            }, step.delay);
+
+            this.pendingFocusTimers.push(timer);
+        }
+    }
+
+    private queueTargetMessageFocus(): void {
+        const messageId = this.pendingMessageFocusId ?? this.highlightedMessageId();
+        if (!messageId) {
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            this.focusTargetMessageCardIfNeeded();
+        }, 0);
+
+        this.pendingFocusTimers.push(timer);
+    }
+
+    private findTargetMessageCard(messageId: string): HTMLElement | null {
+        const targetRef = this.messageCardRefs
+            ?.toArray()
+            .find(ref => ref.nativeElement.dataset['messageId'] === messageId);
+
+        if (targetRef?.nativeElement) {
+            return targetRef.nativeElement;
+        }
+
+        return document.querySelector(`[data-message-id="${messageId}"]`) as HTMLElement | null;
+    }
+
+    private scrollTargetMessageCardIntoView(target: HTMLElement, behavior: ScrollBehavior): void {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        const headerHeight = (document.querySelector('.top-bar') as HTMLElement | null)?.offsetHeight ?? 88;
+        const targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight - 28;
+        const safeTop = Math.max(0, targetTop);
+
+        window.scrollTo({ top: safeTop, behavior });
+    }
+
+    private clearPendingFocusTimers(): void {
+        for (const timer of this.pendingFocusTimers) {
+            clearTimeout(timer);
+        }
+        this.pendingFocusTimers = [];
+    }
+
+    private clearTargetMessageFocusTimers(): void {
+        this.clearPendingFocusTimers();
+
+        if (this.flashingMessageResetTimer) {
+            clearTimeout(this.flashingMessageResetTimer);
+            this.flashingMessageResetTimer = null;
+        }
+    }
+
+    private destroySupportMap(): void {
+        if (this.supportMap) {
+            this.supportMap.remove();
+            this.supportMap = null;
+        }
+
+        this.supportMapInitialized = false;
+    }
+
+    private extractMessageIdFromFragment(fragment: string | null): string | null {
+        if (!fragment?.startsWith('message-')) {
+            return null;
+        }
+
+        const messageId = fragment.slice('message-'.length).trim();
+        return messageId || null;
     }
 }
