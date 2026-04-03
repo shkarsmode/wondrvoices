@@ -629,6 +629,24 @@
                     color: #D46A51;
                 }
             }
+
+            &--success {
+                align-items: flex-start;
+                text-align: left;
+                background: rgba(72, 187, 120, 0.08);
+                margin: 1.5rem 0;
+
+                .material-symbols-outlined {
+                    color: #48bb78;
+                }
+            }
+
+            .email-text {
+                flex: 1;
+                font-weight: 500;
+                color: #1f2937;
+                line-height: 1.6;
+            }
         }
 
         .code-inputs {
@@ -859,6 +877,14 @@
                     }
                 }
             }
+        }
+    }
+
+    .confirmation-card {
+        text-align: center;
+
+        .step-description strong {
+            color: #1f2937;
         }
     }
 

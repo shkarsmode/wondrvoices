@@ -1,5 +1,5 @@
 <div class="request-support">
-    <div class="header-section">
+    <div class="header-section" *ngIf="!magicLinkMode()">
         <div class="icon-circle healing">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 19c-1.8-1.4-3-3-3.2-4.8a3 3 0 0 1 2.7-3.2 2.8 2.8 0 0 1 2.1.8"/>
@@ -24,6 +24,8 @@
             </div>
         </div>
     </div>
+
+    <ng-container *ngIf="!magicLinkMode(); else magicLinkTemplate">
 
     <!-- Step 1: Tell Us Your Story -->
     <div class="step-content fade-in" *ngIf="currentStep() === 1">
@@ -221,7 +223,7 @@
                         placeholder="your&#64;email.com"
                         autocomplete="email"
                         class="form-input">
-                    <small class="help-text">If provided, we'll verify via a code. Never shown publicly.</small>
+                    <small class="help-text">If provided, we'll send a one-tap confirmation link. Never shown publicly.</small>
                 </div>
 
                 <div class="form-group">
@@ -283,61 +285,7 @@
                     Back
                 </button>
                 <button type="button" class="btn-continue" (click)="nextStep()" [disabled]="isSubmitting()">
-                    {{ step4Form.value.email ? 'Verify Email' : 'Submit' }} <span class="material-symbols-outlined">arrow_forward</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 5: Email Verification -->
-    <div class="step-content" *ngIf="currentStep() === 5">
-        <div class="card verification-card">
-            <div class="verification-icon">
-                <span class="material-symbols-outlined">shield</span>
-            </div>
-            <h2>Verify Your Email</h2>
-            <p class="step-description">To prevent spam, please verify your email address.</p>
-
-            <div class="email-display">
-                <span class="material-symbols-outlined">mail</span>
-                <span class="email-text">{{ step4Form.value.email }}</span>
-                <a href="javascript:void(0)" class="change-link" (click)="previousStep()">Change</a>
-            </div>
-
-            <div class="form-group">
-                <label>Enter the 6-digit code sent to your email:</label>
-                <div class="code-inputs">
-                    <input 
-                        #codeInput
-                        *ngFor="let digit of [0,1,2,3,4,5]"
-                        type="text" 
-                        inputmode="numeric"
-                        maxlength="1"
-                        class="code-input"
-                        placeholder="0"
-                        autocomplete="off"
-                        [value]="verificationCode()[digit] || ''"
-                        (input)="onCodeInput(digit, $event)"
-                        (keydown)="onCodeKeyDown(digit, $event)"
-                        (paste)="onCodePaste($event)">
-                </div>
-            </div>
-
-            <div class="demo-info" *ngIf="demoVerificationCode()">
-                <strong>Demo Mode:</strong> Enter any 6 digits to proceed (e.g., 123456)
-            </div>
-
-            <div class="resend-section">
-                <span>Didn't receive a code?</span>
-                <a href="javascript:void(0)" (click)="resendCode()" class="resend-link">Resend code</a>
-            </div>
-
-            <div class="form-actions">
-                <button type="button" class="btn-secondary" (click)="previousStep()">
-                    Back
-                </button>
-                <button type="button" class="btn-continue" (click)="nextStep()" [disabled]="isSubmitting()">
-                    <span *ngIf="!isSubmitting()">Submit</span>
+                    <span *ngIf="!isSubmitting()">Submit Journey</span>
                     <span *ngIf="isSubmitting()" class="spinner"></span>
                     <span class="material-symbols-outlined" *ngIf="!isSubmitting()">arrow_forward</span>
                 </button>
@@ -345,14 +293,19 @@
         </div>
     </div>
 
-    <!-- Step 6: Success -->
-    <div class="step-content" *ngIf="currentStep() === 6">
+    <!-- Step 5: Success -->
+    <div class="step-content" *ngIf="currentStep() === 5">
         <div class="card success-card">
             <div class="success-icon">
                 <span class="material-symbols-outlined">check_circle</span>
             </div>
             <h2>Journey Submitted for Review</h2>
             <p class="step-description">Your request will be reviewed before it appears on WondrVoices. Your unique Journey ID is:</p>
+
+            <div class="email-display email-display--success" *ngIf="step4Form.value.email">
+                <span class="material-symbols-outlined">mark_email_read</span>
+                <span class="email-text">We sent a magic link to {{ step4Form.value.email }} so you can confirm your submission without typing a code.</span>
+            </div>
 
             <div class="journey-id">
                 <strong>{{ requestId() }}</strong>
@@ -378,4 +331,54 @@
             </div>
         </div>
     </div>
+
+    </ng-container>
+
+    <ng-template #magicLinkTemplate>
+        <div class="step-content">
+            <div class="card success-card confirmation-card">
+                <div class="verification-icon" *ngIf="magicLinkStatus() === 'verifying'">
+                    <span class="material-symbols-outlined">hourglass_top</span>
+                </div>
+                <div class="success-icon" *ngIf="magicLinkStatus() === 'success'">
+                    <span class="material-symbols-outlined">verified</span>
+                </div>
+                <div class="verification-icon" *ngIf="magicLinkStatus() === 'error'">
+                    <span class="material-symbols-outlined">warning</span>
+                </div>
+
+                <h2 *ngIf="magicLinkStatus() === 'verifying'">Confirming your submission...</h2>
+                <h2 *ngIf="magicLinkStatus() === 'success'">Email Confirmed</h2>
+                <h2 *ngIf="magicLinkStatus() === 'error'">Confirmation Link Expired</h2>
+
+                <p class="step-description" *ngIf="magicLinkStatus() === 'verifying'">
+                    Please wait while we verify your WondrVoices journey submission.
+                </p>
+                <p class="step-description" *ngIf="magicLinkStatus() === 'success'">
+                    Your email is confirmed and your journey is now in review. Journey ID: <strong>{{ requestId() }}</strong>
+                </p>
+                <p class="step-description" *ngIf="magicLinkStatus() === 'error'">
+                    {{ magicLinkError() || 'This confirmation link is no longer valid. Please submit again if needed.' }}
+                </p>
+
+                <div class="what-happens" *ngIf="magicLinkStatus() === 'success'">
+                    <h3>What happens next?</h3>
+                    <ul>
+                        <li><span class="material-symbols-outlined">check</span> Our team will review your journey before publishing it</li>
+                        <li><span class="material-symbols-outlined">check</span> If approved, supporters can send notes matched to your comfort zones</li>
+                        <li><span class="material-symbols-outlined">check</span> We'll let you know when support arrives</li>
+                    </ul>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-continue" (click)="viewFeed()">
+                        Browse Journeys
+                    </button>
+                    <button type="button" class="btn-secondary" (click)="backToHome()">
+                        Back to Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-template>
 </div>

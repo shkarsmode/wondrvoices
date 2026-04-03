@@ -93,6 +93,15 @@ export class RequestsService {
         );
     }
 
+    verifyMagicLink(requestId: string, token: string): Observable<{ success: boolean }> {
+        return this.http.post<{ success: boolean }>(
+            `${this.basePathApi}/${this.path}/verify/magic`,
+            { requestId, token },
+        ).pipe(
+            catchError((error) => this.handleError(error, 'Magic link verification'))
+        );
+    }
+
     createSupportMessage(requestId: string, payload: CreateSupportMessageDto): Observable<ISupportMessage> {
         return this.http.post<ISupportMessage>(`${this.basePathApi}/${this.path}/${requestId}/messages`, payload).pipe(
             catchError((error) => this.handleError(error, 'Sending support message'))

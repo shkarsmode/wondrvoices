@@ -35,7 +35,7 @@ const SHARE_ENDPOINTS: Record<SharePlatform, string> = {
 })
 export class GalleryComponent implements OnInit {
     public readonly VoiceSourceType = VoiceSourceType;
-    public readonly linkedRequestBadgeLabel = 'Specific Request';
+    public readonly linkedRequestBadgeLabel = 'Supported Journey';
     public tabs: string[] = [];
     public activeTab = signal<string>('All');
     public tabCounts = signal<Record<string, number>>({});

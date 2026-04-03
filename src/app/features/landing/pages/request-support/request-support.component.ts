@@ -1,7 +1,7 @@
 import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { AfterViewChecked, ChangeDetectionStrategy, Component, computed, ElementRef, NgZone, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, computed, ElementRef, NgZone, signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RequestsService } from '../../../../shared/services/requests.service';
 import { CreateSupportRequestDto } from '../../../../shared/types/request-support.types';
 
@@ -18,14 +18,13 @@ declare const google: any;
 export class RequestSupportComponent implements AfterViewChecked {
     readonly additionalNoteMaxLength = 2000;
     currentStep = signal(1);
-    totalSteps = 6;
+    totalSteps = 5;
     isSubmitting = signal(false);
     requestId = signal<string>('');
     isAnonymous = signal(false);
-    verificationCode = signal<string>('');
-    demoVerificationCode = signal<string>('');
-    
-    @ViewChildren('codeInput') codeInputs!: QueryList<ElementRef<HTMLInputElement>>;
+    magicLinkMode = signal(false);
+    magicLinkStatus = signal<'idle' | 'verifying' | 'success' | 'error'>('idle');
+    magicLinkError = signal('');
 
     // Google Places autocomplete
     @ViewChild('locationInput') locationInputRef!: ElementRef<HTMLInputElement>;
@@ -146,6 +145,7 @@ export class RequestSupportComponent implements AfterViewChecked {
         private fb: FormBuilder,
         private requestsService: RequestsService,
         private router: Router,
+        private route: ActivatedRoute,
         private ngZone: NgZone
     ) {
         this.step1Form = this.fb.group({
@@ -172,6 +172,11 @@ export class RequestSupportComponent implements AfterViewChecked {
             location: ['', Validators.required],
             hospital: ['']
         });
+
+        this.handleMagicLinkParams(
+            this.route.snapshot.queryParamMap.get('requestId'),
+            this.route.snapshot.queryParamMap.get('token'),
+        );
     }
 
     // Google Places autocomplete initialization
@@ -184,6 +189,28 @@ export class RequestSupportComponent implements AfterViewChecked {
             this.locationAutocomplete = null;
             this.hospitalAutocomplete = null;
         }
+    }
+
+    private handleMagicLinkParams(requestId: string | null, token: string | null): void {
+        if (!requestId || !token) {
+            return;
+        }
+
+        this.magicLinkMode.set(true);
+        this.magicLinkStatus.set('verifying');
+        this.magicLinkError.set('');
+        this.requestId.set(requestId);
+
+        this.requestsService.verifyMagicLink(requestId, token).subscribe({
+            next: () => {
+                this.magicLinkStatus.set('success');
+            },
+            error: (error: Error) => {
+                console.error('Magic link verification error:', error);
+                this.magicLinkStatus.set('error');
+                this.magicLinkError.set(error.message || 'The confirmation link is invalid or has expired.');
+            },
+        });
     }
 
     private initGooglePlacesAutocomplete(): void {
@@ -346,8 +373,8 @@ export class RequestSupportComponent implements AfterViewChecked {
                 alert('Please select at least one comfort zone');
                 return;
             }
-            if (this.step3Form.invalid) {
-                this.step3Form.markAllAsTouched();
+            if (this.step3Form.get('additionalNote')?.hasError('maxlength')) {
+                this.step3Form.get('additionalNote')?.markAsTouched();
                 alert(`Please keep your note under ${this.additionalNoteMaxLength} characters`);
                 return;
             }
@@ -357,9 +384,6 @@ export class RequestSupportComponent implements AfterViewChecked {
                 return;
             }
             this.submitRequest();
-            return;
-        } else if (this.currentStep() === 5) {
-            this.verifyEmailCode();
             return;
         }
         
@@ -416,87 +440,18 @@ export class RequestSupportComponent implements AfterViewChecked {
 
     toggleComfortZone(zoneId: string): void {
         const zones = this.selectedComfortZones();
-        if (zones.includes(zoneId)) {
-            this.selectedComfortZones.set(zones.filter(z => z !== zoneId));
-        } else {
-            this.selectedComfortZones.set([...zones, zoneId]);
-        }
+        const nextZones = zones.includes(zoneId)
+            ? zones.filter(z => z !== zoneId)
+            : [...zones, zoneId];
+
+        this.selectedComfortZones.set(nextZones);
+        this.step3Form.patchValue({ comfortZones: nextZones });
+        this.step3Form.get('comfortZones')?.markAsTouched();
+        this.step3Form.get('comfortZones')?.updateValueAndValidity();
     }
 
     isZoneSelected(zoneId: string): boolean {
         return this.selectedComfortZones().includes(zoneId);
-    }
-
-    // Verification code input handlers
-    onCodeInput(index: number, event: any): void {
-        const input = event.target as HTMLInputElement;
-        let value = input.value;
-        value = value.replace(/\D/g, '');
-        if (value.length > 1) {
-            value = value[value.length - 1];
-        }
-        input.value = value;
-
-        const currentCode = this.verificationCode();
-        const codeArray = currentCode.split('');
-        while (codeArray.length < 6) codeArray.push('');
-        codeArray[index] = value;
-        this.verificationCode.set(codeArray.join(''));
-
-        if (value && index < 5) {
-            const nextInput = this.codeInputs.toArray()[index + 1];
-            if (nextInput) {
-                setTimeout(() => nextInput.nativeElement.focus(), 0);
-            }
-        }
-    }
-
-    onCodeKeyDown(index: number, event: KeyboardEvent): void {
-        const input = event.target as HTMLInputElement;
-        const key = event.key;
-
-        if (key === 'Backspace') {
-            event.preventDefault();
-            input.value = '';
-            const currentCode = this.verificationCode();
-            const codeArray = currentCode.split('');
-            while (codeArray.length < 6) codeArray.push('');
-            codeArray[index] = '';
-            this.verificationCode.set(codeArray.join(''));
-
-            if (index > 0) {
-                const prevInput = this.codeInputs.toArray()[index - 1];
-                if (prevInput) {
-                    setTimeout(() => prevInput.nativeElement.focus(), 0);
-                }
-            }
-        } else if (key === 'ArrowLeft' && index > 0) {
-            event.preventDefault();
-            const prevInput = this.codeInputs.toArray()[index - 1];
-            if (prevInput) prevInput.nativeElement.focus();
-        } else if (key === 'ArrowRight' && index < 5) {
-            event.preventDefault();
-            const nextInput = this.codeInputs.toArray()[index + 1];
-            if (nextInput) nextInput.nativeElement.focus();
-        }
-    }
-
-    onCodePaste(event: ClipboardEvent): void {
-        event.preventDefault();
-        const pastedText = event.clipboardData?.getData('text') || '';
-        const digits = pastedText.replace(/\D/g, '').slice(0, 6);
-
-        if (digits.length > 0) {
-            this.verificationCode.set(digits.padEnd(6, ''));
-            this.codeInputs.forEach((input, index) => {
-                input.nativeElement.value = digits[index] || '';
-            });
-            const focusIndex = Math.min(digits.length, 5);
-            const focusInput = this.codeInputs.toArray()[focusIndex];
-            if (focusInput) {
-                setTimeout(() => focusInput.nativeElement.focus(), 0);
-            }
-        }
     }
 
     submitRequest(): void {
@@ -523,77 +478,13 @@ export class RequestSupportComponent implements AfterViewChecked {
         this.requestsService.createRequest(requestData).subscribe({
             next: (response) => {
                 this.requestId.set(response.requestId);
-                const email = this.step4Form.value.email;
-                if (!email) {
-                    // No email provided — skip verification, go to success
-                    this.isSubmitting.set(false);
-                    this.currentStep.set(6);
-                    return;
-                }
-                // Send verification code
-                this.requestsService.sendVerificationCode(email, this.requestId()).subscribe({
-                    next: (codeResponse) => {
-                        if (codeResponse.code) {
-                            this.demoVerificationCode.set(codeResponse.code);
-                        }
-                        this.isSubmitting.set(false);
-                        this.currentStep.set(5);
-                    },
-                    error: (error: Error) => {
-                        this.isSubmitting.set(false);
-                        console.error('Verification code error:', error);
-                        alert(error.message || 'Failed to send verification code. Please try again.');
-                    }
-                });
+                this.isSubmitting.set(false);
+                this.currentStep.set(5);
             },
             error: (error: Error) => {
                 this.isSubmitting.set(false);
                 console.error('Submit request error:', error);
                 alert(error.message || 'Failed to submit request. Please check your connection and try again.');
-            }
-        });
-    }
-
-    resendCode(): void {
-        const email = this.step4Form.value.email;
-        this.requestsService.sendVerificationCode(email, this.requestId()).subscribe({
-            next: (codeResponse) => {
-                if (codeResponse.code) {
-                    this.demoVerificationCode.set(codeResponse.code);
-                }
-                alert('Verification code resent! Please check your email.');
-            },
-            error: (error: Error) => {
-                console.error('Resend code error:', error);
-                alert(error.message || 'Failed to resend code. Please try again in a moment.');
-            }
-        });
-    }
-
-    verifyEmailCode(): void {
-        const code = this.verificationCode();
-        if (code.length !== 6) {
-            alert('Please enter the complete 6-digit code');
-            return;
-        }
-
-        this.isSubmitting.set(true);
-        this.requestsService.verifyEmail({
-            email: this.step4Form.value.email,
-            code: code,
-            requestId: this.requestId()
-        }).subscribe({
-            next: () => {
-                this.isSubmitting.set(false);
-                this.currentStep.set(6);
-            },
-            error: (error: Error) => {
-                this.isSubmitting.set(false);
-                console.error('Verification error:', error);
-                const errorMessage = error.message?.includes('expired') 
-                    ? 'Verification code has expired. Please request a new one.'
-                    : error.message || 'Invalid verification code. Please try again.';
-                alert(errorMessage);
             }
         });
     }
