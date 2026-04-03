@@ -23,6 +23,7 @@
         <span class="chip"><span class="material-symbols-outlined">volunteer_activism</span> Nonprofit / Foundation</span>
         <span class="chip"><span class="material-symbols-outlined">groups</span> Community Organization</span>
         <span class="chip"><span class="material-symbols-outlined">church</span> Faith-Based Organization</span>
+        <span class="chip"><span class="material-symbols-outlined">diversity_1</span> Volunteers</span>
     </div>
 </section>
 
@@ -222,7 +223,7 @@
             <button
                 class="button primary submit-btn"
                 type="submit"
-                [disabled]="(form.invalid && form.touched) || isLoading()">
+                [disabled]="form.invalid || isLoading()">
                 @if (!isLoading()) {
                     Get Started
                 } @else {
@@ -245,3 +246,21 @@
         </div>
     }
 </section>
+
+@if (showSuccessDialog()) {
+    <div class="success-dialog-backdrop" (click)="closeSuccessDialog()">
+        <div class="success-dialog" (click)="$event.stopPropagation()">
+            <div class="success-dialog__icon">
+                <span class="material-symbols-outlined">celebration</span>
+            </div>
+            <h3>Thanks for reaching out</h3>
+            <p>
+                Your partnership request was sent successfully. We will review it through the existing
+                Get Involved submissions inbox and follow up within 1-2 business days.
+            </p>
+            <button type="button" class="button primary success-dialog__button" (click)="closeSuccessDialog()">
+                Close
+            </button>
+        </div>
+    </div>
+}

@@ -94,7 +94,7 @@ export class GalleryComponent implements OnInit {
     @ViewChild('sharePopover', { read: ElementRef })
     private sharePopoverRef?: ElementRef<HTMLElement>;
 
-    public isLoading: WritableSignal<boolean> = signal(false);
+    public isLoading: WritableSignal<boolean> = signal(true);
 
     @ViewChild('sentinel', { static: true }) sentinelRef?: ElementRef<HTMLElement>;
 
@@ -149,22 +149,22 @@ export class GalleryComponent implements OnInit {
 
         if (typeof window !== 'undefined') {
             this.loadPage(1, true);
+            this.route.queryParamMap.subscribe(() => {
+                if (!this.isLoading()) {
+                    // update venue visuals when query changes
+                    const updatedCredit = this.filters().creditTo || null;
+                    this.venueDisplayName.set(updatedCredit);
+                    this.afterVenueContextChanged();
+                    this.brandLogoUrl.set(this.venueLogos[this.normalizeVenueKey(updatedCredit)] || null);
+    
+                    this.page.set(1);
+                    this.hasMore.set(true);
+                    this.cards.set([]);
+                    this.loadPage(1, true);
+                }
+            });
         }
 
-        this.route.queryParamMap.subscribe(() => {
-            if (!this.isLoading()) {
-                // update venue visuals when query changes
-                const updatedCredit = this.filters().creditTo || null;
-                this.venueDisplayName.set(updatedCredit);
-                this.afterVenueContextChanged();
-                this.brandLogoUrl.set(this.venueLogos[this.normalizeVenueKey(updatedCredit)] || null);
-
-                this.page.set(1);
-                this.hasMore.set(true);
-                this.cards.set([]);
-                this.loadPage(1, true);
-            }
-        });
 
         this.afterVenueContextChanged();
     }

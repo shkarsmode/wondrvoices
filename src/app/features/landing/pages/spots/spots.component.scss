@@ -523,6 +523,63 @@
     }
 }
 
+.success-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: rgba(44, 30, 22, 0.42);
+    backdrop-filter: blur(8px);
+    z-index: 1100;
+}
+
+.success-dialog {
+    width: min(100%, 460px);
+    background: linear-gradient(180deg, #fff9f4 0%, #ffffff 100%);
+    border: 1px solid rgba(207, 134, 110, 0.22);
+    border-radius: 24px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 24px 70px rgba(59, 37, 29, 0.18);
+
+    h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.6rem;
+        color: #2c1e16;
+        font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.98rem;
+        line-height: 1.7;
+        color: #6e5b51;
+    }
+}
+
+.success-dialog__icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 1rem;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #ffe6d6 0%, #fbe9e5 60%, #f2f5ee 100%);
+
+    .material-symbols-outlined {
+        font-size: 2rem;
+        color: #cf866e;
+    }
+}
+
+.success-dialog__button {
+    margin-top: 1.5rem;
+    min-width: 160px;
+}
+
 /* ---------- Loader ---------- */
 .loader {
     width: 18px;

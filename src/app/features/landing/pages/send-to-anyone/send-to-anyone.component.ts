@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } 
 import { RouterLink } from '@angular/router';
 import { first } from 'rxjs';
 import { VoicesService } from '../../../../shared/services/voices.service';
-import { IVoice } from '../../../../shared/types/voices';
+import { IVoice, VoiceSourceType } from '../../../../shared/types/voices';
 
 @Component({
     selector: 'app-send-to-anyone',
@@ -22,7 +22,7 @@ export class SendToAnyoneComponent implements OnInit {
 
     readonly visibleWallCards = computed(() =>
         this.wallCards()
-            .filter((card) => !!card.img)
+            .filter((card) => !!card.img && !this.isJourneyLinkedCard(card))
             .slice(0, 6)
     );
 
@@ -53,10 +53,16 @@ export class SendToAnyoneComponent implements OnInit {
         return card.location?.trim() || 'From the WondrVoices community';
     }
 
+    private isJourneyLinkedCard(card: IVoice): boolean {
+        return card.sourceType === VoiceSourceType.SupportMessage
+            || !!card.sourceSupportRequestId
+            || !!card.sourceSupportMessageId;
+    }
+
     private loadWallCards(): void {
         this.wallLoading.set(true);
 
-        this.voicesService.getApprovedVoices(6, {
+        this.voicesService.getApprovedVoices(30, {
             orderBy: 'createdAt',
             orderDir: 'DESC',
             page: 1

@@ -170,7 +170,12 @@
                     placeholder="Share anything else that might help us connect with the right messages..."
                     class="form-textarea"
                     rows="4"
+                    [value]="step3Form.value.additionalNote || ''"
+                    [attr.maxlength]="additionalNoteMaxLength"
                     (input)="step3Form.patchValue({ additionalNote: additionalNoteInput.value })"></textarea>
+                <small class="help-text help-text--counter">
+                    {{ (step3Form.value.additionalNote || '').length }}/{{ additionalNoteMaxLength }}
+                </small>
             </div>
 
             <div class="form-actions">

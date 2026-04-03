@@ -237,6 +237,19 @@ export class RequestComponent implements OnInit, AfterViewInit, AfterViewChecked
         return icons[zone] || 'forum';
     }
 
+    getDisplayAdditionalNote(note?: string | null): string {
+        const normalized = note?.trim();
+        if (!normalized) {
+            return '';
+        }
+
+        if (normalized.length <= 2000) {
+            return normalized;
+        }
+
+        return `${normalized.slice(0, 2000).trimEnd()}...`;
+    }
+
     isLiked(requestId: string): boolean {
         return this.liked().has(requestId);
     }

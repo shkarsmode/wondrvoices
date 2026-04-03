@@ -33,7 +33,9 @@
                 </div>
                 }
                 <div class="diagnosis-badge">{{ req.diagnosis }}</div>
-                <p class="additional-note">{{ req.additionalNote }}</p>
+                @if (req.additionalNote) {
+                <p class="additional-note">{{ getDisplayAdditionalNote(req.additionalNote) }}</p>
+                }
                 
                 @if (getJourneyStageLabel(req) || getRelationshipLabel(req)) {
                 <div class="journey-info-block">

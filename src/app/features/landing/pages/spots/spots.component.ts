@@ -1,7 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Meta, Title } from '@angular/platform-browser';
+import { first } from 'rxjs';
 import { FormType, SubmissionService } from '../../../../shared/services/submission.service';
+import { ToastService } from '../../../../shared/toast/toast.service';
 
 @Component({
     selector: 'app-spots',
@@ -13,13 +15,15 @@ export class SpotsComponent implements OnInit {
     private title = inject(Title);
     private meta = inject(Meta);
     private fb = inject(FormBuilder);
+    private toastService = inject(ToastService);
 
-    private readonly formType: FormType = FormType.JoinSpot;
+    private readonly formType: FormType = FormType.GetInvolved;
     private readonly submissionService: SubmissionService = inject(SubmissionService);
 
     public form: FormGroup;
     public isLoading = signal(false);
     public submitted = signal(false);
+    public showSuccessDialog = signal(false);
 
     // Organization type options
     public organizationTypes = [
@@ -29,6 +33,7 @@ export class SpotsComponent implements OnInit {
         { id: 'nonprofit', label: 'Nonprofit / Foundation' },
         { id: 'community', label: 'Community Organization' },
         { id: 'faith', label: 'Faith-Based Organization' },
+        { id: 'volunteers', label: 'Volunteers' },
         { id: 'other', label: 'Other' }
     ];
 
@@ -57,13 +62,46 @@ export class SpotsComponent implements OnInit {
             this.form.markAllAsTouched();
             return;
         }
+
         this.isLoading.set(true);
         this.createSubmission();
     }
 
-    private async createSubmission(): Promise<void> {
-        this.submitted.set(true);
-        this.isLoading.set(false);
+    public closeSuccessDialog(): void {
+        this.showSuccessDialog.set(false);
+    }
+
+    private createSubmission(): void {
+        const data = {
+            ...this.form.getRawValue(),
+            sourcePage: 'spots',
+            submissionCategory: 'partner_inquiry',
+        };
+
+        this.submissionService.create({
+            formType: this.formType,
+            data,
+        }).pipe(first()).subscribe({
+            next: () => {
+                this.form.reset({
+                    contactPerson: '',
+                    organizationName: '',
+                    organizationType: '',
+                    email: '',
+                    message: '',
+                });
+                this.isLoading.set(false);
+                this.submitted.set(true);
+                this.showSuccessDialog.set(true);
+            },
+            error: (error: Error) => {
+                this.isLoading.set(false);
+                this.toastService.error(
+                    'Submission failed',
+                    error.message || 'Please try again in a moment.'
+                );
+            }
+        });
     }
 
     private updateMetaTags(): void {

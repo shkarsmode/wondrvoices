@@ -16,6 +16,7 @@ declare const google: any;
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RequestSupportComponent implements AfterViewChecked {
+    readonly additionalNoteMaxLength = 2000;
     currentStep = signal(1);
     totalSteps = 6;
     isSubmitting = signal(false);
@@ -160,7 +161,7 @@ export class RequestSupportComponent implements AfterViewChecked {
 
         this.step3Form = this.fb.group({
             comfortZones: [[], Validators.required],
-            additionalNote: ['']
+            additionalNote: ['', Validators.maxLength(this.additionalNoteMaxLength)]
         });
 
         this.step4Form = this.fb.group({
@@ -345,6 +346,11 @@ export class RequestSupportComponent implements AfterViewChecked {
                 alert('Please select at least one comfort zone');
                 return;
             }
+            if (this.step3Form.invalid) {
+                this.step3Form.markAllAsTouched();
+                alert(`Please keep your note under ${this.additionalNoteMaxLength} characters`);
+                return;
+            }
         } else if (this.currentStep() === 4) {
             if (this.step4Form.invalid) {
                 this.step4Form.markAllAsTouched();
@@ -495,6 +501,7 @@ export class RequestSupportComponent implements AfterViewChecked {
 
     submitRequest(): void {
         this.isSubmitting.set(true);
+        const additionalNote = this.step3Form.value.additionalNote?.trim();
 
         const requestData: CreateSupportRequestDto = {
             firstName: this.isAnonymous() ? undefined : (this.step4Form.value.firstName || undefined),
@@ -509,7 +516,7 @@ export class RequestSupportComponent implements AfterViewChecked {
             contextTags: this.selectedContextTags(),
             email: this.step4Form.value.email?.trim() || undefined,
             comfortZones: this.selectedComfortZones(),
-            additionalNote: this.step3Form.value.additionalNote || undefined,
+            additionalNote: additionalNote ? additionalNote.slice(0, this.additionalNoteMaxLength) : undefined,
             isAnonymous: this.isAnonymous()
         };
 

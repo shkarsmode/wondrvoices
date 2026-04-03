@@ -10,6 +10,7 @@ import { BASE_PATH_API } from './variables';
 })
 export class RequestsService {
     private readonly path = 'support-requests';
+    private readonly additionalNoteLimit = 2000;
 
     constructor(
         private http: HttpClient,
@@ -68,10 +69,12 @@ export class RequestsService {
 
     private sanitizeSupportRequestPayload(request: CreateSupportRequestDto): CreateSupportRequestDto {
         const email = request.email?.trim();
+        const additionalNote = request.additionalNote?.trim();
 
         return {
             ...request,
             email: email || undefined,
+            additionalNote: additionalNote ? additionalNote.slice(0, this.additionalNoteLimit) : undefined,
         };
     }
 
