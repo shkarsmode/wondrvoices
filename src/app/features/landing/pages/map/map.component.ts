@@ -72,6 +72,7 @@ export class MapComponent implements AfterViewInit {
         await import('leaflet.markercluster');
 
         this.initMap();
+        console.log('Loading data for map...');
         await Promise.allSettled([this.loadJourneys(), this.loadSupportCards()]);
         this.mapReady.set(true);
         this.refreshMarkers();
@@ -159,6 +160,7 @@ export class MapComponent implements AfterViewInit {
                 orderDir: 'DESC',
                 page
             }));
+            console.log(response);
             const items = response?.items ?? [];
 
             if (!items.length) {

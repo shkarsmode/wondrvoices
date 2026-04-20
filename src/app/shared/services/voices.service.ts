@@ -60,9 +60,14 @@ export class VoicesService {
             tags?: string[]; tab?: string;
             tagsMode?: 'any' | 'all';
             orderBy?: 'createdAt' | 'id'; orderDir?: 'ASC' | 'DESC';
-            page?: number
+            page?: number,
+            limit?: number
         }
     ): Observable<VoicesListResponse> {
+        if (extra) {
+            extra.limit = limit;
+        }
+
         const stringifiedExtra = JSON.stringify(extra);
 
         let params = new HttpParams().set('limit', String(limit)).set('page', String(extra?.page));
@@ -78,6 +83,7 @@ export class VoicesService {
 
         const approvedUrl = status === VoiceStatus.Approved ? '/approved' : '';
 
+        console.log('Fetching voices with params:', stringifiedExtra);
         if (this.cache[stringifiedExtra]) {
             return of({ items: this.cache[stringifiedExtra], total: this.cache[stringifiedExtra].length });
         }
