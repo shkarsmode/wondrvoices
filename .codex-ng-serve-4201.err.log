@@ -1,0 +1,27 @@
+[1m[33m[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`[39m[22m
+[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: AutocompleteInputComponent is not used within the template of FormComponent[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/landing/pages/form/form.component.ts:43:35:
+[37m      43 │     imports: [ReactiveFormsModule, [32mAutocompleteInputComponent[37m],
+         ╵                                    [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mDeprecation[0m [1m[35m[plugin angular-sass][0m
+
+    src/app/features/landing/pages/gallery/gallery.component.scss:1512:4:
+[37m      1512 │     [32m[37manimation: share-popover-in 140ms cubic-bezier(.2, .8, .2, 1...
+           ╵     [32m^[0m
+
+
+  Sass's behavior for declarations that appear after nested
+  rules will be changing to match the behavior specified by CSS in an upcoming
+  version. To keep the existing behavior, move the declaration above the nested
+  rule. To opt into the new behavior, wrap the declaration in `& {}`.
+  
+  More info: [4mhttps://sass-lang.com/d/mixed-decls[0m
+
+[39m[22m
+[1m[33mNG0914: The application is using zoneless change detection, but is still loading Zone.js. Consider removing Zone.js to get the full benefits of zoneless. In applications using the Angular CLI, Zone.js is typically included in the "polyfills" section of the angular.json file.[39m[22m
+[1m[33mNG05001: Configuration error: found both hydration and enabledBlocking initial navigation in the same application, which is a contradiction.[39m[22m
+[1m[33mNG05001: Configuration error: found both hydration and enabledBlocking initial navigation in the same application, which is a contradiction.[39m[22m
+[1m[33mNG02801: Angular detected that `HttpClient` is not configured to use `fetch` APIs. It's strongly recommended to enable `fetch` for applications that use Server-Side Rendering for better performance and compatibility. To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` call at the root of the application.[39m[22m

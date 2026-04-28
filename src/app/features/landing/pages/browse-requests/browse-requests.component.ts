@@ -77,6 +77,7 @@ export class BrowseRequestsComponent implements OnInit {
                 return list;
         }
     });
+    hasActiveFilters = computed(() => this.selectedFilter() !== FilterCategory.All || this.selectedZone() !== 'all');
 
     constructor(private requestsService: RequestsService, private likesService: LikesService) {}
 
@@ -112,6 +113,12 @@ export class BrowseRequestsComponent implements OnInit {
 
     setFilter(filter: FilterCategory): void {
         this.selectedFilter.set(filter);
+        this.loadRequests();
+    }
+
+    resetFilters(): void {
+        this.selectedFilter.set(FilterCategory.All);
+        this.selectedZone.set('all');
         this.loadRequests();
     }
 

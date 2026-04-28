@@ -41,8 +41,8 @@ export class RequestsService {
 
     getBrowseRequests(filters?: { category?: string; comfortZone?: string; page?: number; limit?: number }): Observable<SupportRequestsResponse> {
         let params = new HttpParams();
-        if (filters?.category) params = params.set('category', filters.category);
-        if (filters?.comfortZone) params = params.set('comfortZone', filters.comfortZone);
+        if (filters?.category && filters.category !== 'all') params = params.set('category', filters.category);
+        if (filters?.comfortZone && filters.comfortZone !== 'all') params = params.set('comfortZone', filters.comfortZone);
         if (filters?.page) params = params.set('page', String(filters.page));
         if (filters?.limit) params = params.set('limit', String(filters.limit));
 
